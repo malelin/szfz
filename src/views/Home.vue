@@ -15,6 +15,7 @@ export default {
     HelloWorld
   },
   created() {
+    console.log(process.env);
     login()
       .then(result => {
         console.log(result);
