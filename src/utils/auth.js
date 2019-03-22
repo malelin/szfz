@@ -2,6 +2,10 @@ import Cookies from "js-cookie";
 
 const TokenKey = "Admin-Token";
 
+/**
+ * @description 获取token
+ * @returns token
+ */
 export function getToken() {
   return Cookies.get(TokenKey);
 }
