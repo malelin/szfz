@@ -1,0 +1,39 @@
+.clearfix:after, .clearfix::before
+  display table
+  content ''
+
+.clearfix:after
+  clear both
+
+.clearfix
+  zoom 1
+
+.fl
+  float left
+
+.fr
+  float right
+
+/* 盒子居中 */
+.center-box
+  text-align center
+  -webkit-writing-mode tb-lr
+  -ms-writing-mode tb-lr
+  writing-mode tb-lr
+  -webkit-writing-mode vertical-lr
+  writing-mode vertical-lr
+
+  .center-wrap
+    display inline-block
+    width 100%
+    text-align center
+    -webkit-writing-mode lr-tb
+    -ms-writing-mode lr-tb
+    writing-mode lr-tb
+    -webkit-writing-mode horizontal-tb
+    writing-mode horizontal-tb
+
+    .center-content
+      display inline-block
+      text-align left
+      text-align initial
