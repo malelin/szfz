@@ -1,6 +1,9 @@
 <template>
   <div id="app">
     <img src="./assets/logo.png" />
+    <svg-icon icon-class="clipboard" />
+    <svg-icon icon-class="bug" />
+    <svg-icon icon-class="chart" />
     <div>
       <p>
         If Element is successfully added to this project, you'll see an

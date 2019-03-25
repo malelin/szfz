@@ -5,7 +5,7 @@ import store from "@/store";
 import "@/stylus/index.styl";
 import "@/plugins/element.js";
 import plugins from "@/plugins";
-
+import "./icons";
 Vue.config.productionTip = false;
 
 Vue.use(plugins);
