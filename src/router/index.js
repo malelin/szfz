@@ -1,12 +1,18 @@
 import Vue from "vue";
 import Router from "vue-router";
 import Home from "@/views/Home.vue";
+import login from "@/views/login";
 Vue.use(Router);
 export const constantRoutes = [
   {
     path: "/",
     name: "home",
     component: Home
+  },
+  {
+    path: "/login",
+    name: "login",
+    component: login
   },
   {
     path: "/about",
