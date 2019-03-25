@@ -1,6 +1,6 @@
 import request from "@/utils/request";
 /**
- * @description 登陆接口
+ * @description 登录接口
  * @param {*} username
  * @param {*} password
  */

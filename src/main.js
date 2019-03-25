@@ -5,7 +5,10 @@ import * as filters from "@/filters"; // global filters
 import store from "@/store";
 import "@/stylus/index.styl";
 import "./plugins/element.js";
+// 引入echarts
+import echarts from "echarts";
 
+Vue.prototype.$echarts = echarts;
 Vue.config.productionTip = false;
 
 // 注册全局过滤器

@@ -1,0 +1,16 @@
+### 根地址
+@baseUrl = http://192.168.2.112:8081
+
+###
+GET {{baseUrl}}/comments
+    ?page=2
+    &pageSize=10
+    
+###
+POST {{baseUrl}}/comments HTTP/1.1
+content-type: application/json
+
+{
+    "name": "sample",
+    "time": "Wed, 21 Oct 2015 18:27:50 GMT"
+}
