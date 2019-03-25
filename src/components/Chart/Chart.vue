@@ -3,7 +3,7 @@
  * @LastEditors: 旺苍扛把子
  * @Description: 封装echart通用组件
  * @Date: 2019-03-25 10:55:42
- * @LastEditTime: 2019-03-25 11:41:10
+ * @LastEditTime: 2019-03-25 11:56:23
  -->
 
 <template>
