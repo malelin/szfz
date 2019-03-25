@@ -1,7 +1,8 @@
-import HelloWorld from "@/components/HelloWorld.vue";
 // 图标组件
 import SvgIcon from "@/components/SvgIcon";
+// 图表组件
+import Chart from "@/components/Chart";
 export default {
-  HelloWorld,
+  Chart,
   SvgIcon
 };
