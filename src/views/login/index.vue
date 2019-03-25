@@ -1,8 +1,12 @@
 <template>
-  <div class="login"></div>
+  <div class="login">
+    <button @click="handleLogin">login</button>
+    <button @click="handleLogout">logout</button>
+  </div>
 </template>
 
 <script>
+import { login, logout } from "@/api/login";
 export default {
   name: "Login",
   components: {
@@ -21,7 +25,27 @@ export default {
   },
   computed: {},
   watch: {},
-  methods: {},
+  methods: {
+    async handleLogin() {
+      login("test002", "123456")
+        .then(result => {
+          console.log(result);
+        })
+        .catch(err => {
+          console.log(err);
+        });
+    },
+    async handleLogout() {
+      let token = sessionStorage.getItem("token");
+      logout(token)
+        .then(result => {
+          console.log(result);
+        })
+        .catch(err => {
+          console.log(err);
+        });
+    }
+  },
   created() {},
   mounted() {}
 };

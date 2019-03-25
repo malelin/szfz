@@ -2,7 +2,7 @@
 @baseUrl = http://192.168.2.112:8081
 
 ###
-GET {{baseUrl}}/comments
+PUT {{baseUrl}}/v1/sysmanage/login
     ?page=2
     &pageSize=10
     
