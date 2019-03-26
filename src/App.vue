@@ -16,6 +16,8 @@ html, body
   height 100%
 
 #app
+  width 100%
+  height 100%
   color #2c3e50
   text-align center
   font-family 'Microsoft YaHei', Helvetica, Arial, sans-serif
