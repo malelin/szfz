@@ -3,7 +3,7 @@
  * @LastEditors: 旺苍扛把子
  * @Description: 登录组件
  * @Date: 2019-03-25 15:26:28
- * @LastEditTime: 2019-03-26 16:18:46
+ * @LastEditTime: 2019-03-26 17:08:07
  -->
 <template>
   <div class="login">
@@ -55,17 +55,7 @@
         </div>
       </div>
     </div>
-    <div class="copyright-box">
-      <div class="message">
-        <span class="message-item">帮助</span>
-        <span class="message-item">隐私</span>
-        <span class="message-item">条款</span>
-      </div>
-      <div class="copyright">
-        <p>Copyright © 兴华永恒（北京）科技有限责任公司.</p>
-        <p>All rights reserved. 京ICP备10040895号.</p>
-      </div>
-    </div>
+    <copyright class="c-copyright" />
     <button @click="handleLogout">logout</button>
   </div>
 </template>
@@ -200,27 +190,10 @@ export default {
       .line
         color #cccdcf
 
-  .copyright-box
+  // 给copyright组件添加样式
+  .c-copyright
     position absolute
     bottom 50px
     left 50%
-    width 520px
-    color rgba(0, 0, 0, 0.45)
     transform translateX(-50%)
-
-    .message
-      padding-bottom 20px
-      text-align center
-      font-size 14px
-
-      .message-item
-        margin-right 20px
-        cursor pointer
-
-    .copyright
-      font-size 12px
-      line-height 20px
-
-      p
-        text-align center
 </style>
