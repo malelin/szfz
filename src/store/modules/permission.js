@@ -35,6 +35,7 @@ export function filterAsyncRoutes(routes, roles) {
 }
 
 const permission = {
+  namespaced: true,
   state: {
     routes: [],
     addRoutes: []

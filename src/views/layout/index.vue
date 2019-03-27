@@ -3,13 +3,20 @@
  * @LastEditors: 旺苍扛把子
  * @Description: 布局组件,包含SiderBar,NavBar,TagsView,AppMain
  * @Date: 2019-03-27 09:45:34
- * @LastEditTime: 2019-03-27 10:20:53
+ * @LastEditTime: 2019-03-27 14:31:39
  -->
 <template>
   <div class="layout">
-    <SiderBar></SiderBar>
-    <NavBar></NavBar>
-    <TagsView></TagsView>
+    <!-- 侧边栏 -->
+    <div class="siderbar-container">
+      <SiderBar class="c-siderbar" />
+    </div>
+    <!-- 右侧内容 -->
+    <div class="main-container">
+      <NavBar class="c-nav-bar" />
+      <TagsView class="c-tags-view" />
+      <app-main />
+    </div>
   </div>
 </template>
 
@@ -19,6 +26,7 @@ export default {
   components: {
     TagsView: () => import("./TagsView"),
     NavBar: () => import("./NavBar"),
+    AppMain: () => import("./AppMain"),
     SiderBar: () => import("./SiderBar")
   },
   props: {
@@ -41,7 +49,20 @@ export default {
 
 <style lang="stylus" scoped>
 .layout
+  overflow hidden
   width 100%
   height 100%
   line-height 1
+
+  .siderbar-container
+    float left
+    height 100%
+    background-color rgb(0, 21, 41)
+
+    .c-siderbar
+      height 100%
+
+  .main-container
+    overflow hidden
+    height 100%
 </style>

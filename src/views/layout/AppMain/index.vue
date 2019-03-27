@@ -1,3 +1,10 @@
+<!--
+ * @Author: 旺苍扛把子
+ * @LastEditors: 旺苍扛把子
+ * @Description: 内容主视图
+ * @Date: 2019-03-27 10:03:14
+ * @LastEditTime: 2019-03-27 10:32:20
+ -->
 <template>
   <div class="app-main"></div>
 </template>

@@ -1,3 +1,10 @@
+<!--
+ * @Author: 旺苍扛把子
+ * @LastEditors: 旺苍扛把子
+ * @Description: 展示打开的功能,可以关闭
+ * @Date: 2019-03-27 10:02:21
+ * @LastEditTime: 2019-03-27 10:33:03
+ -->
 <template>
   <div class="tags-view"></div>
 </template>

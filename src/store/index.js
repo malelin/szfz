@@ -1,10 +1,15 @@
 import Vue from "vue";
 import Vuex from "vuex";
-import app from "./modules/app";
+
 import getters from "./getters";
+
+import app from "./modules/app";
+import layout from "./modules/layout";
+import permission from "./modules/permission";
+
 Vue.use(Vuex);
 
 export default new Vuex.Store({
-  modules: { app },
+  modules: { app, permission, layout },
   getters
 });
