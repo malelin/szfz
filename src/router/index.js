@@ -1,6 +1,9 @@
 import Vue from "vue";
 import Router from "vue-router";
+
 import login from "@/views/login";
+import layout from "@/views/layout";
+
 Vue.use(Router);
 export const constantRoutes = [
   {
@@ -12,6 +15,11 @@ export const constantRoutes = [
     path: "/login",
     name: "login",
     component: login
+  },
+  {
+    path: "/layout",
+    name: "layout",
+    component: layout
   }
 ];
 //异步挂载的路由
@@ -43,7 +51,7 @@ const routerWhiteList = ["/login", "/403", "/404", "/405"];
 //在每次进行路由跳转之前进行
 router.beforeEach((to, from, next) => {
   //增加登录验证
-  const isLogin = localStorage.getItem("token") ? true : false;
+  const isLogin = sessionStorage.getItem("token") ? true : false;
   if (routerWhiteList.includes(to.path)) {
     //如果在白名单内，不需要token
     next();

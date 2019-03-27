@@ -3,7 +3,7 @@
  * @LastEditors: 旺苍扛把子
  * @Description: 登录组件
  * @Date: 2019-03-25 15:26:28
- * @LastEditTime: 2019-03-26 17:08:07
+ * @LastEditTime: 2019-03-27 10:10:52
  -->
 <template>
   <div class="login">
@@ -139,8 +139,9 @@ export default {
             this.$message({
               message: "登录成功",
               type: "success",
-              duration: 1500
+              duration: 1000
             });
+            this.$router.replace("/layout");
           }
         }
       } catch (e) {
