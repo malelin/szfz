@@ -3,13 +3,35 @@
  * @LastEditors: 旺苍扛把子
  * @Description: 头部栏,包含搜索,注销,消息
  * @Date: 2019-03-27 10:03:36
- * @LastEditTime: 2019-03-27 10:34:00
+ * @LastEditTime: 2019-03-27 18:01:32
  -->
 <template>
-  <div class="navbar"></div>
+  <div class="navbar">
+    <svg-icon
+      icon-class="collapse"
+      class-name="svg-collapse"
+      @click.native="toggleISCollapse"
+    ></svg-icon>
+    <el-input
+      placeholder="搜索IP、域名、文件HASH、邮箱"
+      v-model="searchText"
+      class="search-box"
+    >
+      <el-button slot="append" type="primary">搜索</el-button>
+    </el-input>
+    <div class="operation-box">
+      <img src="./images/avatar.gif" alt="头像" class="avatar" />
+      <el-badge :value="12" class="badge-message">
+        <svg-icon icon-class="message" class-name="svg-message"></svg-icon>
+      </el-badge>
+      <svg-icon icon-class="logout" class-name="svg-logout"></svg-icon>
+    </div>
+  </div>
 </template>
 
 <script>
+import { createNamespacedHelpers } from "vuex";
+const { mapMutations } = createNamespacedHelpers("layout");
 export default {
   name: "NavBar",
   components: {
@@ -24,17 +46,68 @@ export default {
     //  }
   },
   data() {
-    return {};
+    return {
+      searchText: ""
+    };
   },
   computed: {},
   watch: {},
-  methods: {},
+  methods: {
+    ...mapMutations(["toggleISCollapse"])
+  },
   created() {},
   mounted() {}
 };
 </script>
+<style>
+/* 重写elementui样式 */
+.search-box {
+  margin-right: auto;
+  padding-right: 40px;
+}
+/* 强制改变搜索按钮背景颜色 */
+.el-button--primary {
+  background-color: #409eff !important;
+  color: #fff !important;
+}
+/* 重写消息徽章 */
+.badge-message {
+  margin-right: 15px;
+}
+</style>
 
 <style lang="stylus" scoped>
 .navbar
+  display flex
+  align-items center
+  padding 0 20px
+  height 60px
+  background-color #fff
   line-height 1
+
+.operation-box
+  display flex
+  align-items center
+  margin-right -15px
+
+  .avatar
+    margin-right 15px
+    width 35px
+    height 35px
+    border-radius 50%
+
+.svg-icon
+  margin-right 15px
+  vertical-align middle
+  font-size 30px
+  cursor pointer
+
+  &.svg-logout
+    font-size 35px
+
+  &.svg-collapse
+    font-size 30px
+
+  &.svg-message
+    margin-right 0
 </style>

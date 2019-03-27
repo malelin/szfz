@@ -3,6 +3,7 @@ import App from "./App.vue";
 import router from "@/router";
 import store from "@/store";
 import "@/stylus/index.styl";
+import "@/plugins/animated.js";
 import "@/plugins/element.js";
 import plugins from "@/plugins";
 import "./icons";
