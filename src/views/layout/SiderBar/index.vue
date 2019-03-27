@@ -3,20 +3,19 @@
  * @LastEditors: 旺苍扛把子
  * @Description: siderbar组件
  * @Date: 2019-03-27 10:01:30
- * @LastEditTime: 2019-03-27 17:01:23
+ * @LastEditTime: 2019-03-27 17:03:43
  -->
 <template>
   <div class="siderbar">
+    <transition
+      name="custom-classes-transition"
+      enter-active-class="animated fadeInLeft"
+      leave-active-class="animated fadeOut delay"
+    >
+      <div class="logo-container" v-show="!isCollapse">
+        <svg-icon icon-class="logo" class-name="svg-logo"></svg-icon></div
+    ></transition>
     <el-scrollbar class="c-scrollbar">
-      <transition
-        name="custom-classes-transition"
-        enter-active-class="animated fadeInLeft"
-        leave-active-class="animated fadeOut delay"
-      >
-        <div class="logo-container" v-show="!isCollapse">
-          <svg-icon icon-class="logo" class-name="svg-logo"></svg-icon></div
-      ></transition>
-
       <el-menu
         default-active="1-4-1"
         class="el-menu-vertical-demo"
@@ -243,7 +242,7 @@ export default {
   line-height 1
 
   .c-scrollbar
-    height 100%
+    height calc(100% - 75px)
 
   .logo-container
     text-align center
