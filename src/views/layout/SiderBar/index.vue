@@ -3,14 +3,20 @@
  * @LastEditors: 旺苍扛把子
  * @Description: siderbar组件
  * @Date: 2019-03-27 10:01:30
- * @LastEditTime: 2019-03-27 15:52:48
+ * @LastEditTime: 2019-03-27 17:01:23
  -->
 <template>
   <div class="siderbar">
     <el-scrollbar class="c-scrollbar">
-      <div class="logo-container" v-show="!isCollapse">
-        <svg-icon icon-class="logo" class-name="svg-logo"></svg-icon>
-      </div>
+      <transition
+        name="custom-classes-transition"
+        enter-active-class="animated fadeInLeft"
+        leave-active-class="animated fadeOut delay"
+      >
+        <div class="logo-container" v-show="!isCollapse">
+          <svg-icon icon-class="logo" class-name="svg-logo"></svg-icon></div
+      ></transition>
+
       <el-menu
         default-active="1-4-1"
         class="el-menu-vertical-demo"
@@ -47,6 +53,105 @@
           <el-menu-item-group>
             <el-menu-item index="3-1">系统管理</el-menu-item>
             <el-menu-item index="3-2">审计日志</el-menu-item>
+          </el-menu-item-group> </el-submenu
+        ><el-submenu index="3">
+          <template slot="title">
+            <svg-icon icon-class="xitong"></svg-icon>
+            <span slot="title">系统管理</span>
+          </template>
+          <el-menu-item-group>
+            <el-menu-item index="3-1">系统管理</el-menu-item>
+            <el-menu-item index="3-2">审计日志</el-menu-item>
+          </el-menu-item-group> </el-submenu
+        ><el-submenu index="3">
+          <template slot="title">
+            <svg-icon icon-class="xitong"></svg-icon>
+            <span slot="title">系统管理</span>
+          </template>
+          <el-menu-item-group>
+            <el-menu-item index="3-1">系统管理</el-menu-item>
+            <el-menu-item index="3-2">审计日志</el-menu-item>
+          </el-menu-item-group> </el-submenu
+        ><el-submenu index="3">
+          <template slot="title">
+            <svg-icon icon-class="xitong"></svg-icon>
+            <span slot="title">系统管理</span>
+          </template>
+          <el-menu-item-group>
+            <el-menu-item index="3-1">系统管理</el-menu-item>
+            <el-menu-item index="3-2">审计日志</el-menu-item>
+          </el-menu-item-group> </el-submenu
+        ><el-submenu index="3">
+          <template slot="title">
+            <svg-icon icon-class="xitong"></svg-icon>
+            <span slot="title">系统管理</span>
+          </template>
+          <el-menu-item-group>
+            <el-menu-item index="3-1">系统管理</el-menu-item>
+            <el-menu-item index="3-2">审计日志</el-menu-item>
+          </el-menu-item-group> </el-submenu
+        ><el-submenu index="3">
+          <template slot="title">
+            <svg-icon icon-class="xitong"></svg-icon>
+            <span slot="title">系统管理</span>
+          </template>
+          <el-menu-item-group>
+            <el-menu-item index="3-1">系统管理</el-menu-item>
+            <el-menu-item index="3-2">审计日志</el-menu-item>
+          </el-menu-item-group> </el-submenu
+        ><el-submenu index="3">
+          <template slot="title">
+            <svg-icon icon-class="xitong"></svg-icon>
+            <span slot="title">系统管理</span>
+          </template>
+          <el-menu-item-group>
+            <el-menu-item index="3-1">系统管理</el-menu-item>
+            <el-menu-item index="3-2">审计日志</el-menu-item>
+          </el-menu-item-group> </el-submenu
+        ><el-submenu index="3">
+          <template slot="title">
+            <svg-icon icon-class="xitong"></svg-icon>
+            <span slot="title">系统管理</span>
+          </template>
+          <el-menu-item-group>
+            <el-menu-item index="3-1">系统管理</el-menu-item>
+            <el-menu-item index="3-2">审计日志</el-menu-item>
+          </el-menu-item-group> </el-submenu
+        ><el-submenu index="3">
+          <template slot="title">
+            <svg-icon icon-class="xitong"></svg-icon>
+            <span slot="title">系统管理</span>
+          </template>
+          <el-menu-item-group>
+            <el-menu-item index="3-1">系统管理</el-menu-item>
+            <el-menu-item index="3-2">审计日志</el-menu-item>
+          </el-menu-item-group> </el-submenu
+        ><el-submenu index="3">
+          <template slot="title">
+            <svg-icon icon-class="xitong"></svg-icon>
+            <span slot="title">系统管理</span>
+          </template>
+          <el-menu-item-group>
+            <el-menu-item index="3-1">系统管理</el-menu-item>
+            <el-menu-item index="3-2">审计日志</el-menu-item>
+          </el-menu-item-group> </el-submenu
+        ><el-submenu index="3">
+          <template slot="title">
+            <svg-icon icon-class="xitong"></svg-icon>
+            <span slot="title">系统管理</span>
+          </template>
+          <el-menu-item-group>
+            <el-menu-item index="3-1">系统管理</el-menu-item>
+            <el-menu-item index="3-2">审计日志</el-menu-item>
+          </el-menu-item-group> </el-submenu
+        ><el-submenu index="3">
+          <template slot="title">
+            <svg-icon icon-class="xitong"></svg-icon>
+            <span slot="title">系统管理</span>
+          </template>
+          <el-menu-item-group>
+            <el-menu-item index="3-1">系统管理</el-menu-item>
+            <el-menu-item index="3-2">审计日志</el-menu-item>
           </el-menu-item-group>
         </el-submenu>
       </el-menu>
@@ -56,7 +161,6 @@
 
 <script>
 import { createNamespacedHelpers } from "vuex";
-
 const { mapState } = createNamespacedHelpers("layout");
 export default {
   name: "SiderBar",
@@ -79,9 +183,7 @@ export default {
     return {};
   },
   computed: {
-    ...mapState({
-      isCollapse: state => state.isCollapse
-    })
+    ...mapState(["isCollapse"])
   },
   watch: {},
   methods: {
@@ -126,11 +228,22 @@ export default {
 .el-submenu .el-menu-item {
   background-color: rgba(47, 51, 58, 0.53) !important;
 }
+/* 管理侧边栏横向滚动条 */
+.el-scrollbar__wrap {
+  overflow-x: hidden;
+}
+/* 重写animate.css fadeout延时 */
+.fadeOut.delay {
+  animation-duration: 0.6s;
+}
 </style>
 
 <style lang="stylus" scoped>
 .siderbar
   line-height 1
+
+  .c-scrollbar
+    height 100%
 
   .logo-container
     text-align center
@@ -140,9 +253,8 @@ export default {
 
 .svg-icon
   margin-right 10px
-  width 30px
-  height 30px
   vertical-align middle
+  font-size 28px
 
 .svg-logo
   padding-bottom 20px
