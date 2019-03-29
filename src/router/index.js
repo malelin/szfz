@@ -5,7 +5,7 @@ import login from "@/views/login";
 import layout from "@/views/layout";
 
 /* AppMain组件下的router-view的所有路由 */
-import dashboard from "./modules/dashboard";
+import AppMain from "./modules/AppMain";
 Vue.use(Router);
 export const constantRoutes = [
   {
@@ -20,9 +20,8 @@ export const constantRoutes = [
   },
   {
     path: "/layout",
-    name: "layout",
     component: layout,
-    children: dashboard
+    children: AppMain
   }
 ];
 //异步挂载的路由

@@ -3,15 +3,12 @@
  * @LastEditors: 旺苍扛把子
  * @Description: AppMain组件下的router-view的所有路由
  * @Date: 2019-03-29 10:18:42
- * @LastEditTime: 2019-03-29 10:31:10
+ * @LastEditTime: 2019-03-29 11:19:11
  */
 import Dashboard from "@/views/layout/AppMain/Dashboard";
-const dashboard = [
-  // 默认渲染的路由
-  {
-    path: "",
-    component: Dashboard
-  },
+const AppMain = [
+  // 默认AppMain子路由
+  { path: "", component: Dashboard },
   { path: "/dashboard", name: "dashboard", component: Dashboard }
 ];
-export default dashboard;
+export default AppMain;

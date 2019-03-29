@@ -3,7 +3,7 @@
  * @LastEditors: 旺苍扛把子
  * @Description: 内容主视图
  * @Date: 2019-03-27 10:03:14
- * @LastEditTime: 2019-03-29 10:34:26
+ * @LastEditTime: 2019-03-29 11:54:29
  -->
 <template>
   <div class="app-main">
@@ -49,6 +49,7 @@ export default {
 
   .app-content
     box-sizing border-box
+    padding 0 20px
     height calc(100% - 124px)
 
   .copyright-container
