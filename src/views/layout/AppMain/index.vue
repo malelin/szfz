@@ -3,10 +3,17 @@
  * @LastEditors: 旺苍扛把子
  * @Description: 内容主视图
  * @Date: 2019-03-27 10:03:14
- * @LastEditTime: 2019-03-27 17:26:22
+ * @LastEditTime: 2019-03-29 10:34:26
  -->
 <template>
-  <div class="app-main"></div>
+  <div class="app-main">
+    <div class="app-content">
+      <router-view />
+    </div>
+    <div class="copyright-container">
+      <Copyright class="c-copyright" />
+    </div>
+  </div>
 </template>
 
 <script>
@@ -36,5 +43,17 @@ export default {
 
 <style lang="stylus" scoped>
 .app-main
+  height calc(100% - 96px)
+  background-color #F0F2F5
   line-height 1
+
+  .app-content
+    box-sizing border-box
+    height calc(100% - 124px)
+
+  .copyright-container
+    text-align center
+
+    .c-copyright
+      display inline-block
 </style>

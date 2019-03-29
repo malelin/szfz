@@ -1,17 +1,17 @@
 <!--
  * @Author: 旺苍扛把子
  * @LastEditors: 旺苍扛把子
- * @Description: 展示打开的功能,可以关闭
- * @Date: 2019-03-27 10:02:21
- * @LastEditTime: 2019-03-29 10:04:36
+ * @Description: 控制面板组件
+ * @Date: 2019-03-29 10:14:42
+ * @LastEditTime: 2019-03-29 10:32:25
  -->
 <template>
-  <div class="tags-view"></div>
+  <div class="dashboard"></div>
 </template>
 
 <script>
 export default {
-  name: "TagsView",
+  name: "Dashboard",
   components: {
     /* 按需加载组件 */
     // demo: () => import('@/pages/')
@@ -35,7 +35,8 @@ export default {
 </script>
 
 <style lang="stylus" scoped>
-.tags-view
-  height 36px
+.dashboard
+  width 100%
+  height 100%
   line-height 1
 </style>

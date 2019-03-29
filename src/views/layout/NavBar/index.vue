@@ -3,7 +3,7 @@
  * @LastEditors: 旺苍扛把子
  * @Description: 头部栏,包含搜索,注销,消息
  * @Date: 2019-03-27 10:03:36
- * @LastEditTime: 2019-03-27 18:01:32
+ * @LastEditTime: 2019-03-29 10:03:38
  -->
 <template>
   <div class="navbar">
@@ -12,6 +12,12 @@
       class-name="svg-collapse"
       @click.native="toggleISCollapse"
     ></svg-icon>
+    <el-breadcrumb separator="|">
+      <el-breadcrumb-item :to="{ path: '/' }">数字方舟</el-breadcrumb-item>
+      <el-breadcrumb-item>活动管理</el-breadcrumb-item>
+      <el-breadcrumb-item>活动列表</el-breadcrumb-item>
+      <el-breadcrumb-item>活动详情</el-breadcrumb-item>
+    </el-breadcrumb>
     <el-input
       placeholder="搜索IP、域名、文件HASH、邮箱"
       v-model="searchText"
@@ -63,6 +69,8 @@ export default {
 /* 重写elementui样式 */
 .search-box {
   margin-right: auto;
+  margin-left: 50px;
+  width: 600px;
   padding-right: 40px;
 }
 /* 强制改变搜索按钮背景颜色 */
@@ -83,6 +91,7 @@ export default {
   padding 0 20px
   height 60px
   background-color #fff
+  box-shadow 0 1px 3px #ccc
   line-height 1
 
 .operation-box
