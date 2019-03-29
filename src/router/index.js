@@ -9,7 +9,7 @@ export const constantRoutes = [
   {
     path: "/",
     name: "home",
-    redirect: "/login"
+    redirect: "/layout"
   },
   {
     path: "/login",
@@ -46,18 +46,18 @@ const router = new Router({
   base: process.env.BASE_URL,
   routes: constantRoutes
 });
-// 路由白名单，不需要进行token验证
-const routerWhiteList = ["/login", "/403", "/404", "/405"];
-//在每次进行路由跳转之前进行
-router.beforeEach((to, from, next) => {
-  //增加登录验证
-  const isLogin = sessionStorage.getItem("token") ? true : false;
-  if (routerWhiteList.includes(to.path)) {
-    //如果在白名单内，不需要token
-    next();
-  } else {
-    //如果不是登录页面就要判断是否登录
-    isLogin ? next() : next("/login");
-  }
-});
+// // 路由白名单，不需要进行token验证
+// const routerWhiteList = ["/login", "/403", "/404", "/405"];
+// //在每次进行路由跳转之前进行
+// router.beforeEach((to, from, next) => {
+//   //增加登录验证
+//   const isLogin = sessionStorage.getItem("token") ? true : false;
+//   if (routerWhiteList.includes(to.path)) {
+//     //如果在白名单内，不需要token
+//     next();
+//   } else {
+//     //如果不是登录页面就要判断是否登录
+//     isLogin ? next() : next("/login");
+//   }
+// });
 export default router;
