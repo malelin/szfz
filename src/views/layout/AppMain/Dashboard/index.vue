@@ -3,7 +3,7 @@
  * @LastEditors: 旺苍扛把子
  * @Description: 控制面板组件
  * @Date: 2019-03-29 10:14:42
- * @LastEditTime: 2019-03-29 18:00:42
+ * @LastEditTime: 2019-04-01 17:02:13
  -->
 <template>
   <div class="dashboard">
@@ -374,6 +374,7 @@ export default {
     margin-bottom 20px
     height calc(100% - 330px)
     background-color #fff
+    box-shadow 0 0px 10px #ccc
 
     &-header
       display flex

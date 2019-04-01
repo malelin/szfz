@@ -3,7 +3,7 @@
  * @LastEditors: 旺苍扛把子
  * @Description: 头部栏,包含搜索,注销,消息
  * @Date: 2019-03-27 10:03:36
- * @LastEditTime: 2019-03-29 10:03:38
+ * @LastEditTime: 2019-04-01 16:58:57
  -->
 <template>
   <div class="navbar">
@@ -30,7 +30,12 @@
       <el-badge :value="12" class="badge-message">
         <svg-icon icon-class="message" class-name="svg-message"></svg-icon>
       </el-badge>
-      <svg-icon icon-class="logout" class-name="svg-logout"></svg-icon>
+      <svg-icon
+        title="注销"
+        icon-class="logout"
+        @click.native="handleLogout"
+        class-name="svg-logout"
+      ></svg-icon>
     </div>
   </div>
 </template>
@@ -38,6 +43,8 @@
 <script>
 import { createNamespacedHelpers } from "vuex";
 const { mapMutations } = createNamespacedHelpers("layout");
+import { logout } from "@/api/login";
+import _ from "lodash";
 export default {
   name: "NavBar",
   components: {
@@ -59,7 +66,28 @@ export default {
   computed: {},
   watch: {},
   methods: {
-    ...mapMutations(["toggleISCollapse"])
+    //映射是否折叠侧边栏
+    ...mapMutations(["toggleISCollapse"]),
+    /**
+     * @description 注销登录
+     */
+    handleLogout: _.debounce(async function() {
+      try {
+        let token = sessionStorage.getItem("token");
+        let { status } = await logout(token);
+        if (status === 200) {
+          this.$message({
+            type: "success",
+            message: "注销成功"
+          });
+          this.$router.push("/login");
+          // 清空sessionStorage
+          sessionStorage.clear();
+        }
+      } catch (e) {
+        console.log(e);
+      }
+    })
   },
   created() {},
   mounted() {}

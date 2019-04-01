@@ -3,7 +3,7 @@
  * @LastEditors: 旺苍扛把子
  * @Description: siderbar组件
  * @Date: 2019-03-27 10:01:30
- * @LastEditTime: 2019-03-27 17:22:03
+ * @LastEditTime: 2019-04-01 10:11:46
  -->
 <template>
   <div class="siderbar">
@@ -194,9 +194,8 @@ export default {
     handleOpen(key, keyPath) {
       console.log(key, keyPath);
     },
-    // 折叠侧边栏
     /**
-     * @description
+     * @description 折叠侧边栏
      * @param {any} key
      * @param {any} keyPath
      */

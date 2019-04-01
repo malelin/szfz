@@ -34,7 +34,12 @@ service.interceptors.response.use(
         sessionStorage.setItem("token", data.data.token);
       }
     } else {
-      //错误处理 根据不同的状态码，进行错误处理
+      //没有成功就显示每次返回的状态码
+      Message({
+        message: data.status,
+        type: "info",
+        duration: 5 * 1000
+      });
     }
     return data;
   },

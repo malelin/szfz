@@ -3,7 +3,7 @@
  * @LastEditors: 旺苍扛把子
  * @Description: 登录组件
  * @Date: 2019-03-25 15:26:28
- * @LastEditTime: 2019-03-27 10:10:52
+ * @LastEditTime: 2019-04-01 16:46:58
  -->
 <template>
   <div class="login">
@@ -22,11 +22,11 @@
             </el-form-item>
             <el-form-item prop="account">
               <el-input
-                placeholder="用户名"
+                placeholder="账号"
                 type="text"
-                v-model.number="loginForm.account"
+                v-model="loginForm.account"
               >
-                <svg-icon icon-class="user" slot="prefix"></svg-icon>
+                <svg-icon icon-class="account" slot="prefix"></svg-icon>
               </el-input>
             </el-form-item>
             <el-form-item e prop="password">
@@ -46,22 +46,25 @@
               >
             </el-form-item>
             <el-form-item>
-              <el-checkbox v-model="autoLogin">自动登录</el-checkbox>
-              <el-button class="fr" type="text">注册账户</el-button>
-              <span class="line fr">&nbsp;|&nbsp;</span>
-              <el-button class="fr" type="text">忘记密码</el-button>
+              <!-- <el-checkbox v-model="autoLogin">自动登录</el-checkbox>-->
+              <el-button @click.native="handleToRegister" class="fr" type="text"
+                >注册账号</el-button
+              >
+              <!-- <span class="line fr">&nbsp;|&nbsp;</span> -->
+              <!-- <el-button class="fr" type="text">忘记密码</el-button> -->
             </el-form-item>
           </el-form>
         </div>
       </div>
     </div>
     <copyright class="c-copyright" />
-    <button @click="handleLogout">logout</button>
   </div>
 </template>
 
 <script>
 import { login, logout } from "@/api/login";
+// 导入正则表达式
+import { accountRegx } from "@/regxs";
 import _ from "lodash";
 export default {
   name: "Login",
@@ -77,28 +80,31 @@ export default {
     //  }
   },
   data() {
-    // 账户校验器
+    /**
+     * @description 账号校验器
+     */
     var validateAccount = (rule, value, callback) => {
       if (!value) {
-        return callback(new Error("账户不能为空"));
+        return callback(new Error("账号不能为空"));
       }
       setTimeout(() => {
-        let accountRegx = /^[a-zA-Z0-9_]{6,18}$/;
         if (!accountRegx.test(value)) {
-          callback(new Error("账户只能是数字,字母,下划线,6~18位"));
+          callback(new Error("账号只能是数字,字母,下划线,4~18位"));
         } else {
           callback();
         }
       }, 500);
     };
-    // 密码校验器
+    /**
+     * @description 密码校验器
+     */
     var validatePassword = (rule, value, callback) => {
       if (value === "") {
         callback(new Error("请输入密码"));
       } else {
         // 6~18字母数字组合
         // let passwordRegx = /^(?![0-9]+$)(?![a-zA-Z]+$)[0-9A-Za-z]{6,18}$/;
-        if (value.length < 6) {
+        if (value.length < 6 || value.length > 18) {
           callback(new Error("密码6~18位"));
         } else {
           callback();
@@ -123,25 +129,45 @@ export default {
   computed: {},
   watch: {},
   methods: {
-    // 点击登录,防抖处理,不要使用箭头函数
+    /**
+     * @description 点击登录,防抖处理,不要使用箭头函数
+     */
     handleLogin: _.debounce(async function() {
-      console.log(111);
-      console.log(this);
       try {
         // 对整个表单进行校验
         let isSuccess = await this.$refs.loginForm.validate();
         let { account, password } = this.loginForm;
         if (isSuccess) {
-          let { status } = await login(account, password);
-          if (status === 200) {
-            // 登录成功
-            debugger;
-            this.$message({
-              message: "登录成功",
-              type: "success",
-              duration: 1000
-            });
-            this.$router.replace("/layout");
+          let { status, msg } = await login(account, password);
+          // if (status === 200) {
+          //   // 登录成功
+          //   debugger;
+          //   this.$message({
+          //     message: "登录成功",
+          //     type: "success",
+          //     duration: 1000
+          //   });
+          //   this.$router.replace("/layout");
+          // }
+          switch (status) {
+            // 成功
+            case 200:
+              this.$message({
+                message: "登录成功",
+                type: "success",
+                duration: 1000
+              });
+              this.$router.replace("/layout");
+              break;
+            // 没有成功
+            default:
+              this.$message({
+                message: msg,
+                type: "warning",
+                duration: 1000
+              });
+              // this.$router.replace("/layout");
+              break;
           }
         }
       } catch (e) {
@@ -149,7 +175,9 @@ export default {
       }
     }),
 
-    //点击登出
+    /**
+     * @description 点击登出
+     */
     async handleLogout() {
       let token = sessionStorage.getItem("token");
       logout(token)
@@ -159,6 +187,12 @@ export default {
         .catch(err => {
           console.log(err);
         });
+    },
+    /**
+     * @description 跳转到注册
+     */
+    handleToRegister() {
+      this.$router.push("/register");
     }
   },
   created() {},
@@ -178,9 +212,8 @@ export default {
     height 100%
 
     .svg-icon
-      width 20px
-      height 20px
       vertical-align middle
+      font-size 16px
 
     .login-form
       width 500px

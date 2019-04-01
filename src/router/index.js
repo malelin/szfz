@@ -3,6 +3,7 @@ import Router from "vue-router";
 
 import Login from "@/views/Login";
 import Layout from "@/views/Layout";
+import Register from "@/views/Register";
 
 /* AppMain组件下的router-view的所有路由 */
 import AppMain from "./modules/AppMain";
@@ -11,12 +12,17 @@ export const constantRoutes = [
   {
     path: "/",
     name: "home",
-    redirect: "/layout"
+    redirect: "/register"
   },
   {
     path: "/login",
     name: "login",
     component: Login
+  },
+  {
+    path: "/register",
+    name: "register",
+    component: Register
   },
   {
     path: "/layout",
