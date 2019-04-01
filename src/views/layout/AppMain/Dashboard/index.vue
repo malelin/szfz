@@ -3,7 +3,7 @@
  * @LastEditors: 旺苍扛把子
  * @Description: 控制面板组件
  * @Date: 2019-03-29 10:14:42
- * @LastEditTime: 2019-03-29 17:56:44
+ * @LastEditTime: 2019-03-29 18:00:42
  -->
 <template>
   <div class="dashboard">

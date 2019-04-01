@@ -1,8 +1,8 @@
 import Vue from "vue";
 import Router from "vue-router";
 
-import login from "@/views/login";
-import layout from "@/views/layout";
+import Login from "@/views/Login";
+import Layout from "@/views/Layout";
 
 /* AppMain组件下的router-view的所有路由 */
 import AppMain from "./modules/AppMain";
@@ -16,11 +16,11 @@ export const constantRoutes = [
   {
     path: "/login",
     name: "login",
-    component: login
+    component: Login
   },
   {
     path: "/layout",
-    component: layout,
+    component: Layout,
     children: AppMain
   }
 ];
