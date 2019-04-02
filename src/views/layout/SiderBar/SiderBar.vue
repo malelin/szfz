@@ -3,7 +3,7 @@
  * @LastEditors: 旺苍扛把子
  * @Description: siderbar组件
  * @Date: 2019-03-27 10:01:30
- * @LastEditTime: 2019-04-02 11:56:24
+ * @LastEditTime: 2019-04-02 13:36:54
  -->
 <template>
   <div class="siderbar">
@@ -86,7 +86,9 @@ export default {
       routerMap: {
         "1-1": { path: "/dashboard" },
         "2-1": { path: "/taskOverview" },
-        "2-2": { path: "/createTask" }
+        "2-2": { path: "/createTask" },
+        "3-1": { path: "/userManage" },
+        "3-2": { path: "/auditLog" }
       }
     };
   },
@@ -101,16 +103,8 @@ export default {
      * @param {any} indexPath 选中菜单项的 index path
      */
     onSelect(index) {
-      let path =
-        typeof this.routerMap[index] === "undefined"
-          ? undefined
-          : typeof this.routerMap[index].path === "undefined"
-          ? undefined
-          : this.routerMap[index].path;
-      console.log(path);
-      if (path) {
-        this.$router.push({ path });
-      }
+      let { path } = this.routerMap[index];
+      this.$router.push({ path });
     }
   },
   created() {},

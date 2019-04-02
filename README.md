@@ -53,7 +53,7 @@ this.$eventbus.emit(event: string, data: Object)
 
 #### 知识
 
-1. 使用 `typeof` 判断一个变量是否存在(是否有值或者是否被声明)
+1. 使用 `typeof` 判断一个变量是否存在(是否有非 `undefined` 值或者是否被声明)
 
    1. 如果 `a` 声明了但未赋值
 

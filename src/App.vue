@@ -1,7 +1,7 @@
 <template>
   <div id="app">
     <transition name="fade">
-      <router-view />
+      <router-view class="app__router-view" />
     </transition>
   </div>
 </template>

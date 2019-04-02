@@ -3,7 +3,7 @@
  * @LastEditors: 旺苍扛把子
  * @Description: 控制面板组件
  * @Date: 2019-03-29 10:14:42
- * @LastEditTime: 2019-04-01 17:02:13
+ * @LastEditTime: 2019-04-02 13:45:20
  -->
 <template>
   <div class="dashboard">
@@ -283,10 +283,6 @@ export default {
 
 <style lang="stylus" scoped>
 .dashboard
-  width 100%
-  height 100%
-  line-height 1
-
   .charts-container
     display flex
     justify-content space-between

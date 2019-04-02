@@ -3,12 +3,12 @@
  * @LastEditors: 旺苍扛把子
  * @Description: 内容主视图
  * @Date: 2019-03-27 10:03:14
- * @LastEditTime: 2019-04-02 09:53:27
+ * @LastEditTime: 2019-04-02 13:44:53
  -->
 <template>
   <div class="app-main">
     <div class="app-content">
-      <router-view />
+      <router-view class="app-main__router-view" />
     </div>
     <div class="copyright-container">
       <Copyright class="c-copyright" />
@@ -51,6 +51,9 @@ export default {
     box-sizing border-box
     padding 0 20px
     height calc(100% - 124px)
+
+    .app-main__router-view
+      height 100%
 
   .copyright-container
     text-align center
