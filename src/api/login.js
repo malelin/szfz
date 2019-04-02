@@ -6,14 +6,13 @@ import request from "@/utils/request";
  * @returns {Promise<*>} Promise对象
  */
 export function login(account, password) {
-  const data = {
-    account,
-    password
-  };
   return request({
     url: "/v1/sysmanage/login",
     method: "put",
-    data
+    data: {
+      account,
+      password
+    }
   });
 }
 /**

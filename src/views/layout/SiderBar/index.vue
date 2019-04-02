@@ -3,7 +3,7 @@
  * @LastEditors: 旺苍扛把子
  * @Description: siderbar组件
  * @Date: 2019-03-27 10:01:30
- * @LastEditTime: 2019-04-01 10:11:46
+ * @LastEditTime: 2019-04-02 09:45:36
  -->
 <template>
   <div class="siderbar">
@@ -17,7 +17,8 @@
     ></transition>
     <el-scrollbar class="c-scrollbar">
       <el-menu
-        default-active="1-4-1"
+        @select="onSelect"
+        :default-active="defaultActive"
         class="el-menu-vertical-demo"
         @open="handleOpen"
         @close="handleClose"
@@ -45,105 +46,6 @@
           </el-menu-item-group>
         </el-submenu>
         <el-submenu index="3">
-          <template slot="title">
-            <svg-icon icon-class="xitong"></svg-icon>
-            <span slot="title">系统管理</span>
-          </template>
-          <el-menu-item-group>
-            <el-menu-item index="3-1">系统管理</el-menu-item>
-            <el-menu-item index="3-2">审计日志</el-menu-item>
-          </el-menu-item-group> </el-submenu
-        ><el-submenu index="3">
-          <template slot="title">
-            <svg-icon icon-class="xitong"></svg-icon>
-            <span slot="title">系统管理</span>
-          </template>
-          <el-menu-item-group>
-            <el-menu-item index="3-1">系统管理</el-menu-item>
-            <el-menu-item index="3-2">审计日志</el-menu-item>
-          </el-menu-item-group> </el-submenu
-        ><el-submenu index="3">
-          <template slot="title">
-            <svg-icon icon-class="xitong"></svg-icon>
-            <span slot="title">系统管理</span>
-          </template>
-          <el-menu-item-group>
-            <el-menu-item index="3-1">系统管理</el-menu-item>
-            <el-menu-item index="3-2">审计日志</el-menu-item>
-          </el-menu-item-group> </el-submenu
-        ><el-submenu index="3">
-          <template slot="title">
-            <svg-icon icon-class="xitong"></svg-icon>
-            <span slot="title">系统管理</span>
-          </template>
-          <el-menu-item-group>
-            <el-menu-item index="3-1">系统管理</el-menu-item>
-            <el-menu-item index="3-2">审计日志</el-menu-item>
-          </el-menu-item-group> </el-submenu
-        ><el-submenu index="3">
-          <template slot="title">
-            <svg-icon icon-class="xitong"></svg-icon>
-            <span slot="title">系统管理</span>
-          </template>
-          <el-menu-item-group>
-            <el-menu-item index="3-1">系统管理</el-menu-item>
-            <el-menu-item index="3-2">审计日志</el-menu-item>
-          </el-menu-item-group> </el-submenu
-        ><el-submenu index="3">
-          <template slot="title">
-            <svg-icon icon-class="xitong"></svg-icon>
-            <span slot="title">系统管理</span>
-          </template>
-          <el-menu-item-group>
-            <el-menu-item index="3-1">系统管理</el-menu-item>
-            <el-menu-item index="3-2">审计日志</el-menu-item>
-          </el-menu-item-group> </el-submenu
-        ><el-submenu index="3">
-          <template slot="title">
-            <svg-icon icon-class="xitong"></svg-icon>
-            <span slot="title">系统管理</span>
-          </template>
-          <el-menu-item-group>
-            <el-menu-item index="3-1">系统管理</el-menu-item>
-            <el-menu-item index="3-2">审计日志</el-menu-item>
-          </el-menu-item-group> </el-submenu
-        ><el-submenu index="3">
-          <template slot="title">
-            <svg-icon icon-class="xitong"></svg-icon>
-            <span slot="title">系统管理</span>
-          </template>
-          <el-menu-item-group>
-            <el-menu-item index="3-1">系统管理</el-menu-item>
-            <el-menu-item index="3-2">审计日志</el-menu-item>
-          </el-menu-item-group> </el-submenu
-        ><el-submenu index="3">
-          <template slot="title">
-            <svg-icon icon-class="xitong"></svg-icon>
-            <span slot="title">系统管理</span>
-          </template>
-          <el-menu-item-group>
-            <el-menu-item index="3-1">系统管理</el-menu-item>
-            <el-menu-item index="3-2">审计日志</el-menu-item>
-          </el-menu-item-group> </el-submenu
-        ><el-submenu index="3">
-          <template slot="title">
-            <svg-icon icon-class="xitong"></svg-icon>
-            <span slot="title">系统管理</span>
-          </template>
-          <el-menu-item-group>
-            <el-menu-item index="3-1">系统管理</el-menu-item>
-            <el-menu-item index="3-2">审计日志</el-menu-item>
-          </el-menu-item-group> </el-submenu
-        ><el-submenu index="3">
-          <template slot="title">
-            <svg-icon icon-class="xitong"></svg-icon>
-            <span slot="title">系统管理</span>
-          </template>
-          <el-menu-item-group>
-            <el-menu-item index="3-1">系统管理</el-menu-item>
-            <el-menu-item index="3-2">审计日志</el-menu-item>
-          </el-menu-item-group> </el-submenu
-        ><el-submenu index="3">
           <template slot="title">
             <svg-icon icon-class="xitong"></svg-icon>
             <span slot="title">系统管理</span>
@@ -179,7 +81,16 @@ export default {
    * @returns {any}
    */
   data() {
-    return {};
+    return {
+      // 默认激活的菜单
+      defaultActive: "1-1",
+      // 菜单导航对应的路由
+      routerMap: {
+        "1-1": { name: "dashboard" },
+        "2-1": { name: "taskOverview" },
+        "2-2": { name: "createTask" }
+      }
+    };
   },
   computed: {
     ...mapState(["isCollapse"])
@@ -199,8 +110,20 @@ export default {
      * @param {any} key
      * @param {any} keyPath
      */
+
     handleClose(key, keyPath) {
       console.log(key, keyPath);
+    },
+
+    /**
+     * @description 菜单激活回调
+     * @param {any} index 选中菜单项的 index
+     * @param {any} indexPath 选中菜单项的 index path
+     */
+    onSelect(index) {
+      console.log(index);
+      let name = this.routerMap[index].name;
+      this.$router.push({ name });
     }
   },
   created() {},

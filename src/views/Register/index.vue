@@ -3,7 +3,7 @@
  * @LastEditors: 旺苍扛把子
  * @Description: 注册组件
  * @Date: 2019-04-01 09:24:10
- * @LastEditTime: 2019-04-01 16:04:16
+ * @LastEditTime: 2019-04-02 09:17:06
  -->
 <template>
   <div class="register center-box">
