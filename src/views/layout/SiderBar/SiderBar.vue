@@ -3,7 +3,7 @@
  * @LastEditors: 旺苍扛把子
  * @Description: siderbar组件
  * @Date: 2019-03-27 10:01:30
- * @LastEditTime: 2019-04-02 09:45:36
+ * @LastEditTime: 2019-04-02 11:56:24
  -->
 <template>
   <div class="siderbar">
@@ -20,8 +20,6 @@
         @select="onSelect"
         :default-active="defaultActive"
         class="el-menu-vertical-demo"
-        @open="handleOpen"
-        @close="handleClose"
         :collapse="isCollapse"
         background-color="#001529"
         text-color="#ffffff"
@@ -86,9 +84,9 @@ export default {
       defaultActive: "1-1",
       // 菜单导航对应的路由
       routerMap: {
-        "1-1": { name: "dashboard" },
-        "2-1": { name: "taskOverview" },
-        "2-2": { name: "createTask" }
+        "1-1": { path: "/dashboard" },
+        "2-1": { path: "/taskOverview" },
+        "2-2": { path: "/createTask" }
       }
     };
   },
@@ -98,32 +96,21 @@ export default {
   watch: {},
   methods: {
     /**
-     * @description 展开侧边栏
-     * @param {any} key
-     * @param {any} keyPath
-     */
-    handleOpen(key, keyPath) {
-      console.log(key, keyPath);
-    },
-    /**
-     * @description 折叠侧边栏
-     * @param {any} key
-     * @param {any} keyPath
-     */
-
-    handleClose(key, keyPath) {
-      console.log(key, keyPath);
-    },
-
-    /**
      * @description 菜单激活回调
      * @param {any} index 选中菜单项的 index
      * @param {any} indexPath 选中菜单项的 index path
      */
     onSelect(index) {
-      console.log(index);
-      let name = this.routerMap[index].name;
-      this.$router.push({ name });
+      let path =
+        typeof this.routerMap[index] === "undefined"
+          ? undefined
+          : typeof this.routerMap[index].path === "undefined"
+          ? undefined
+          : this.routerMap[index].path;
+      console.log(path);
+      if (path) {
+        this.$router.push({ path });
+      }
     }
   },
   created() {},

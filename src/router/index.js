@@ -1,9 +1,9 @@
 import Vue from "vue";
 import Router from "vue-router";
 
-import Login from "@/views/Login";
-import Layout from "@/views/Layout";
-import Register from "@/views/Register";
+import Login from "@/views/Login/Login";
+import Layout from "@/views/Layout/Layout";
+import Register from "@/views/Register/Register";
 
 /* AppMain组件下的router-view的所有路由 */
 import AppMain from "./modules/AppMain";
