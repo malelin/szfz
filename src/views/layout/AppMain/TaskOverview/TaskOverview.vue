@@ -3,7 +3,7 @@
  * @LastEditors: 旺苍扛把子
  * @Description: 任务概览组件
  * @Date: 2019-04-01 18:17:27
- * @LastEditTime: 2019-04-03 14:43:44
+ * @LastEditTime: 2019-04-03 18:21:18
  -->
 <template>
   <div class="task-overview">
@@ -129,21 +129,50 @@
       <!-- 表格 -->
       <el-table
         ref="taskTable"
-        :data="tableData"
+        :data="tableData.list"
         tooltip-effect="dark"
         :height="380"
         style="width: 100%;"
       >
-        <el-table-column type="selection" width="55"> </el-table-column>
-        <el-table-column label="任务编号" width="80" prop="id">
+        <el-table-column align="center" type="selection" width="55">
         </el-table-column>
-        <el-table-column prop="name" label="任务名称"> </el-table-column>
-        <el-table-column sortable prop="createTime" label="创建时间">
+        <el-table-column align="center" label="任务编号" width="80" prop="tid">
         </el-table-column>
-        <el-table-column sortable prop="finishedTime" label="完成时间">
+        <el-table-column align="center" prop="taskName" label="任务名称">
         </el-table-column>
         <el-table-column
-          prop="state"
+          align="center"
+          sortable
+          prop="startTime"
+          label="开始时间"
+        >
+          <template slot-scope="{ row }">
+            <p style="color:#409eff;">
+              {{ utc2LocalDate(row.startTime).substr(0, 10) }}
+            </p>
+            <p style="color:#409eff;">
+              {{ utc2LocalDate(row.startTime).substr(11) }}
+            </p>
+          </template>
+        </el-table-column>
+        <el-table-column
+          align="center"
+          sortable
+          prop="endTime"
+          label="结束时间"
+        >
+          <template slot-scope="{ row }">
+            <p style="color:#409eff;">
+              {{ utc2LocalDate(row.endTime).substr(0, 10) }}
+            </p>
+            <p style="color:#409eff;">
+              {{ utc2LocalDate(row.endTime).substr(11) }}
+            </p>
+          </template>
+        </el-table-column>
+        <el-table-column
+          align="center"
+          prop="taskStatus"
           label="状态"
           :filters="[
             { text: '2016-05-01', value: '2016-05-01' },
@@ -153,16 +182,70 @@
           ]"
           :filter-method="filterHandler"
         >
-          <template slot-scope="scope">
-            <i class="el-icon-time"></i>
-            <span style="margin-left: 10px">{{ scope.row.state }}</span>
+          <template slot-scope="{ row }">
+            <template v-if="row.taskStatus === 1">
+              <i
+                style="display:inline-block;vertical-align:middle;border-radius: 50%;background-color:rgba(0, 0, 0, 0.25);width: 5px;height: 5px;"
+              ></i>
+              <span style="vertical-align:middle;margin-left: 10px;">关闭</span>
+            </template>
+            <template v-if="row.taskStatus === 2">
+              <i
+                style="display:inline-block;vertical-align:middle;border-radius: 50%;background-color:#409EFF;width: 5px;height: 5px;"
+              ></i>
+              <span style="vertical-align:middle;margin-left: 10px;"
+                >运行中</span
+              >
+            </template>
+            <template v-if="row.taskStatus === 3">
+              <i
+                style="display:inline-block;vertical-align:middle;border-radius: 50%;background-color:#67C23A;width: 5px;height: 5px;"
+              ></i>
+              <span style="vertical-align:middle;margin-left: 10px;"
+                >已上线</span
+              >
+            </template>
+            <template v-if="row.taskStatus === 4">
+              <i
+                style="display:inline-block;vertical-align:middle;border-radius: 50%;background-color:#F56C6C;width: 5px;height: 5px;"
+              ></i>
+              <span style="vertical-align:middle;margin-left: 10px;">异常</span>
+            </template>
           </template>
         </el-table-column>
-        <el-table-column prop="taskContent" label="任务内容"> </el-table-column>
-        <el-table-column prop="operate" label="操作">
-          <template slot-scope="{}">
-            <el-button size="mini">编辑</el-button>
-            <el-button size="mini" type="danger">删除</el-button>
+        <el-table-column align="center" prop="taskContent" label="任务内容">
+          <template slot-scope="{ row }">
+            <span class="task-item" v-if="row.taskHomo === 2">同源分析</span>
+            <span class="task-item" v-if="row.taskAnti === 2"
+              >静态仿真分析</span
+            >
+            <span class="task-item" v-if="row.taskMorph === 2"
+              >工具变形与验证</span
+            >
+            <span class="task-item" v-if="row.taskSensi === 2"
+              >敏感信息分析</span
+            >
+            <span class="task-item" v-if="row.taskVeri === 2"
+              >漏洞工具验证</span
+            >
+          </template>
+        </el-table-column>
+        <el-table-column align="center" prop="operate" label="操作">
+          <template slot-scope="{ row }">
+            <el-button size="mini" type="primary">查看</el-button>
+            <el-button
+              size="mini"
+              v-if="row.taskStatus === 1 || row.taskStatus === 3"
+              type="danger"
+              >删除</el-button
+            >
+            <el-button
+              size="mini"
+              v-if="row.taskStatus === 1 || row.taskStatus === 3"
+              style="margin-top:5px;"
+              type="success"
+              >启动</el-button
+            >
           </template></el-table-column
         >
       </el-table>
@@ -174,7 +257,7 @@
         :page-sizes="[10, 20, 30, 50]"
         :page-size="100"
         layout="sizes, prev, pager, next"
-        :total="1000"
+        :total="tableData.total"
       >
       </el-pagination>
     </div>
@@ -183,6 +266,9 @@
 
 <script>
 import _ from "lodash";
+// 导入时间处理工具函数
+import { utc2LocalDate } from "@/utils/day";
+import { getDefaultTask } from "@/api/task";
 export default {
   name: "TaskOverview",
   components: {
@@ -235,67 +321,26 @@ export default {
       // 表格数据
       tableData: [
         {
-          id: 1,
-          name: "特种任务",
-          createTime: "2018-10-02",
-          finishedTime: "2019-02-02",
-          state: "1",
-          taskContent: "这是任务内容",
-          operate: "操作"
-        },
-        {
-          id: 2,
-          name: "特种任务",
-          createTime: "2018-10-03",
-          finishedTime: "2019-02-02",
-          state: "1",
-          taskContent: "这是任务内容",
-          operate: "操作"
-        },
-        {
-          id: 3,
-          name: "特种任务",
-          createTime: "2018-10-04",
-          finishedTime: "2019-02-02",
-          state: "1",
-          taskContent: "这是任务内容",
-          operate: "操作"
-        },
-        {
-          id: 4,
-          name: "特种任务",
-          createTime: "2018-10-05",
-          finishedTime: "2019-02-02",
-          state: "1",
-          taskContent: "这是任务内容",
-          operate: "操作"
-        },
-        {
-          id: 5,
-          name: "特种任务",
-          createTime: "2018-10-06",
-          finishedTime: "2019-02-02",
-          state: "1",
-          taskContent: "这是任务内容",
-          operate: "操作"
-        },
-        {
-          id: 6,
-          name: "特种任务",
-          createTime: "2018-10-07",
-          finishedTime: "2019-02-02",
-          state: "1",
-          taskContent: "这是任务内容",
-          operate: "操作"
-        },
-        {
-          id: 7,
-          name: "特种任务",
-          createTime: "2018-10-08",
-          finishedTime: "2019-02-02",
-          state: "1",
-          taskContent: "这是任务内容",
-          operate: "操作"
+          endTime: "2019-04-17T03:11:29.000+0000",
+          remarks: null,
+          startTime: "2019-04-16T03:11:24.000+0000",
+          //静态仿真分析
+          taskAnti: 2,
+          // 同源分析
+          taskHomo: 2,
+          taskLevel: 1,
+          // 工具变形与验证
+          taskMorph: 2,
+          taskName: "新任务8",
+          // 敏感信息分析 1 开启 2 未开启
+          taskSensi: 1,
+          // 状态 1 未启动 2 进行中 3,完成 4,失败
+          taskStatus: 1, // 1 查看 启动 删除 2 查看 3 查看 启动 删除
+          taskUid: 5,
+          // 漏洞工具验证
+          taskVeri: 2,
+          // 任务编号
+          tid: 8
         }
       ],
 
@@ -313,6 +358,21 @@ export default {
         ? { text: "收起", isActiveRotate: true }
         : { text: "展开", isActiveRotate: false };
     }
+    // //处理后的任务列表
+    // formatedTaskList() {
+    //   Array.isArray(this.tableData);
+    //   // 任务内容格式化
+    //   // this.tableData.map((item))
+    //   let res = this.tableData.map(item => {
+    //     let { endTime, remarks, startTime } = item;
+    //     return {
+    //       remarks,
+    //       endTime: utc2LocalDate(endTime),
+    //       startTime: utc2LocalDate(startTime)
+    //     };
+    //   });
+    //   return res;
+    // }
   },
   watch: {},
   methods: {
@@ -342,6 +402,19 @@ export default {
       this.$refs[formName].resetFields();
     },
     /**
+     * @description 获取默认任务列表
+     */
+    async getDefaultTask() {
+      let token = sessionStorage.getItem("token");
+      try {
+        let res = await getDefaultTask(token);
+        console.log(res);
+        return res;
+      } catch (e) {
+        console.log(e);
+      }
+    },
+    /**
      * @description 设置表格高度
      */
     setTableHeight: _.debounce(function() {
@@ -356,14 +429,31 @@ export default {
     filterHandler(value, row, column) {
       const property = column["property"];
       return row[property] === value;
+    },
+    utc2LocalDate(utcDateString) {
+      return utc2LocalDate(utcDateString);
     }
   },
-  created() {},
+  created() {
+    this.tableData.map(item => {
+      console.log(item);
+      return item;
+    });
+    //请求默认任务
+    this.getDefaultTask()
+      .then(res => {
+        console.log(res);
+        this.tableData = res.data;
+      })
+      .catch(err => console.log(err));
+  },
   mounted() {
-    // 页面加载完毕后设置表格的高度
-    this.setTableHeight();
-    // 监听屏幕的尺寸,动态设置表格的高度
-    window.addEventListener("resize", this.setTableHeight);
+    //   console.log(new Date().toString());
+    //   console.log(utc2LocalDate("2019-04-17T03:11:29.000+0000"));
+    //   // 页面加载完毕后设置表格的高度
+    //   this.setTableHeight();
+    //   // 监听屏幕的尺寸,动态设置表格的高度
+    //   window.addEventListener("resize", this.setTableHeight);
   },
   updated() {
     // this.$nextTick(() => {
@@ -406,6 +496,15 @@ export default {
     flex 1
     overflow hidden
     background-color greeen
+
+    .task-item
+      margin-top 8px
+      margin-right 5px
+      padding 1px 3px
+      border 1px solid rgba(64, 174, 252, 1)
+      border-radius 5px
+      color rgba(64, 174, 252, 1)
+      cursor pointer
 
   .svg-icon
     transition all 0.1s
