@@ -3,7 +3,7 @@
  * @LastEditors: 旺苍扛把子
  * @Description: 头部栏,包含搜索,注销,消息
  * @Date: 2019-03-27 10:03:36
- * @LastEditTime: 2019-04-03 09:40:50
+ * @LastEditTime: 2019-04-03 14:15:12
  -->
 <template>
   <div class="navbar">
@@ -23,7 +23,7 @@
       v-model="searchText"
       class="search-box"
     >
-      <el-button slot="append" type="primary">搜索</el-button>
+      <el-button slot="append" type="primary">搜&nbsp;索</el-button>
     </el-input>
     <div class="operation-box">
       <img src="./images/avatar.gif" alt="头像" class="avatar" />
