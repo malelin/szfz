@@ -3,7 +3,7 @@
  * @LastEditors: 旺苍扛把子
  * @Description: 内容主视图
  * @Date: 2019-03-27 10:03:14
- * @LastEditTime: 2019-04-02 13:44:53
+ * @LastEditTime: 2019-04-02 17:15:38
  -->
 <template>
   <div class="app-main">
@@ -53,7 +53,9 @@ export default {
     height calc(100% - 124px)
 
     .app-main__router-view
-      height 100%
+      box-sizing border-box
+      margin-bottom 15px
+      height calc(100% - 15px)
 
   .copyright-container
     text-align center

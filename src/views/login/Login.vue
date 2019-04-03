@@ -3,7 +3,7 @@
  * @LastEditors: 旺苍扛把子
  * @Description: 登录组件
  * @Date: 2019-03-25 15:26:28
- * @LastEditTime: 2019-04-02 09:21:41
+ * @LastEditTime: 2019-04-03 09:40:57
  -->
 <template>
   <div class="login">
@@ -173,7 +173,7 @@ export default {
       } catch (e) {
         console.log(e);
       }
-    }),
+    }, 300),
 
     /**
      * @description 点击登出

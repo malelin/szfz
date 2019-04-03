@@ -3,7 +3,7 @@
  * @LastEditors: 旺苍扛把子
  * @Description: 注册组件
  * @Date: 2019-04-01 09:24:10
- * @LastEditTime: 2019-04-02 09:17:06
+ * @LastEditTime: 2019-04-03 09:41:04
  -->
 <template>
   <div class="register center-box">
@@ -239,7 +239,7 @@ export default {
       } catch (e) {
         console.log(e);
       }
-    })
+    }, 300)
   },
   created() {},
   mounted() {}
