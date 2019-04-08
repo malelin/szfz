@@ -36,7 +36,7 @@ service.interceptors.response.use(
     } else {
       //没有成功就显示每次返回的状态码
       Message({
-        message: data.status,
+        message: data.status + "   :   " + data.msg,
         type: "info",
         duration: 5 * 1000
       });

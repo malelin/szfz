@@ -3,7 +3,7 @@
  * @LastEditors: 旺苍扛把子
  * @Description: 头部栏,包含搜索,注销,消息
  * @Date: 2019-03-27 10:03:36
- * @LastEditTime: 2019-04-03 14:15:12
+ * @LastEditTime: 2019-04-08 10:07:19
  -->
 <template>
   <div class="navbar">
@@ -26,6 +26,7 @@
       <el-button slot="append" type="primary">搜&nbsp;索</el-button>
     </el-input>
     <div class="operation-box">
+      <span class="username">{{}}</span>
       <img src="./images/avatar.gif" alt="头像" class="avatar" />
       <el-badge :value="12" class="badge-message">
         <svg-icon icon-class="message" class-name="svg-message"></svg-icon>

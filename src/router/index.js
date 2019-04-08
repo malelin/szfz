@@ -32,7 +32,7 @@ export const constantRoutes = [
 ];
 //异步挂载的路由
 //动态需要根据权限加载的路由表
-console.log(constantRoutes);
+// console.log(constantRoutes);
 export const asyncRoutes = [
   // {
   //   path: "/permission",

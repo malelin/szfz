@@ -1,6 +1,6 @@
 // set function parseTime,formatTime to filter
 export { parseTime, formatTime } from "@/utils";
-
+import { utc2LocalDate } from "@/utils/day";
 function pluralize(time, label) {
   if (time === 1) {
     return time + label;
@@ -45,4 +45,22 @@ export function toThousandFilter(num) {
   return (+num || 0)
     .toString()
     .replace(/^-?\d+/g, m => m.replace(/(?=(?!\b)(\d{3})+$)/g, ","));
+}
+/**
+ * @description 返回2010/10/10类型的时间
+ * @export
+ * @param {*} value
+ * @returns
+ */
+export function utc2LocalYmd(value) {
+  return value === null ? "---" : utc2LocalDate(value).substr(0, 10);
+}
+/**
+ * @description 返回00:00:00类型的时间
+ * @export
+ * @param {*} value
+ * @returns
+ */
+export function utc2LocalTime(value) {
+  return value === null ? "---" : utc2LocalDate(value).substr(11);
 }

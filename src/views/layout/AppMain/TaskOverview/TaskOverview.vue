@@ -3,7 +3,7 @@
  * @LastEditors: 旺苍扛把子
  * @Description: 任务概览组件
  * @Date: 2019-04-01 18:17:27
- * @LastEditTime: 2019-04-03 18:21:18
+ * @LastEditTime: 2019-04-08 11:19:34
  -->
 <template>
   <div class="task-overview">
@@ -17,23 +17,24 @@
       >
         <el-row :gutter="20">
           <el-col :span="8">
-            <el-form-item label="任务名称 :" prop="taskName">
+            <el-form-item label="任务名称 :" prop="taskname">
               <el-input
                 style="width:70%;"
                 placeholder="请输入"
-                v-model="taskOverviewForm.taskName"
+                v-model.trim="taskOverviewForm.taskname"
               />
             </el-form-item>
           </el-col>
           <el-col :span="8">
-            <el-form-item label="状态 :" prop="stateSelect">
+            <el-form-item label="状态 :" prop="taskStatus">
               <el-select
-                v-model="taskOverviewForm.stateSelect"
+                v-model="taskOverviewForm.taskStatus"
                 placeholder="请选择"
               >
                 <el-option label="完成" value="1"></el-option>
                 <el-option label="进行中" value="2"></el-option>
                 <el-option label="待启动" value="3"></el-option>
+                <el-option label="全部" value=" "></el-option>
               </el-select> </el-form-item
           ></el-col>
           <el-col :span="8">
@@ -66,7 +67,7 @@
                     style="width:60%;"
                     start-placeholder="起始启动时间"
                     end-placeholder="起始完成时间"
-                    :default-time="['12:00:00']"
+                    :default-time="['00:00:00']"
                   >
                   </el-date-picker>
                 </el-form-item>
@@ -79,20 +80,20 @@
                     style="width:60%;"
                     start-placeholder="结束启动时间"
                     end-placeholder="结束完成时间"
-                    :default-time="['12:00:00']"
+                    :default-time="['00:00:00']"
                   >
                   </el-date-picker>
                 </el-form-item> </el-col
             ></el-row>
             <el-row type="flex" align="middle">
               <el-col :span="16">
-                <el-form-item prop="checkedList">
-                  <el-checkbox-group v-model="taskOverviewForm.checkedList">
+                <el-form-item prop="taskContents">
+                  <el-checkbox-group v-model="taskOverviewForm.taskContents">
                     <el-checkbox label="同源分析" />
                     <el-checkbox label="敏感信息分析" />
                     <el-checkbox label="静态仿真分析" />
-                    <el-checkbox label="工具变形与验证" />
                     <el-checkbox label="漏洞工具验证" />
+                    <el-checkbox label="工具变形与验证" />
                   </el-checkbox-group>
                 </el-form-item>
               </el-col>
@@ -100,11 +101,11 @@
                 <el-form-item
                   ><el-select
                     style="width:110px;margin-right:5px;"
-                    v-model="taskOverviewForm.plczSelect.selected"
+                    v-model="plczSelect.selected"
                     placeholder="批量操作"
                   >
                     <el-option
-                      v-for="item in taskOverviewForm.plczSelect.selected"
+                      v-for="item in plczSelect.selected"
                       :key="item.value"
                       :label="item.label"
                       :value="item.value"
@@ -131,8 +132,9 @@
         ref="taskTable"
         :data="tableData.list"
         tooltip-effect="dark"
-        :height="380"
         style="width: 100%;"
+        class="c-el-table"
+        :max-height="tableHeight"
       >
         <el-table-column align="center" type="selection" width="55">
         </el-table-column>
@@ -147,11 +149,17 @@
           label="开始时间"
         >
           <template slot-scope="{ row }">
-            <p style="color:#409eff;">
-              {{ utc2LocalDate(row.startTime).substr(0, 10) }}
+            <p style="color:#409eff;" v-if="row.startTime !== ''">
+              {{ row.startTime | utc2LocalYmd }}
             </p>
-            <p style="color:#409eff;">
-              {{ utc2LocalDate(row.startTime).substr(11) }}
+            <p v-else style="color:#409eff;">
+              ---
+            </p>
+            <p style="color:#409eff;" v-if="row.startTime !== ''">
+              {{ row.startTime | utc2LocalTime }}
+            </p>
+            <p v-else style="color:#409eff;">
+              ---
             </p>
           </template>
         </el-table-column>
@@ -162,11 +170,17 @@
           label="结束时间"
         >
           <template slot-scope="{ row }">
-            <p style="color:#409eff;">
-              {{ utc2LocalDate(row.endTime).substr(0, 10) }}
+            <p style="color:#409eff;" v-if="row.endTime !== ''">
+              {{ row.endTime | utc2LocalYmd }}
             </p>
-            <p style="color:#409eff;">
-              {{ utc2LocalDate(row.endTime).substr(11) }}
+            <p v-else style="color:#409eff;">
+              ---
+            </p>
+            <p style="color:#409eff;" v-if="row.endTime !== ''">
+              {{ row.endTime | utc2LocalTime }}
+            </p>
+            <p v-else style="color:#409eff;">
+              ---
             </p>
           </template>
         </el-table-column>
@@ -175,41 +189,40 @@
           prop="taskStatus"
           label="状态"
           :filters="[
-            { text: '2016-05-01', value: '2016-05-01' },
-            { text: '2016-05-02', value: '2016-05-02' },
-            { text: '2016-05-03', value: '2016-05-03' },
-            { text: '2016-05-04', value: '2016-05-04' }
+            { text: '完成', value: 1 },
+            { text: '进行中', value: 2 },
+            { text: '待启动', value: 3 }
           ]"
           :filter-method="filterHandler"
         >
           <template slot-scope="{ row }">
-            <template v-if="row.taskStatus === 1">
+            <!-- <template v-if="row.taskStatus === 1">
               <i
                 style="display:inline-block;vertical-align:middle;border-radius: 50%;background-color:rgba(0, 0, 0, 0.25);width: 5px;height: 5px;"
               ></i>
               <span style="vertical-align:middle;margin-left: 10px;">关闭</span>
-            </template>
+            </template> -->
             <template v-if="row.taskStatus === 2">
               <i
                 style="display:inline-block;vertical-align:middle;border-radius: 50%;background-color:#409EFF;width: 5px;height: 5px;"
               ></i>
               <span style="vertical-align:middle;margin-left: 10px;"
-                >运行中</span
+                >进行中</span
               >
             </template>
-            <template v-if="row.taskStatus === 3">
+            <template v-if="row.taskStatus === 1">
               <i
                 style="display:inline-block;vertical-align:middle;border-radius: 50%;background-color:#67C23A;width: 5px;height: 5px;"
               ></i>
-              <span style="vertical-align:middle;margin-left: 10px;"
-                >已上线</span
-              >
+              <span style="vertical-align:middle;margin-left: 10px;">完成</span>
             </template>
-            <template v-if="row.taskStatus === 4">
+            <template v-if="row.taskStatus === 3">
               <i
                 style="display:inline-block;vertical-align:middle;border-radius: 50%;background-color:#F56C6C;width: 5px;height: 5px;"
               ></i>
-              <span style="vertical-align:middle;margin-left: 10px;">异常</span>
+              <span style="vertical-align:middle;margin-left: 10px;"
+                >待启动</span
+              >
             </template>
           </template>
         </el-table-column>
@@ -258,6 +271,8 @@
         :page-size="100"
         layout="sizes, prev, pager, next"
         :total="tableData.total"
+        style="margin-top:10px;"
+        class="c-el-pagination"
       >
       </el-pagination>
     </div>
@@ -267,8 +282,8 @@
 <script>
 import _ from "lodash";
 // 导入时间处理工具函数
-import { utc2LocalDate } from "@/utils/day";
-import { getDefaultTask } from "@/api/task";
+import { utc2LocalDate, formatChinese } from "@/utils/day";
+import { getDefaultTask, getTask } from "@/api/task";
 export default {
   name: "TaskOverview",
   components: {
@@ -286,66 +301,186 @@ export default {
     return {
       // 任务概览组件表单数据
       taskOverviewForm: {
-        taskName: "",
+        taskname: "",
         // 创建时间段
-        createTimeRange: "",
+        createTimeRange: [],
         // 结束时间段
-        finishedTimeRange: "",
+        finishedTimeRange: [],
         // 状态下拉
-        stateSelect: "",
+        taskStatus: "",
         // 多选框
-        checkedList: [],
-        // 批量选中下拉框
-        plczSelect: {
-          selected: "",
-          option: [
-            {
-              value: "1",
-              label: "完成"
-            },
-            {
-              value: "2",
-              label: "进行中"
-            },
-            {
-              value: "3",
-              label: "待启动"
-            }
-          ]
-        }
+        taskContents: []
+      },
+      // 批量选中下拉框
+      plczSelect: {
+        selected: "",
+        option: [
+          {
+            value: "1",
+            label: "完成"
+          },
+          {
+            value: "2",
+            label: "进行中"
+          },
+          {
+            value: "3",
+            label: "待启动"
+          }
+        ]
       },
       // 折叠项
       activeNames: [],
       // 任务概览组件表单校验规则
       taskOverviewRules: {},
       // 表格数据
-      tableData: [
-        {
-          endTime: "2019-04-17T03:11:29.000+0000",
-          remarks: null,
-          startTime: "2019-04-16T03:11:24.000+0000",
-          //静态仿真分析
-          taskAnti: 2,
-          // 同源分析
-          taskHomo: 2,
-          taskLevel: 1,
-          // 工具变形与验证
-          taskMorph: 2,
-          taskName: "新任务8",
-          // 敏感信息分析 1 开启 2 未开启
-          taskSensi: 1,
-          // 状态 1 未启动 2 进行中 3,完成 4,失败
-          taskStatus: 1, // 1 查看 启动 删除 2 查看 3 查看 启动 删除
-          taskUid: 5,
-          // 漏洞工具验证
-          taskVeri: 2,
-          // 任务编号
-          tid: 8
-        }
-      ],
-
-      // 表格高度
-      tableHeight: 300,
+      tableData: {
+        // list: [
+        //   {
+        //     tid: 8,
+        //     taskStatus: 1,
+        //     taskLevel: 1,
+        //     taskUid: 5,
+        //     taskName: "新任务8",
+        //     startTime: "2019-04-16T03:11:24.000+0000",
+        //     endTime: "2019-04-17T03:11:29.000+0000",
+        //     taskHomo: 2,
+        //     taskSensi: 1,
+        //     taskAnti: 2,
+        //     taskVeri: 2,
+        //     taskMorph: 2,
+        //     remarks: null
+        //   },
+        //   {
+        //     tid: 8,
+        //     taskStatus: 1,
+        //     taskLevel: 1,
+        //     taskUid: 5,
+        //     taskName: "新任务8",
+        //     startTime: "2019-04-16T03:11:24.000+0000",
+        //     endTime: "2019-04-17T03:11:29.000+0000",
+        //     taskHomo: 2,
+        //     taskSensi: 1,
+        //     taskAnti: 2,
+        //     taskVeri: 2,
+        //     taskMorph: 2,
+        //     remarks: null
+        //   },
+        //   {
+        //     tid: 8,
+        //     taskStatus: 1,
+        //     taskLevel: 1,
+        //     taskUid: 5,
+        //     taskName: "新任务8",
+        //     startTime: "2019-04-16T03:11:24.000+0000",
+        //     endTime: "2019-04-17T03:11:29.000+0000",
+        //     taskHomo: 2,
+        //     taskSensi: 1,
+        //     taskAnti: 2,
+        //     taskVeri: 2,
+        //     taskMorph: 2,
+        //     remarks: null
+        //   },
+        //   {
+        //     tid: 8,
+        //     taskStatus: 1,
+        //     taskLevel: 1,
+        //     taskUid: 5,
+        //     taskName: "新任务8",
+        //     startTime: "2019-04-16T03:11:24.000+0000",
+        //     endTime: "2019-04-17T03:11:29.000+0000",
+        //     taskHomo: 2,
+        //     taskSensi: 1,
+        //     taskAnti: 2,
+        //     taskVeri: 2,
+        //     taskMorph: 2,
+        //     remarks: null
+        //   },
+        //   {
+        //     tid: 8,
+        //     taskStatus: 1,
+        //     taskLevel: 1,
+        //     taskUid: 5,
+        //     taskName: "新任务8",
+        //     startTime: "2019-04-16T03:11:24.000+0000",
+        //     endTime: "2019-04-17T03:11:29.000+0000",
+        //     taskHomo: 2,
+        //     taskSensi: 1,
+        //     taskAnti: 2,
+        //     taskVeri: 2,
+        //     taskMorph: 2,
+        //     remarks: null
+        //   },
+        //   {
+        //     tid: 8,
+        //     taskStatus: 1,
+        //     taskLevel: 1,
+        //     taskUid: 5,
+        //     taskName: "新任务8",
+        //     startTime: "2019-04-16T03:11:24.000+0000",
+        //     endTime: "2019-04-17T03:11:29.000+0000",
+        //     taskHomo: 2,
+        //     taskSensi: 1,
+        //     taskAnti: 2,
+        //     taskVeri: 2,
+        //     taskMorph: 2,
+        //     remarks: null
+        //   },
+        //   {
+        //     tid: 11,
+        //     taskStatus: 3,
+        //     taskLevel: 2,
+        //     taskUid: 5,
+        //     taskName: "新任务11",
+        //     startTime: "2019-03-26T05:33:22.000+0000",
+        //     endTime: "2019-03-26T05:35:11.000+0000",
+        //     taskHomo: 2,
+        //     taskSensi: 1,
+        //     taskAnti: 2,
+        //     taskVeri: 2,
+        //     taskMorph: 2,
+        //     remarks: null
+        //   },
+        //   {
+        //     tid: 12,
+        //     taskStatus: 2,
+        //     taskLevel: null,
+        //     taskUid: 5,
+        //     taskName: "新任务12",
+        //     startTime: "2019-04-08T02:27:10.000+0000",
+        //     endTime: null,
+        //     taskHomo: 2,
+        //     taskSensi: 2,
+        //     taskAnti: 1,
+        //     taskVeri: 2,
+        //     taskMorph: 2,
+        //     remarks: null
+        //   },
+        //   {
+        //     endTime: "2019-04-17T03:11:29.000+0000",
+        //     remarks: null,
+        //     startTime: "2019-04-16T03:11:24.000+0000",
+        //     //静态仿真分析
+        //     taskAnti: 2,
+        //     // 同源分析
+        //     taskHomo: 2,
+        //     taskLevel: 1,
+        //     // 工具变形与验证
+        //     taskMorph: 2,
+        //     taskName: "新任务8",
+        //     // 敏感信息分析 1 开启 2 未开启
+        //     taskSensi: 1,
+        //     // 状态 1 未启动 2 进行中 3,完成 4,失败
+        //     taskStatus: 1, // 1 查看 启动 删除 2 查看 3 查看 启动 删除
+        //     taskUid: 5,
+        //     // 漏洞工具验证
+        //     taskVeri: 2,
+        //     // 任务编号
+        //     tid: 8
+        //   }
+        // ]
+      },
+      tableHeight: 0,
       multipleSelection: [],
       // 分页组件的当前页码
       currentPage: 5
@@ -358,21 +493,6 @@ export default {
         ? { text: "收起", isActiveRotate: true }
         : { text: "展开", isActiveRotate: false };
     }
-    // //处理后的任务列表
-    // formatedTaskList() {
-    //   Array.isArray(this.tableData);
-    //   // 任务内容格式化
-    //   // this.tableData.map((item))
-    //   let res = this.tableData.map(item => {
-    //     let { endTime, remarks, startTime } = item;
-    //     return {
-    //       remarks,
-    //       endTime: utc2LocalDate(endTime),
-    //       startTime: utc2LocalDate(startTime)
-    //     };
-    //   });
-    //   return res;
-    // }
   },
   watch: {},
   methods: {
@@ -391,10 +511,83 @@ export default {
     handleSizeChange() {},
     handleCurrentChange() {},
     /**
-     * @description 根据表单查询
+     * @description 根据表单查询,获取任务列表
      */
 
-    handleSearch() {},
+    handleSearch: _.debounce(async function() {
+      let {
+        taskname,
+        createTimeRange: [enableTimeStart, enableTimeEnd],
+        finishedTimeRange: [finishTimeStart, finishTimeEnd],
+        taskStatus,
+        taskContents: tem
+      } = this.taskOverviewForm;
+      let taskContents = [];
+      // taskContent拼装成数组[1,2,3,4,5]
+      tem.forEach(item => {
+        switch (item) {
+          case "同源分析":
+            taskContents.push(1);
+            break;
+          case "敏感信息分析":
+            taskContents.push(2);
+            break;
+          case "静态仿真分析":
+            taskContents.push(3);
+            break;
+          case "漏洞工具验证":
+            taskContents.push(4);
+            break;
+          case "工具变形与验证":
+            taskContents.push(5);
+            break;
+          default:
+            break;
+        }
+      });
+
+      let params = {
+        taskname,
+        enableTimeStart,
+        enableTimeEnd,
+        finishTimeStart,
+        finishTimeEnd,
+        taskStatus,
+        taskContents: taskContents + ""
+      };
+      // 删除params中无效的参数
+      for (let key in params) {
+        if (params.hasOwnProperty(key)) {
+          let value = params[key];
+          if (
+            value === "" ||
+            (Array.isArray(value) && value.length === 0) ||
+            value === undefined ||
+            value === " "
+          ) {
+            delete params[key];
+          } else {
+            if (
+              [
+                "enableTimeStart",
+                "enableTimeEnd",
+                "finishTimeStart",
+                "finishTimeEnd"
+              ].indexOf(key) !== -1
+            ) {
+              params[key] = formatChinese(value);
+            }
+          }
+        }
+      }
+      try {
+        let { data } = await getTask(params);
+        this.tableData = data;
+      } catch (e) {
+        console.log(e);
+      }
+    }, 300),
+
     /**
      * @description 清空表单
      */
@@ -405,22 +598,18 @@ export default {
      * @description 获取默认任务列表
      */
     async getDefaultTask() {
-      let token = sessionStorage.getItem("token");
       try {
-        let res = await getDefaultTask(token);
-        console.log(res);
+        let res = await getDefaultTask();
         return res;
       } catch (e) {
         console.log(e);
       }
     },
+
     /**
      * @description 设置表格高度
      */
     setTableHeight: _.debounce(function() {
-      // console.log(
-      //   // "tableContainer高度:" + this.$refs.tableContainer.offsetHeight
-      // );
       this.tableHeight = this.$refs.tableContainer.offsetHeight - 52;
     }),
     /**
@@ -435,33 +624,20 @@ export default {
     }
   },
   created() {
-    this.tableData.map(item => {
-      console.log(item);
-      return item;
-    });
-    //请求默认任务
-    this.getDefaultTask()
-      .then(res => {
-        console.log(res);
-        this.tableData = res.data;
-      })
-      .catch(err => console.log(err));
+    // //请求默认任务
+    // this.getDefaultTask()
+    //   .then(res => {
+    //     this.tableData = res.data;
+    //   })
+    //   .catch(err => console.log(err));
   },
   mounted() {
-    //   console.log(new Date().toString());
-    //   console.log(utc2LocalDate("2019-04-17T03:11:29.000+0000"));
-    //   // 页面加载完毕后设置表格的高度
-    //   this.setTableHeight();
-    //   // 监听屏幕的尺寸,动态设置表格的高度
-    //   window.addEventListener("resize", this.setTableHeight);
+    // 页面加载完毕后设置表格的高度
+    this.setTableHeight();
+    // 监听屏幕的尺寸,动态设置表格的高度
+    window.addEventListener("resize", this.setTableHeight);
   },
-  updated() {
-    // this.$nextTick(() => {
-    //   console.log(
-    //     "tableContainer高度:" + this.$refs.tableContainer.offsetHeight
-    //   );
-    // });
-  }
+  updated() {}
 };
 </script>
 <style>
@@ -493,6 +669,7 @@ export default {
     // background-color pink
 
   .table-container
+    position relative
     flex 1
     overflow hidden
     background-color greeen
@@ -505,6 +682,10 @@ export default {
       border-radius 5px
       color rgba(64, 174, 252, 1)
       cursor pointer
+
+      &:hover
+        background-color rgba(64, 174, 252, 1)
+        color #fff
 
   .svg-icon
     transition all 0.1s
