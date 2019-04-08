@@ -3,7 +3,7 @@
  * @LastEditors: 旺苍扛把子
  * @Description: 任务概览组件
  * @Date: 2019-04-01 18:17:27
- * @LastEditTime: 2019-04-08 11:40:44
+ * @LastEditTime: 2019-04-08 17:17:19
  -->
 <template>
   <div class="task-overview">
@@ -134,7 +134,6 @@
         tooltip-effect="dark"
         style="width: 100%;"
         class="c-el-table"
-        :max-height="tableHeight"
       >
         <el-table-column align="center" type="selection" width="55">
         </el-table-column>
@@ -271,7 +270,6 @@
         :page-size="100"
         layout="sizes, prev, pager, next"
         :total="tableData.total"
-        style="margin-top:10px;"
         class="c-el-pagination"
       >
       </el-pagination>
@@ -335,152 +333,152 @@ export default {
       taskOverviewRules: {},
       // 表格数据
       tableData: {
-        // list: [
-        //   {
-        //     tid: 8,
-        //     taskStatus: 1,
-        //     taskLevel: 1,
-        //     taskUid: 5,
-        //     taskName: "新任务8",
-        //     startTime: "2019-04-16T03:11:24.000+0000",
-        //     endTime: "2019-04-17T03:11:29.000+0000",
-        //     taskHomo: 2,
-        //     taskSensi: 1,
-        //     taskAnti: 2,
-        //     taskVeri: 2,
-        //     taskMorph: 2,
-        //     remarks: null
-        //   },
-        //   {
-        //     tid: 8,
-        //     taskStatus: 1,
-        //     taskLevel: 1,
-        //     taskUid: 5,
-        //     taskName: "新任务8",
-        //     startTime: "2019-04-16T03:11:24.000+0000",
-        //     endTime: "2019-04-17T03:11:29.000+0000",
-        //     taskHomo: 2,
-        //     taskSensi: 1,
-        //     taskAnti: 2,
-        //     taskVeri: 2,
-        //     taskMorph: 2,
-        //     remarks: null
-        //   },
-        //   {
-        //     tid: 8,
-        //     taskStatus: 1,
-        //     taskLevel: 1,
-        //     taskUid: 5,
-        //     taskName: "新任务8",
-        //     startTime: "2019-04-16T03:11:24.000+0000",
-        //     endTime: "2019-04-17T03:11:29.000+0000",
-        //     taskHomo: 2,
-        //     taskSensi: 1,
-        //     taskAnti: 2,
-        //     taskVeri: 2,
-        //     taskMorph: 2,
-        //     remarks: null
-        //   },
-        //   {
-        //     tid: 8,
-        //     taskStatus: 1,
-        //     taskLevel: 1,
-        //     taskUid: 5,
-        //     taskName: "新任务8",
-        //     startTime: "2019-04-16T03:11:24.000+0000",
-        //     endTime: "2019-04-17T03:11:29.000+0000",
-        //     taskHomo: 2,
-        //     taskSensi: 1,
-        //     taskAnti: 2,
-        //     taskVeri: 2,
-        //     taskMorph: 2,
-        //     remarks: null
-        //   },
-        //   {
-        //     tid: 8,
-        //     taskStatus: 1,
-        //     taskLevel: 1,
-        //     taskUid: 5,
-        //     taskName: "新任务8",
-        //     startTime: "2019-04-16T03:11:24.000+0000",
-        //     endTime: "2019-04-17T03:11:29.000+0000",
-        //     taskHomo: 2,
-        //     taskSensi: 1,
-        //     taskAnti: 2,
-        //     taskVeri: 2,
-        //     taskMorph: 2,
-        //     remarks: null
-        //   },
-        //   {
-        //     tid: 8,
-        //     taskStatus: 1,
-        //     taskLevel: 1,
-        //     taskUid: 5,
-        //     taskName: "新任务8",
-        //     startTime: "2019-04-16T03:11:24.000+0000",
-        //     endTime: "2019-04-17T03:11:29.000+0000",
-        //     taskHomo: 2,
-        //     taskSensi: 1,
-        //     taskAnti: 2,
-        //     taskVeri: 2,
-        //     taskMorph: 2,
-        //     remarks: null
-        //   },
-        //   {
-        //     tid: 11,
-        //     taskStatus: 3,
-        //     taskLevel: 2,
-        //     taskUid: 5,
-        //     taskName: "新任务11",
-        //     startTime: "2019-03-26T05:33:22.000+0000",
-        //     endTime: "2019-03-26T05:35:11.000+0000",
-        //     taskHomo: 2,
-        //     taskSensi: 1,
-        //     taskAnti: 2,
-        //     taskVeri: 2,
-        //     taskMorph: 2,
-        //     remarks: null
-        //   },
-        //   {
-        //     tid: 12,
-        //     taskStatus: 2,
-        //     taskLevel: null,
-        //     taskUid: 5,
-        //     taskName: "新任务12",
-        //     startTime: "2019-04-08T02:27:10.000+0000",
-        //     endTime: null,
-        //     taskHomo: 2,
-        //     taskSensi: 2,
-        //     taskAnti: 1,
-        //     taskVeri: 2,
-        //     taskMorph: 2,
-        //     remarks: null
-        //   },
-        //   {
-        //     endTime: "2019-04-17T03:11:29.000+0000",
-        //     remarks: null,
-        //     startTime: "2019-04-16T03:11:24.000+0000",
-        //     //静态仿真分析
-        //     taskAnti: 2,
-        //     // 同源分析
-        //     taskHomo: 2,
-        //     taskLevel: 1,
-        //     // 工具变形与验证
-        //     taskMorph: 2,
-        //     taskName: "新任务8",
-        //     // 敏感信息分析 1 开启 2 未开启
-        //     taskSensi: 1,
-        //     // 状态 1 未启动 2 进行中 3,完成 4,失败
-        //     taskStatus: 1, // 1 查看 启动 删除 2 查看 3 查看 启动 删除
-        //     taskUid: 5,
-        //     // 漏洞工具验证
-        //     taskVeri: 2,
-        //     // 任务编号
-        //     tid: 8
-        //   }
-        // ]
+        list: [
+          {
+            tid: 8,
+            taskStatus: 1,
+            taskLevel: 1,
+            taskUid: 5,
+            taskName: "新任务8",
+            startTime: "2019-04-16T03:11:24.000+0000",
+            endTime: "2019-04-17T03:11:29.000+0000",
+            taskHomo: 2,
+            taskSensi: 1,
+            taskAnti: 2,
+            taskVeri: 2,
+            taskMorph: 2,
+            remarks: null
+          },
+          {
+            tid: 8,
+            taskStatus: 1,
+            taskLevel: 1,
+            taskUid: 5,
+            taskName: "新任务8",
+            startTime: "2019-04-16T03:11:24.000+0000",
+            endTime: "2019-04-17T03:11:29.000+0000",
+            taskHomo: 2,
+            taskSensi: 1,
+            taskAnti: 2,
+            taskVeri: 2,
+            taskMorph: 2,
+            remarks: null
+          },
+          {
+            tid: 8,
+            taskStatus: 1,
+            taskLevel: 1,
+            taskUid: 5,
+            taskName: "新任务8",
+            startTime: "2019-04-16T03:11:24.000+0000",
+            endTime: "2019-04-17T03:11:29.000+0000",
+            taskHomo: 2,
+            taskSensi: 1,
+            taskAnti: 2,
+            taskVeri: 2,
+            taskMorph: 2,
+            remarks: null
+          },
+          {
+            tid: 8,
+            taskStatus: 1,
+            taskLevel: 1,
+            taskUid: 5,
+            taskName: "新任务8",
+            startTime: "2019-04-16T03:11:24.000+0000",
+            endTime: "2019-04-17T03:11:29.000+0000",
+            taskHomo: 2,
+            taskSensi: 1,
+            taskAnti: 2,
+            taskVeri: 2,
+            taskMorph: 2,
+            remarks: null
+          },
+          {
+            tid: 8,
+            taskStatus: 1,
+            taskLevel: 1,
+            taskUid: 5,
+            taskName: "新任务8",
+            startTime: "2019-04-16T03:11:24.000+0000",
+            endTime: "2019-04-17T03:11:29.000+0000",
+            taskHomo: 2,
+            taskSensi: 1,
+            taskAnti: 2,
+            taskVeri: 2,
+            taskMorph: 2,
+            remarks: null
+          },
+          {
+            tid: 8,
+            taskStatus: 1,
+            taskLevel: 1,
+            taskUid: 5,
+            taskName: "新任务8",
+            startTime: "2019-04-16T03:11:24.000+0000",
+            endTime: "2019-04-17T03:11:29.000+0000",
+            taskHomo: 2,
+            taskSensi: 1,
+            taskAnti: 2,
+            taskVeri: 2,
+            taskMorph: 2,
+            remarks: null
+          },
+          {
+            tid: 11,
+            taskStatus: 3,
+            taskLevel: 2,
+            taskUid: 5,
+            taskName: "新任务11",
+            startTime: "2019-03-26T05:33:22.000+0000",
+            endTime: "2019-03-26T05:35:11.000+0000",
+            taskHomo: 2,
+            taskSensi: 1,
+            taskAnti: 2,
+            taskVeri: 2,
+            taskMorph: 2,
+            remarks: null
+          },
+          {
+            tid: 12,
+            taskStatus: 2,
+            taskLevel: null,
+            taskUid: 5,
+            taskName: "新任务12",
+            startTime: "2019-04-08T02:27:10.000+0000",
+            endTime: null,
+            taskHomo: 2,
+            taskSensi: 2,
+            taskAnti: 1,
+            taskVeri: 2,
+            taskMorph: 2,
+            remarks: null
+          },
+          {
+            endTime: "2019-04-17T03:11:29.000+0000",
+            remarks: null,
+            startTime: "2019-04-16T03:11:24.000+0000",
+            //静态仿真分析
+            taskAnti: 2,
+            // 同源分析
+            taskHomo: 2,
+            taskLevel: 1,
+            // 工具变形与验证
+            taskMorph: 2,
+            taskName: "新任务8",
+            // 敏感信息分析 1 开启 2 未开启
+            taskSensi: 1,
+            // 状态 1 未启动 2 进行中 3,完成 4,失败
+            taskStatus: 1, // 1 查看 启动 删除 2 查看 3 查看 启动 删除
+            taskUid: 5,
+            // 漏洞工具验证
+            taskVeri: 2,
+            // 任务编号
+            tid: 8
+          }
+        ]
       },
-      tableHeight: 0,
+      tableHeight: 300,
       multipleSelection: [],
       // 分页组件的当前页码
       currentPage: 5
@@ -625,18 +623,13 @@ export default {
   },
   created() {
     //请求默认任务
-    this.getDefaultTask()
-      .then(res => {
-        this.tableData = res.data;
-      })
-      .catch(err => console.log(err));
+    // this.getDefaultTask()
+    //   .then(res => {
+    //     this.tableData = res.data;
+    //   })
+    //   .catch(err => console.log(err));
   },
-  mounted() {
-    // 页面加载完毕后设置表格的高度
-    this.setTableHeight();
-    // 监听屏幕的尺寸,动态设置表格的高度
-    window.addEventListener("resize", this.setTableHeight);
-  },
+  mounted() {},
   updated() {}
 };
 </script>
@@ -686,6 +679,9 @@ export default {
       &:hover
         background-color rgba(64, 174, 252, 1)
         color #fff
+
+    .c-el-pagination
+      padding 15px 0
 
   .svg-icon
     transition all 0.1s

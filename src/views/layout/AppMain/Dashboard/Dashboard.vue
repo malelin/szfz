@@ -3,7 +3,7 @@
  * @LastEditors: 旺苍扛把子
  * @Description: 控制面板组件
  * @Date: 2019-03-29 10:14:42
- * @LastEditTime: 2019-04-08 15:03:18
+ * @LastEditTime: 2019-04-08 16:44:58
  -->
 <template>
   <div class="dashboard">
@@ -416,7 +416,7 @@ export default {
           flex 0 0 33.33%
           box-sizing border-box
           padding 20px
-          height 50%
+          height 200px
           border 1px solid #ccc
           border-bottom none
           border-left none

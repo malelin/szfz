@@ -20,8 +20,8 @@ export function login(account, password) {
  * @param {string} token
  * @returns {Promise<*>} Promise对象
  */
-export function logout(token) {
-  console.log(token);
+export function logout() {
+  let token = sessionStorage.getItem("token");
   return request({
     url: "/v1/sysmanage/logout",
     method: "delete",

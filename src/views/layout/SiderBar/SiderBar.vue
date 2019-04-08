@@ -3,7 +3,7 @@
  * @LastEditors: 旺苍扛把子
  * @Description: siderbar组件
  * @Date: 2019-03-27 10:01:30
- * @LastEditTime: 2019-04-02 13:36:54
+ * @LastEditTime: 2019-04-08 16:35:40
  -->
 <template>
   <div class="siderbar">
@@ -131,7 +131,7 @@ export default {
   background-color: rgba(47, 51, 58, 0.53) !important;
 }
 /* 管理侧边栏横向滚动条 */
-.el-scrollbar__wrap {
+.siderbar .el-scrollbar__wrap {
   overflow-x: hidden;
 }
 /* 重写animate.css fadeout延时 */

@@ -3,7 +3,7 @@
  * @LastEditors: 旺苍扛把子
  * @Description: 登录组件
  * @Date: 2019-03-25 15:26:28
- * @LastEditTime: 2019-04-03 09:40:57
+ * @LastEditTime: 2019-04-08 16:58:32
  -->
 <template>
   <div class="login">
@@ -179,8 +179,7 @@ export default {
      * @description 点击登出
      */
     async handleLogout() {
-      let token = sessionStorage.getItem("token");
-      logout(token)
+      logout()
         .then(result => {
           console.log(result);
         })
