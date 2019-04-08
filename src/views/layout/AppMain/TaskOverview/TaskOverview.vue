@@ -3,7 +3,7 @@
  * @LastEditors: 旺苍扛把子
  * @Description: 任务概览组件
  * @Date: 2019-04-01 18:17:27
- * @LastEditTime: 2019-04-08 11:19:34
+ * @LastEditTime: 2019-04-08 11:40:44
  -->
 <template>
   <div class="task-overview">
@@ -624,12 +624,12 @@ export default {
     }
   },
   created() {
-    // //请求默认任务
-    // this.getDefaultTask()
-    //   .then(res => {
-    //     this.tableData = res.data;
-    //   })
-    //   .catch(err => console.log(err));
+    //请求默认任务
+    this.getDefaultTask()
+      .then(res => {
+        this.tableData = res.data;
+      })
+      .catch(err => console.log(err));
   },
   mounted() {
     // 页面加载完毕后设置表格的高度

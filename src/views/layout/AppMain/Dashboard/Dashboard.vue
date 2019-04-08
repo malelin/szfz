@@ -3,7 +3,7 @@
  * @LastEditors: 旺苍扛把子
  * @Description: 控制面板组件
  * @Date: 2019-03-29 10:14:42
- * @LastEditTime: 2019-04-02 13:45:20
+ * @LastEditTime: 2019-04-08 15:03:18
  -->
 <template>
   <div class="dashboard">
@@ -20,42 +20,46 @@
           </el-tabs>
         </div>
         <div class="chart-body">
-          <ve-ring
-            :width="width"
-            :height="height"
-            :data="chartData"
-            :legend-visible="false"
-            :tooltip-visible="false"
-            :judge-width="true"
-            :settings="chartSettings"
-          ></ve-ring>
-          <ve-ring
-            :width="width"
-            :height="height"
-            :data="chartData"
-            :legend-visible="false"
-            :tooltip-visible="false"
-            :judge-width="true"
-            :settings="chartSettings"
-          ></ve-ring>
-          <ve-ring
-            :width="width"
-            :height="height"
-            :data="chartData"
-            :legend-visible="false"
-            :tooltip-visible="false"
-            :judge-width="true"
-            :settings="chartSettings"
-          ></ve-ring>
-          <ve-ring
-            :width="width"
-            :height="height"
-            :data="chartData"
-            :legend-visible="false"
-            :tooltip-visible="false"
-            :judge-width="true"
-            :settings="chartSettings"
-          ></ve-ring>
+          <el-col :span="6">
+            <ve-ring
+              :data="chartRing.dataGW"
+              :legend-visible="false"
+              :tooltip-visible="false"
+              :judge-width="true"
+              :colors="['#DA4E4E', '#F6F6F6']"
+              :settings="chartRing.settings"
+            ></ve-ring
+          ></el-col>
+          <el-col :span="6">
+            <ve-ring
+              :data="chartRing.dataZW"
+              :legend-visible="false"
+              :tooltip-visible="false"
+              :judge-width="true"
+              :colors="['#ffc300', '#F6F6F6']"
+              :settings="chartRing.settings"
+            ></ve-ring
+          ></el-col>
+          <el-col :span="6">
+            <ve-ring
+              :data="chartRing.dataAQ"
+              :legend-visible="false"
+              :tooltip-visible="false"
+              :judge-width="true"
+              :colors="['#2ae445', '#F6F6F6']"
+              :settings="chartRing.settings"
+            ></ve-ring
+          ></el-col>
+          <el-col :span="6">
+            <ve-ring
+              :data="chartRing.dataAQ"
+              :legend-visible="false"
+              :tooltip-visible="false"
+              :judge-width="true"
+              :colors="['#2ae445', '#F6F6F6']"
+              :settings="chartRing.settings"
+            ></ve-ring
+          ></el-col>
         </div>
         <div class="chart-footer">
           <div class="res-info">
@@ -84,11 +88,12 @@
         </div>
         <div class="chart-body">
           <ve-pie
-            :data="chartDataWxlxfb"
-            height="300px"
+            :data="chartPie.data"
             width="100%"
             :judge-width="true"
-            :legend="legend"
+            :legend="chartPie.legend"
+            :grid="chartPie.grid"
+            :settings="chartPie.settings"
           ></ve-pie>
         </div>
       </div>
@@ -189,56 +194,73 @@ export default {
   name: "Dashboard",
   components: {},
   props: {},
-
   data() {
     return {
       // 激活的检测结果统计:[全年,本月,本周,今日]
       activeResult: "today",
-      chartSettings: {
-        label: {
-          show: true,
-          position: "center",
-          formatter: ["{a|高危}", "{b|{d}%}"].join("\n"),
-          rich: {
-            a: {
-              lineHeight: 20,
-              color: "#999"
+      // 三个环形图
+      chartRing: {
+        // 环形图设置
+        settings: {
+          label: {
+            show: true,
+            position: "center",
+            formatter({ data, percent }) {
+              let flag = ["高危", "中危", "安全"];
+              return flag.indexOf(data.name) !== -1
+                ? ["{a|" + data.name + "}", "{b|" + percent + "%}"].join("\n")
+                : "";
             },
-            b: {
-              height: 40,
-              fontSize: 18,
-              color: "#333333"
+            rich: {
+              a: {
+                lineHeight: 30,
+                color: "#666"
+              },
+              b: {
+                fontSize: 13,
+                lineHeight: 20,
+                color: "#111"
+              }
             }
-          }
+          },
+          radius: [45, 60],
+          offsetY: 100,
+          hoverAnimation: false
         },
-        radius: [45, 60],
-        offsetY: 100
-      },
-      width: "200px",
-      height: "200px",
-      chartData: {
-        columns: ["高危", "访问用户"],
-        rows: [{ 高危: "25%", 访问用户: 1393 }, { 高危: "25%", 访问用户: 1393 }]
+        // 高危环形图数据
+        dataGW: {
+          columns: ["类型", "数量"],
+          rows: [{ 类型: "高危", 数量: 1393 }, { 类型: "其它", 数量: 100 }]
+        },
+        // 中危环形图数据
+        dataZW: {
+          columns: ["类型", "数量"],
+          rows: [{ 类型: "中危", 数量: 1393 }, { 类型: "其它", 数量: 100 }]
+        },
+        // 安全环形图数据
+        dataAQ: {
+          columns: ["类型", "数量"],
+          rows: [{ 类型: "安全", 数量: 1393 }, { 类型: "其它", 数量: 100 }]
+        }
       },
       // 威胁类型分布图表数据
-      chartDataWxlxfb: {
-        columns: ["类型", "数量"],
-        rows: [
-          { 类型: "涉我信息", 数量: 1393 },
-          { 类型: "开发痕迹", 数量: 3530 },
-          { 类型: "同源信息", 数量: 2923 },
-          { 类型: "仿真分析", 数量: 1723 },
-          { 类型: "IOC风险", 数量: 3792 },
-          { 类型: "其他", 数量: 4593 }
-        ]
-      },
-      legend: { orient: "vertical", right: 40, top: 50, bottom: 20 },
-      grid: {
-        show: true,
-        x: 0, //左侧与y轴的距离
-        y: 0, //top部与x轴的距离
-        x2: 0, //右侧与y轴的距离
-        y2: 0 //bottom部与x轴的距离
+      chartPie: {
+        data: {
+          columns: ["类型", "数量"],
+          rows: [
+            { 类型: "涉我信息", 数量: 1393 },
+            { 类型: "开发痕迹", 数量: 3530 },
+            { 类型: "同源信息", 数量: 2923 },
+            { 类型: "仿真分析", 数量: 1723 },
+            { 类型: "IOC风险", 数量: 3792 },
+            { 类型: "其他", 数量: 4593 }
+          ]
+        },
+        settings: {
+          radius: 60,
+          offsetY: 130
+        },
+        legend: { orient: "vertical", right: 30, top: 50, bottom: 20 }
       }
     };
   },
@@ -395,6 +417,9 @@ export default {
           box-sizing border-box
           padding 20px
           height 50%
+          border 1px solid #ccc
+          border-bottom none
+          border-left none
 
           &-header
             display flex
@@ -402,8 +427,7 @@ export default {
             padding-bottom 20px
 
             >>>.svg-icon
-              width 60px
-              height 60px
+              font-size 40px
 
             .engine-name
               padding-left 20px

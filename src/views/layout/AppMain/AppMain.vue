@@ -3,15 +3,12 @@
  * @LastEditors: 旺苍扛把子
  * @Description: 内容主视图
  * @Date: 2019-03-27 10:03:14
- * @LastEditTime: 2019-04-02 17:15:38
+ * @LastEditTime: 2019-04-08 14:54:53
  -->
 <template>
   <div class="app-main">
     <div class="app-content">
       <router-view class="app-main__router-view" />
-    </div>
-    <div class="copyright-container">
-      <Copyright class="c-copyright" />
     </div>
   </div>
 </template>
@@ -50,16 +47,10 @@ export default {
   .app-content
     box-sizing border-box
     padding 0 20px
-    height calc(100% - 124px)
+    height 100%
 
     .app-main__router-view
       box-sizing border-box
       margin-bottom 15px
-      height calc(100% - 15px)
-
-  .copyright-container
-    text-align center
-
-    .c-copyright
-      display inline-block
+      height 100%
 </style>
