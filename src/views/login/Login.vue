@@ -3,7 +3,7 @@
  * @LastEditors: 旺苍扛把子
  * @Description: 登录组件
  * @Date: 2019-03-25 15:26:28
- * @LastEditTime: 2019-04-08 16:58:32
+ * @LastEditTime: 2019-04-09 09:05:40
  -->
 <template>
   <div class="login">
@@ -62,7 +62,7 @@
 </template>
 
 <script>
-import { login, logout } from "@/api/login";
+import { login } from "@/api/login";
 // 导入正则表达式
 import { accountRegx } from "@/regxs";
 import _ from "lodash";
@@ -175,18 +175,6 @@ export default {
       }
     }, 300),
 
-    /**
-     * @description 点击登出
-     */
-    async handleLogout() {
-      logout()
-        .then(result => {
-          console.log(result);
-        })
-        .catch(err => {
-          console.log(err);
-        });
-    },
     /**
      * @description 跳转到注册
      */

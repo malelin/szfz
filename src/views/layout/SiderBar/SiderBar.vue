@@ -3,7 +3,7 @@
  * @LastEditors: 旺苍扛把子
  * @Description: siderbar组件
  * @Date: 2019-03-27 10:01:30
- * @LastEditTime: 2019-04-08 16:35:40
+ * @LastEditTime: 2019-04-08 18:30:14
  -->
 <template>
   <div class="siderbar">
@@ -60,7 +60,7 @@
 
 <script>
 import { createNamespacedHelpers } from "vuex";
-const { mapState } = createNamespacedHelpers("layout");
+const { mapState, mapMutations } = createNamespacedHelpers("layout");
 export default {
   name: "SiderBar",
   components: {
@@ -80,8 +80,6 @@ export default {
    */
   data() {
     return {
-      // 默认激活的菜单
-      defaultActive: "1-1",
       // 菜单导航对应的路由
       routerMap: {
         "1-1": { path: "/dashboard" },
@@ -93,10 +91,14 @@ export default {
     };
   },
   computed: {
-    ...mapState(["isCollapse"])
+    ...mapState([
+      "isCollapse",
+      "defaultActive" // 默认激活的菜单
+    ])
   },
   watch: {},
   methods: {
+    ...mapMutations(["setDefaultActive"]),
     /**
      * @description 菜单激活回调
      * @param {any} index 选中菜单项的 index
@@ -104,6 +106,7 @@ export default {
      */
     onSelect(index) {
       let { path } = this.routerMap[index];
+      this.setDefaultActive(index);
       this.$router.push({ path });
     }
   },

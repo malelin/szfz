@@ -11,12 +11,8 @@ module.exports = {
     // 配置跨域
     proxy: {
       "/api": {
-        target: "<url>",
-        ws: true,
+        target: "http://192.168.2.112:8081",
         changeOrigin: true
-      },
-      "/foo": {
-        target: "<other_url>"
       }
     }
   },
