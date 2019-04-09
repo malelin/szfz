@@ -1,3 +1,9 @@
+// 使用插件
+import "@/plugins/animated.js";
+import "@/plugins/element.js";
+import "@/plugins/vcharts.js";
+import "@/plugins/modal.js";
+
 // 引入eventbus
 import eventbus from "@/eventbus";
 
