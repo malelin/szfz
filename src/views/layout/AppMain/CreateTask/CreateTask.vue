@@ -3,7 +3,7 @@
  * @LastEditors: 旺苍扛把子
  * @Description: 新建任务组件
  * @Date: 2019-04-02 09:23:23
- * @LastEditTime: 2019-04-11 10:42:54
+ * @LastEditTime: 2019-04-11 11:32:19
  -->
 
 <template>
@@ -183,6 +183,8 @@
 import _ from "lodash";
 import { upload } from "@/api/file";
 import { createTask } from "@/api/task";
+import { createNamespacedHelpers } from "vuex";
+const { mapMutations } = createNamespacedHelpers("layout");
 export default {
   name: "CreateTask",
   components: {
@@ -287,7 +289,7 @@ export default {
         return {
           md5: fileMD5,
           objectName: fileName,
-          openMorph: 1,
+          openMorph: 2,
           openSensitivity,
           sha1: fileSHA1,
           sha256: fileSHA256,
@@ -311,6 +313,7 @@ export default {
   },
   watch: {},
   methods: {
+    ...mapMutations(["setDefaultActive"]),
     /**
      * @description 阻止el-checkbox点击冒泡
      */
@@ -527,6 +530,7 @@ export default {
         });
       } else {
         try {
+          debugger;
           let { status } = await createTask(this.taskData);
           if (status === 200) {
             this.$message({
@@ -534,6 +538,7 @@ export default {
               message: "任务创建成功"
             });
           }
+          this.setDefaultActive("2-1");
           this.$router.push({ path: "/taskOverview" });
         } catch (e) {
           console.log(e);

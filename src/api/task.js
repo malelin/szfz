@@ -3,7 +3,7 @@
  * @LastEditors: 旺苍扛把子
  * @Description: 任务api
  * @Date: 2019-04-03 14:45:44
- * @LastEditTime: 2019-04-11 10:52:06
+ * @LastEditTime: 2019-04-11 13:48:32
  */
 import request from "@/utils/request";
 /**
@@ -11,13 +11,15 @@ import request from "@/utils/request";
  * @param {string} token
  * @returns {Promise<*>} Promise
  */
-export function getDefaultTask() {
+export function getDefaultTask(data) {
   let token = sessionStorage.getItem("token");
+  debugger;
   return request({
     url: "/v1/taskmanage/tasks",
     method: "get",
     params: {
-      order: "desc"
+      order: "desc",
+      ...data
     },
     headers: { "Digark-Access-Header": token }
   });

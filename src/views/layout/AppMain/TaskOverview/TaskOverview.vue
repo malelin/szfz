@@ -3,7 +3,7 @@
  * @LastEditors: 旺苍扛把子
  * @Description: 任务概览组件
  * @Date: 2019-04-01 18:17:27
- * @LastEditTime: 2019-04-11 10:44:56
+ * @LastEditTime: 2019-04-11 14:13:50
  -->
 <template>
   <div class="task-overview">
@@ -31,9 +31,10 @@
                 v-model="taskOverviewForm.taskStatus"
                 placeholder="请选择"
               >
-                <el-option label="完成" value="1"></el-option>
+                <el-option label="完成" value="3"></el-option>
                 <el-option label="进行中" value="2"></el-option>
-                <el-option label="待启动" value="3"></el-option>
+                <el-option label="待启动" value="1"></el-option>
+                <el-option label="失败" value="4"></el-option>
                 <el-option label="全部" value=" "></el-option>
               </el-select> </el-form-item
           ></el-col>
@@ -194,13 +195,11 @@
           ]"
           :filter-method="filterHandler"
         >
+          <!-- 1 带启动
+          2 进行中
+          3 完成
+          4 失败 -->
           <template slot-scope="{ row }">
-            <!-- <template v-if="row.taskStatus === 1">
-              <i
-                style="display:inline-block;vertical-align:middle;border-radius: 50%;background-color:rgba(0, 0, 0, 0.25);width: 5px;height: 5px;"
-              ></i>
-              <span style="vertical-align:middle;margin-left: 10px;">关闭</span>
-            </template> -->
             <template v-if="row.taskStatus === 2">
               <i
                 style="display:inline-block;vertical-align:middle;border-radius: 50%;background-color:#409EFF;width: 5px;height: 5px;"
@@ -211,33 +210,39 @@
             </template>
             <template v-if="row.taskStatus === 1">
               <i
-                style="display:inline-block;vertical-align:middle;border-radius: 50%;background-color:#67C23A;width: 5px;height: 5px;"
-              ></i>
-              <span style="vertical-align:middle;margin-left: 10px;">完成</span>
-            </template>
-            <template v-if="row.taskStatus === 3">
-              <i
-                style="display:inline-block;vertical-align:middle;border-radius: 50%;background-color:#F56C6C;width: 5px;height: 5px;"
+                style="display:inline-block;vertical-align:middle;border-radius: 50%;background-color:#aaaaaa;width: 5px;height: 5px;"
               ></i>
               <span style="vertical-align:middle;margin-left: 10px;"
                 >待启动</span
               >
             </template>
+            <template v-if="row.taskStatus === 3">
+              <i
+                style="display:inline-block;vertical-align:middle;border-radius: 50%;background-color:#67C23A;width: 5px;height: 5px;"
+              ></i>
+              <span style="vertical-align:middle;margin-left: 10px;">完成</span>
+            </template>
+            <template v-if="row.taskStatus === 4">
+              <i
+                style="display:inline-block;vertical-align:middle;border-radius: 50%;background-color:#F56C6C;width: 5px;height: 5px;"
+              ></i>
+              <span style="vertical-align:middle;margin-left: 10px;">失败</span>
+            </template>
           </template>
         </el-table-column>
         <el-table-column align="center" prop="taskContent" label="任务内容">
           <template slot-scope="{ row }">
-            <span class="task-item" v-if="row.taskHomo === 2">同源分析</span>
-            <span class="task-item" v-if="row.taskAnti === 2"
+            <span class="task-item" v-if="row.taskHomo === 1">同源分析</span>
+            <span class="task-item" v-if="row.taskAnti === 1"
               >静态仿真分析</span
             >
-            <span class="task-item" v-if="row.taskMorph === 2"
+            <span class="task-item" v-if="row.taskMorph === 1"
               >工具变形与验证</span
             >
-            <span class="task-item" v-if="row.taskSensi === 2"
+            <span class="task-item" v-if="row.taskSensi === 1"
               >敏感信息分析</span
             >
-            <span class="task-item" v-if="row.taskVeri === 2"
+            <span class="task-item" v-if="row.taskVeri === 1"
               >漏洞工具验证</span
             >
           </template>
@@ -265,9 +270,9 @@
       <el-pagination
         @size-change="handleSizeChange"
         @current-change="handleCurrentChange"
-        :current-page.sync="currentPage"
+        :current-page.sync="pagination.currentPage"
         :page-sizes="[10, 20, 30, 50]"
-        :page-size="100"
+        :page-size="pagination.size"
         layout="sizes, prev, pager, next"
         :total="tableData.total"
         class="c-el-pagination"
@@ -480,8 +485,11 @@ export default {
       },
       tableHeight: 300,
       multipleSelection: [],
-      // 分页组件的当前页码
-      currentPage: 5
+      // 分页组件
+      pagination: {
+        size: 10,
+        currentPage: 1
+      }
     };
   },
   computed: {
@@ -506,8 +514,34 @@ export default {
         this.activeNames.pop();
       }
     }, 300),
-    handleSizeChange() {},
-    handleCurrentChange() {},
+    /**
+     * @description 切换每页显示条数
+     */
+    async handleSizeChange(size) {
+      this.pagination.size = size;
+      try {
+        let res = await getDefaultTask({
+          page: this.pagination.currentPage,
+          rows: size
+        });
+        console.log(res);
+        this.tableData = res.data;
+      } catch (e) {
+        console.log(e);
+      }
+    },
+    async handleCurrentChange(pageIndex) {
+      try {
+        let res = await getDefaultTask({
+          page: pageIndex,
+          rows: this.pagination.size
+        });
+        console.log(res);
+        this.tableData = res.data;
+      } catch (e) {
+        console.log(e);
+      }
+    },
     /**
      * @description 根据表单查询,获取任务列表
      */
@@ -592,17 +626,6 @@ export default {
     resetForm(formName) {
       this.$refs[formName].resetFields();
     },
-    /**
-     * @description 获取默认任务列表
-     */
-    async getDefaultTask() {
-      try {
-        let res = await getDefaultTask();
-        return res;
-      } catch (e) {
-        console.log(e);
-      }
-    },
 
     /**
      * @description 设置表格高度
@@ -623,7 +646,7 @@ export default {
   },
   created() {
     // 请求默认任务;
-    this.getDefaultTask()
+    getDefaultTask()
       .then(res => {
         console.log(res);
         this.tableData = res.data;
