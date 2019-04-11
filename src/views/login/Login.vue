@@ -3,7 +3,7 @@
  * @LastEditors: 旺苍扛把子
  * @Description: 登录组件
  * @Date: 2019-03-25 15:26:28
- * @LastEditTime: 2019-04-09 09:05:40
+ * @LastEditTime: 2019-04-10 12:49:56
  -->
 <template>
   <div class="login">
@@ -139,35 +139,13 @@ export default {
         let { account, password } = this.loginForm;
         if (isSuccess) {
           let { status, msg } = await login(account, password);
-          // if (status === 200) {
-          //   // 登录成功
-          //   debugger;
-          //   this.$message({
-          //     message: "登录成功",
-          //     type: "success",
-          //     duration: 1000
-          //   });
-          //   this.$router.replace("/layout");
-          // }
-          switch (status) {
-            // 成功
-            case 200:
-              this.$message({
-                message: "登录成功",
-                type: "success",
-                duration: 1000
-              });
-              this.$router.replace("/layout");
-              break;
-            // 没有成功
-            default:
-              this.$message({
-                message: msg,
-                type: "warning",
-                duration: 1000
-              });
-              // this.$router.replace("/layout");
-              break;
+          if (status === 200) {
+            this.$router.replace("/layout");
+          } else {
+            this.$message({
+              type: "warning",
+              message: msg
+            });
           }
         }
       } catch (e) {

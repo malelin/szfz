@@ -1,4 +1,5 @@
 import axios from "axios";
+import router from "@/router";
 import { Message } from "element-ui";
 // import store from "@/store";
 // import { getToken } from "@/utils/auth";
@@ -40,6 +41,12 @@ service.interceptors.response.use(
         type: "info",
         duration: 5 * 1000
       });
+      if (data.msg.trim() === "认证过期，请重新登入") {
+        console.log(this);
+        setTimeout(() => {
+          router.push({ path: "/login" });
+        }, 1000);
+      }
     }
     return data;
   },

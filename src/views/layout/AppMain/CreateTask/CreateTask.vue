@@ -3,17 +3,55 @@
  * @LastEditors: 旺苍扛把子
  * @Description: 新建任务组件
  * @Date: 2019-04-02 09:23:23
- * @LastEditTime: 2019-04-09 16:03:37
+ * @LastEditTime: 2019-04-11 10:42:54
  -->
 
 <template>
   <div class="create-task">
+    <!-- 任务设置弹出框 -->
+    <modal
+      name="taskSetting"
+      :draggable="false"
+      :clickToClose="false"
+      class="c-modal"
+      @before-open="beforeModalOpen"
+      transition="fade"
+      height="auto"
+      @opened="onModalOpened"
+      @closed="onModalClosed"
+    >
+      <div class="modal-header">
+        <h2 class="modal-title">任务设置</h2>
+        <svg-icon
+          icon-class="close"
+          @click.native="handleModalClose"
+        ></svg-icon>
+      </div>
+      <div class="modal-body">
+        <el-form ref="form" :model="modalForm">
+          <el-form-item>
+            <el-checkbox
+              size="medium"
+              @click.native.stop="stopProp"
+              v-model="modalForm.taskSensi.isChecked"
+            ></el-checkbox
+            ><span class="engine-name">敏感信息分析</span>
+          </el-form-item>
+        </el-form>
+      </div>
+      <div class="modal-footer">
+        <el-button size="mini" @click.native="handleSure" type="primary"
+          >确定</el-button
+        >
+        <el-button @click.native="handleCancel" size="mini">取消</el-button>
+      </div>
+    </modal>
     <div class="task-info">
       <el-form ref="form" :model="taskForm" label-width="80px">
         <el-form-item label="任务名称 :">
           <el-row :gutter="5"
             ><el-col :span="10">
-              <el-input v-model="taskForm.name"></el-input
+              <el-input v-model="taskForm.taskname"></el-input
             ></el-col>
             <el-col :span="8">
               <el-switch
@@ -30,7 +68,7 @@
             type="textarea"
             :rows="8"
             placeholder="请输入内容"
-            v-model="taskForm.textarea"
+            v-model="taskForm.remarks"
           >
           </el-input>
         </el-form-item>
@@ -39,15 +77,10 @@
     <div class="task-settings">
       <div class="settings-header">
         <h2>任务设置</h2>
-        <el-select v-model="value2" placeholder="请选择">
-          <el-option
-            v-for="item in options2"
-            :key="item.value"
-            :label="item.label"
-            :value="item.value"
-          >
-          </el-option>
-        </el-select>
+        <div class="tool-box">
+          <el-button @click.native="handleDeleteAll">批量删除</el-button>
+          <el-button @click.native="handleSettings">批量设置</el-button>
+        </div>
       </div>
       <div class="settings-body">
         <el-table
@@ -55,29 +88,44 @@
           :data="taskTable"
           tooltip-effect="dark"
           style="width: 100%"
+          class="c-el-table"
           @selection-change="handleSelectionChange"
         >
           <el-table-column type="selection" width="55"> </el-table-column>
           <el-table-column prop="fileName" label="文件名称"> </el-table-column>
           <el-table-column prop="fileType" label="文件类型"> </el-table-column>
-          <el-table-column prop="fileSize" label="大小(kb)"> </el-table-column>
+          <el-table-column prop="fileSize" label="大小(kb)">
+            <template slot-scope="{ row }">
+              {{ parseInt(row.fileSize / 1024) }}kb
+            </template>
+          </el-table-column>
           <el-table-column prop="fileMD5" label="MD5"> </el-table-column>
-          <el-table-column prop="taskContents" label="任务内容">
+          <el-table-column label="任务内容">
+            <template slot-scope="{ row }">
+              <span
+                class="task-item"
+                v-if="
+                  typeof row.openSensitivity !== 'undefined' &&
+                    row.openSensitivity === 1
+                "
+                >敏感信息分析</span
+              >
+            </template>
           </el-table-column>
           <el-table-column prop="operate" label="操作">
-            <template slot-scope="scope">
+            <template slot-scope="{ row, $index }">
               <div class="operate-box">
                 <svg-icon
                   icon-class="edit"
                   class="operate-item"
                   style="margin-right:15px;font-size:20px;"
-                  @click.native="handleEdit(scope)"
+                  @click.native="handleEdit($index, row)"
                 ></svg-icon>
                 <svg-icon
                   class="operate-item"
                   icon-class="remove"
                   style="font-size:20px;"
-                  @click.native="handleRemove(scope.$index, scope)"
+                  @click.native="handleRemove($index, row)"
                 ></svg-icon>
               </div>
             </template>
@@ -102,47 +150,39 @@
           <el-col :span="24"
             ><el-upload
               class="c-el-upload"
+              ref="r_el_upload"
               drag
+              multiple
+              :show-file-list="false"
               :action="upload.action"
               :name="upload.name"
-              :show-file-list="false"
-              :on-progress="fileOnProgress"
               :on-error="fileOnError"
               :on-success="fileOnSuccess"
               :before-upload="fileBeforeUpload"
               :headers="upload.headers"
             >
-              <el-row type="flex" align="middle" style="height:100%;">
-                <el-col>
-                  <el-progress
-                    v-if="upload.showProgress"
-                    style="width:80%;margin:0 auto;"
-                    :text-inside="true"
-                    :stroke-width="30"
-                    :percentage="upload.percent"
-                  ></el-progress>
-                  <template v-else
-                    ><i class="el-icon-upload"></i>
-                    <div class="el-upload__text">
-                      将文件拖到此处，或点击上传
-                    </div>
-                  </template>
-                </el-col>
-              </el-row>
+              <i class="el-icon-upload"></i>
+              <div class="el-upload__text">
+                将文件拖到此处，或点击上传
+              </div>
             </el-upload></el-col
           >
         </el-row>
       </div>
     </div>
     <div class="task-execute">
-      <el-button>创建</el-button>
-      <el-button type="primary">创建并执行</el-button>
+      <el-button @click.native="handleCreate">创建</el-button>
+      <el-button type="primary" @click.native="handleCreateExecute"
+        >创建并执行</el-button
+      >
     </div>
   </div>
 </template>
 
 <script>
+import _ from "lodash";
 import { upload } from "@/api/file";
+import { createTask } from "@/api/task";
 export default {
   name: "CreateTask",
   components: {
@@ -166,9 +206,10 @@ export default {
         showProgress: false,
         headers: {
           "Digark-Access-Header": sessionStorage.getItem("token")
-        }
+        },
+        showFileList: false
       },
-      taskForm: { name: "", isDefaultName: true, textarea: "" },
+      taskForm: { taskname: "", isDefaultName: true, remarks: "" },
       options2: [
         {
           value: "选项1",
@@ -195,83 +236,176 @@ export default {
       value2: "",
       // 任务列表
       taskTable: [
-        {
-          fileName: "index1.html",
-          uploadId: "001",
-          fileMD5: "81967f68746d92bb83994778305113d7",
-          fileType: "html",
-          fileSize: 1243703
-        },
-        {
-          fileName: "index2.html",
-          uploadId: "001",
-          fileMD5: "81967f68746d92bb83994778305113d7",
-          fileType: "html",
-          fileSize: 1243703
-        },
-        {
-          fileName: "index3.html",
-          uploadId: "003",
-          fileMD5: "81967f68746d92bb83994778305113d7",
-          fileType: "html",
-          fileSize: 1243703
-        },
-        {
-          fileName: "index4.html",
-          uploadId: "004",
-          fileMD5: "81967f68746d92bb83994778305113d7",
-          fileType: "html",
-          fileSize: 1243703
-        },
-        {
-          fileName: "index4.html",
-          uploadId: "005",
-          fileMD5: "81967f68746d92bb83994778305113d7",
-          fileType: "html",
-          fileSize: 1243703
-        },
-        {
-          fileName: "index6.html",
-          uploadId: "006",
-          fileMD5: "81967f68746d92bb83994778305113d7",
-          fileType: "html",
-          fileSize: 1243703
-        }
+        // {
+        //   uploadId: 491,
+        //   fileSHA1: "2098a650eb5896a5b6cef4ea08abd9ca913efa25",
+        //   fileSHA256:
+        //     "fb5b59ae05692e7e628a64ec48d8ddc53dc624e9f198896c222114229aa02e9e",
+        //   fileSSDEEP:
+        //     "12288:3Powop57TEtekBplIl1bs7akdMrgq1jqq3ggCzPX61Omv1NSecL4FSLsOV15URZg:hOe",
+        //   suffix: "html",
+        //   fileName: "index.html",
+        //   saveUrl: "/group1/M00/00/04/wKgCcFytWAiAAH2oABL6Nxhs8Rc59.html",
+        //   fileMD5: "81967f68746d92bb83994778305113d7",
+        //   fileType: "html",
+        //   taskContents: {},
+        //   modalForm: { taskSensi: { isChecked: false } },
+        //   fileSize: 1214.5537109375
+        // }
       ],
-      multipleSelection: []
+      // 激活的折叠面板
+      activeCollapse: [],
+      multipleSelection: [],
+      // modal表单
+      modalForm: {
+        // 敏感信息分析
+        taskSensi: { isChecked: false }
+      },
+      // 当前编辑的任务
+      currentEditItem: -1,
+      // 当前编辑row
+      currentRow: {}
     };
   },
-  computed: {},
+  computed: {
+    // 点击执行按钮后传递的参数
+    taskData() {
+      let objects = this.taskTable.map(item => {
+        let {
+          uploadId,
+          fileSHA1,
+          fileSHA256,
+          fileSSDEEP,
+          suffix,
+          saveUrl,
+          fileMD5,
+          fileType,
+          fileSize,
+          fileName,
+          openSensitivity
+        } = item;
+        return {
+          md5: fileMD5,
+          objectName: fileName,
+          openMorph: 1,
+          openSensitivity,
+          sha1: fileSHA1,
+          sha256: fileSHA256,
+          size: fileSize,
+          ssdeep: fileSSDEEP,
+          suffix: suffix,
+          type: fileType,
+          uploadId: uploadId,
+          url: saveUrl
+        };
+      });
+      let { remarks, taskname } = this.taskForm;
+      let taskData = {
+        model: 1,
+        objects,
+        remarks,
+        taskname
+      };
+      return taskData;
+    }
+  },
   watch: {},
   methods: {
-    handleSelectionChange() {},
+    /**
+     * @description 阻止el-checkbox点击冒泡
+     */
+    stopProp() {
+      return;
+    },
+    handleSelectionChange(val) {
+      this.multipleSelection = val;
+    },
     /**
      * @description 上传文件之前的钩子，
      * @param {file} file 上传的文件
      * @returns 若返回 false 或者返回 Promise 且被 reject，则停止上传。
      */
-    fileBeforeUpload() {
-      this.$set(this.upload, "showProgress", true);
+    fileBeforeUpload(file) {
+      this.$set(this.upload, "showFileList", true);
+      if (file.type === "") {
+        this.$message({
+          type: "warning",
+          message: "请传入有后缀名的文件"
+        });
+        return false;
+      }
+    },
+    /**
+     * @description 文件上传时的钩子
+     */
+    fileOnProgress(file) {
+      this.$set(this.upload, "percent", parseInt(file.percent));
     },
     /**
      * @description 文件上传成功钩子
      */
     fileOnSuccess({ status, data, msg }) {
       if (status === 200) {
-        let { fileName, fileMD5, fileType, fileSize } = data;
-        let file = { fileName, fileMD5, fileType, fileSize };
-        this.upload = Object.assign({}, this.upload, {
-          showProgress: false,
-          percent: 0
+        this.$message({
+          type: "success",
+          message: msg
         });
-        this.taskTable.push(file);
+        let {
+          uploadId,
+          fileSHA1,
+          fileSHA256,
+          fileSSDEEP,
+          fileName,
+          saveUrl,
+          fileMD5,
+          fileType,
+          suffix,
+          fileSize
+        } = data;
+        if (
+          this.taskTable.findIndex(item => {
+            return item.fileMD5 === fileMD5;
+          }) !== -1
+        ) {
+          this.$message({
+            type: "warning",
+            message: "重复上传"
+          });
+          return false;
+        }
+        // 单个任务
+        let task = {
+          uploadId,
+          fileSHA1,
+          fileSHA256,
+          fileSSDEEP,
+          suffix,
+          fileName,
+          saveUrl,
+          fileMD5,
+          fileType,
+          openSensitivity: 2,
+          modalForm: { taskSensi: { isChecked: false } },
+          fileSize: fileSize
+        };
+        this.taskTable.push(task);
       } else {
         this.$message({
           type: "warning",
           message: msg
         });
-        this.$set(this.upload, "showProgress", false);
       }
+    },
+    /**
+     * @description 文件上传出错时的钩子
+     */
+    fileOnError(err, file, fileList) {
+      console.log(err, file, fileList);
+      this.$set(this.upload, "showProgress", false);
+      this.$message({
+        type: "error",
+        message: err
+      });
     },
     /**
      * @description 重写表单上传方法
@@ -300,28 +434,158 @@ export default {
         });
       }
     },
-    /**
-     * @description 文件上传时的钩子
-     */
-    fileOnProgress(file) {
-      this.$set(this.upload, "percent", parseInt(file.percent));
-    },
-    fileOnError(err, file, fileList) {
-      console.log(err, file, fileList);
-      this.$set(this.upload, "showProgress", false);
-      this.$message({
-        type: "error",
-        message: err
-      });
-    },
+
     /**
      * @description 任务表格删除某一项
      */
-    handleRemove(index) {
+    handleRemove: _.debounce(function(index) {
       this.taskTable.splice(index, 1);
+    }, 300),
+    /**
+     * @description 任务表格编辑某一项
+     * @param {index} 数组下标
+     * @param {row} 数组某一项
+     */
+    handleEdit: _.debounce(function(index, row) {
+      this.currentEditItem = index;
+      this.currentRow = row;
+      this.modalForm = JSON.parse(JSON.stringify(row.modalForm));
+      this.$modal.show("taskSetting");
+    }, 300),
+    /**
+     * @description modal打开之前,获取数据
+     */
+    beforeModalOpen() {},
+    /**
+     * @description 关闭modal
+     */
+
+    handleModalClose() {
+      this.$modal.hide("taskSetting");
     },
-    handleEdit(index) {
-      console.log(index);
+    /**
+     * @description modal打开之后
+     */
+    onModalOpened() {},
+    /**
+     * @description modal关闭之前
+     */
+    onModalClosed() {},
+    /**
+     * @description 设置弹框确定按钮
+     */
+    handleSure() {
+      // 批量设置
+      if (this.currentEditItem === -1) {
+        if (this.multipleSelection.length === 0) {
+          this.$message({
+            type: "warning",
+            message: "请选择任务"
+          });
+        } else {
+          if (
+            typeof this.modalForm.taskSensi.isChecked !== "undefined" &&
+            this.modalForm.taskSensi.isChecked === true
+          ) {
+            this.multipleSelection.map(item => {
+              item.openSensitivity = 1;
+            });
+          } else {
+            this.multipleSelection.map(item => {
+              item.openSensitivity = 2;
+            });
+          }
+        }
+      } else {
+        //  开启敏感检测，1/开启，2/不开启 ,
+        if (this.modalForm.taskSensi.isChecked === true) {
+          this.$set(this.currentRow, "openSensitivity", 1);
+        } else {
+          this.$set(this.currentRow, "openSensitivity", 2);
+        }
+        this.$set(this.currentRow, "modalForm", this.modalForm);
+      }
+
+      this.$modal.hide("taskSetting");
+      this.modalForm = { taskSensi: { isChecked: false } };
+      this.currentEditItem = -1;
+    },
+    /**
+     * @description 设置弹框取消按钮
+     */
+    handleCancel() {
+      this.$modal.hide("taskSetting");
+    },
+    /**
+     * @description 创建任务
+     */
+    handleCreate: _.debounce(async function() {
+      if (this.multipleSelection.length === 0) {
+        this.$message({
+          type: "warning",
+          message: "请选择任务"
+        });
+      } else {
+        try {
+          let { status } = await createTask(this.taskData);
+          if (status === 200) {
+            this.$message({
+              type: "success",
+              message: "任务创建成功"
+            });
+          }
+          this.$router.push({ path: "/taskOverview" });
+        } catch (e) {
+          console.log(e);
+        }
+      }
+    }, 300),
+    /**
+     * @description 创建并执行任务
+     */
+    handleCreateExecute: _.debounce(async function() {
+      createTask()
+        .then(result => {
+          console.log(result);
+        })
+        .catch(err => {
+          console.log(err);
+        });
+    }, 300),
+    /**
+     * @description 批量设置
+     */
+    handleSettings: _.debounce(async function() {
+      if (this.multipleSelection.length === 0) {
+        this.$message({
+          type: "warning",
+          message: "请选择任务"
+        });
+      } else {
+        this.$modal.show("taskSetting");
+      }
+    }, 600),
+
+    /**
+     * @description 批量删除
+     */
+    handleDeleteAll() {
+      if (this.multipleSelection.length === 0) {
+        this.$message({
+          type: "warning",
+          message: "请选择任务"
+        });
+      } else {
+        let taskTable = this.taskTable;
+        this.multipleSelection.forEach(item => {
+          taskTable.forEach((task, index) => {
+            if (item.uploadId === task.uploadId) {
+              debugger;
+              taskTable.splice(index, 1);
+            }
+          });
+        });
+      }
     }
   },
   created() {},
@@ -362,6 +626,8 @@ export default {
     .settings-body
       .operate-box
         .operate-item
+          cursor pointer
+
           &:hover
             color rgba(24, 144, 255, 1)
 
@@ -377,8 +643,45 @@ export default {
         >>>.el-upload-dragger
           width 100%
 
+      .c-el-table
+        .task-item
+          margin-top 8px
+          margin-right 5px
+          padding 1px 3px
+          border 1px solid rgba(64, 174, 252, 1)
+          border-radius 5px
+          color rgba(64, 174, 252, 1)
+          cursor pointer
+
   .task-execute
     display flex
     justify-content flex-end
     padding 20px 20px 30px
+
+  .c-modal
+    .modal-header
+      display flex
+      justify-content space-between
+      align-items center
+      margin-bottom 10px
+      padding 0 20px
+      border 1px solid #ccc
+      line-height 40px
+
+    .modal-body
+      padding 0 20px
+
+      >>>.engine-name
+        font-weight 400
+        font-size 18px
+
+    .modal-footer
+      display flex
+      justify-content flex-end
+      padding 20px 20px 20px 0
+
+    .svg-icon
+      &:hover
+        color #409EFF
+        cursor pointer
 </style>

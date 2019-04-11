@@ -3,7 +3,7 @@
  * @LastEditors: 旺苍扛把子
  * @Description: 头部栏,包含搜索,注销,消息
  * @Date: 2019-03-27 10:03:36
- * @LastEditTime: 2019-04-09 10:16:23
+ * @LastEditTime: 2019-04-10 11:07:28
  -->
 <template>
   <div class="navbar">
@@ -97,12 +97,14 @@ export default {
      */
     async init() {
       try {
-        let {
-          status,
-          data: { username }
-        } = await getUserInfo();
+        let { status, data, msg } = await getUserInfo();
         if (status === 200) {
-          this.username = username;
+          this.username = data.username;
+        } else {
+          this.$message({
+            type: "warning",
+            message: msg
+          });
         }
       } catch (e) {
         console.log(e);

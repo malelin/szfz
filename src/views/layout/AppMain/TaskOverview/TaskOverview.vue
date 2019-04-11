@@ -3,7 +3,7 @@
  * @LastEditors: 旺苍扛把子
  * @Description: 任务概览组件
  * @Date: 2019-04-01 18:17:27
- * @LastEditTime: 2019-04-08 17:17:19
+ * @LastEditTime: 2019-04-11 10:44:56
  -->
 <template>
   <div class="task-overview">
@@ -622,12 +622,13 @@ export default {
     }
   },
   created() {
-    //请求默认任务
-    // this.getDefaultTask()
-    //   .then(res => {
-    //     this.tableData = res.data;
-    //   })
-    //   .catch(err => console.log(err));
+    // 请求默认任务;
+    this.getDefaultTask()
+      .then(res => {
+        console.log(res);
+        this.tableData = res.data;
+      })
+      .catch(err => console.log(err));
   },
   mounted() {},
   updated() {}
