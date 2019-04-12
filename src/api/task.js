@@ -3,7 +3,7 @@
  * @LastEditors: 旺苍扛把子
  * @Description: 任务api
  * @Date: 2019-04-03 14:45:44
- * @LastEditTime: 2019-04-11 13:48:32
+ * @LastEditTime: 2019-04-12 09:00:27
  */
 import request from "@/utils/request";
 /**
@@ -13,7 +13,6 @@ import request from "@/utils/request";
  */
 export function getDefaultTask(data) {
   let token = sessionStorage.getItem("token");
-  debugger;
   return request({
     url: "/v1/taskmanage/tasks",
     method: "get",
@@ -27,19 +26,23 @@ export function getDefaultTask(data) {
 
 /**
  * @description 使用查询条件获取任务列表
- * @export
- * @param {object} params对象
- *  @returns {Promise<*>} Promise
+ * @param {Object} params对象
+ * @returns {Promise<*>} Promise
  */
-export function getTask(params) {
+export function getTask(data) {
   let token = sessionStorage.getItem("token");
   return request({
     url: "/v1/taskmanage/tasks",
     method: "get",
-    params,
+    params: { ...data, order: "desc" },
     headers: { "Digark-Access-Header": token }
   });
 }
+/**
+ * @description 创建任务
+ * @param {object} data
+ * @returns {Promise<*>} Promise
+ */
 export function createTask(data) {
   let token = sessionStorage.getItem("token");
   console.log(data);
@@ -51,6 +54,54 @@ export function createTask(data) {
     headers: { "Digark-Access-Header": token }
   });
 }
+/**
+ * @description 删除任务
+ * @export
+ * @param {string} tids 任务数组字符串
+ * @returns {Promise<*>} Promise
+ */
+export function deleteTask(tids) {
+  let token = sessionStorage.getItem("token");
+  debugger;
+  return request({
+    url: "/v1/sysmanage/task",
+    method: "delete",
+    params: { tids },
+    headers: { "Digark-Access-Header": token }
+  });
+}
+/**
+ * @description 执行任务
+ * @export
+ * @param {string} tids 任务id
+ * @returns {Promise<*>} Promise
+ */
+export function executeTask(tids) {
+  let token = sessionStorage.getItem("token");
+  debugger;
+  return request({
+    url: "/v1/sysmanage/task_execute",
+    method: "put",
+    params: { tids },
+    headers: { "Digark-Access-Header": token }
+  });
+}
+/**
+ * @description 获取任务详情
+ * @export
+ * @param {string} tids 任务id
+ * @returns {Promise<*>} Promise
+ */
+export function getTaskDetail(tid) {
+  let token = sessionStorage.getItem("token");
+  return request({
+    url: "/v1/sysmanage/task/detail",
+    method: "get",
+    params: { tid },
+    headers: { "Digark-Access-Header": token }
+  });
+}
+
 let ss = {
   model: 0, //1 创建 2 创建并执行
   objects: [

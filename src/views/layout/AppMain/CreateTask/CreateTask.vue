@@ -3,7 +3,7 @@
  * @LastEditors: 旺苍扛把子
  * @Description: 新建任务组件
  * @Date: 2019-04-02 09:23:23
- * @LastEditTime: 2019-04-11 11:32:19
+ * @LastEditTime: 2019-04-11 17:50:17
  -->
 
 <template>
@@ -212,30 +212,6 @@ export default {
         showFileList: false
       },
       taskForm: { taskname: "", isDefaultName: true, remarks: "" },
-      options2: [
-        {
-          value: "选项1",
-          label: "黄金糕"
-        },
-        {
-          value: "选项2",
-          label: "双皮奶",
-          disabled: true
-        },
-        {
-          value: "选项3",
-          label: "蚵仔煎"
-        },
-        {
-          value: "选项4",
-          label: "龙须面"
-        },
-        {
-          value: "选项5",
-          label: "北京烤鸭"
-        }
-      ],
-      value2: "",
       // 任务列表
       taskTable: [
         // {
