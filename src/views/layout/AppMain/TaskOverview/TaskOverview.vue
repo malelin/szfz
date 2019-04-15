@@ -3,7 +3,7 @@
  * @LastEditors: 旺苍扛把子
  * @Description: 任务概览组件
  * @Date: 2019-04-01 18:17:27
- * @LastEditTime: 2019-04-12 09:40:23
+ * @LastEditTime: 2019-04-12 12:44:58
  -->
 <template>
   <div class="task-overview">
@@ -200,34 +200,7 @@
           4 失败 -->
 
           <template slot-scope="{ row }">
-            <template v-if="row.taskStatus === 1">
-              <i
-                style="display:inline-block;vertical-align:middle;border-radius: 50%;background-color:#aaaaaa;width: 5px;height: 5px;"
-              ></i>
-              <span style="vertical-align:middle;margin-left: 10px;"
-                >待启动</span
-              >
-            </template>
-            <template v-if="row.taskStatus === 2">
-              <i
-                style="display:inline-block;vertical-align:middle;border-radius: 50%;background-color:#409EFF;width: 5px;height: 5px;"
-              ></i>
-              <span style="vertical-align:middle;margin-left: 10px;"
-                >进行中</span
-              >
-            </template>
-            <template v-if="row.taskStatus === 3">
-              <i
-                style="display:inline-block;vertical-align:middle;border-radius: 50%;background-color:#67C23A;width: 5px;height: 5px;"
-              ></i>
-              <span style="vertical-align:middle;margin-left: 10px;">完成</span>
-            </template>
-            <template v-if="row.taskStatus === 4">
-              <i
-                style="display:inline-block;vertical-align:middle;border-radius: 50%;background-color:#F56C6C;width: 5px;height: 5px;"
-              ></i>
-              <span style="vertical-align:middle;margin-left: 10px;">失败</span>
-            </template>
+            <status :status="row.taskStatus" />
           </template>
         </el-table-column>
         <el-table-column align="center" prop="taskContent" label="任务内容">

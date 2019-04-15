@@ -3,7 +3,7 @@
  * @LastEditors: 旺苍扛把子
  * @Description: 新建任务组件
  * @Date: 2019-04-02 09:23:23
- * @LastEditTime: 2019-04-11 17:50:17
+ * @LastEditTime: 2019-04-12 10:56:38
  -->
 
 <template>
@@ -214,22 +214,18 @@ export default {
       taskForm: { taskname: "", isDefaultName: true, remarks: "" },
       // 任务列表
       taskTable: [
-        // {
-        //   uploadId: 491,
-        //   fileSHA1: "2098a650eb5896a5b6cef4ea08abd9ca913efa25",
-        //   fileSHA256:
-        //     "fb5b59ae05692e7e628a64ec48d8ddc53dc624e9f198896c222114229aa02e9e",
-        //   fileSSDEEP:
-        //     "12288:3Powop57TEtekBplIl1bs7akdMrgq1jqq3ggCzPX61Omv1NSecL4FSLsOV15URZg:hOe",
-        //   suffix: "html",
-        //   fileName: "index.html",
-        //   saveUrl: "/group1/M00/00/04/wKgCcFytWAiAAH2oABL6Nxhs8Rc59.html",
-        //   fileMD5: "81967f68746d92bb83994778305113d7",
-        //   fileType: "html",
-        //   taskContents: {},
-        //   modalForm: { taskSensi: { isChecked: false } },
-        //   fileSize: 1214.5537109375
-        // }
+        // fileMD5:"a9d811addb3ff9c4e748c45d6a638c61"
+        // fileName:"AB.bundle.5258a95c.js"
+        // fileSHA1:"754f7a363afa1e12c4b7e941b5b6c94ee1ad3736"
+        // fileSHA256:"64eb7a33751d0d6ffe556b0051de3aea4ead0cb03997d7313314063c7a106b81"
+        // fileSSDEEP:"6144:NLrwWgpX0Yt1plybMozZKJso+h/tQG7SPTjue3xA+51gVdH4:NL8jtbsMozZKrCQXnu/+5V"
+        // fileSize:805386
+        // fileType:"html"
+        // modalForm:Object
+        // openSensitivity:1
+        // saveUrl:"/group1/M00/00/0E/wKgCcFyv_ZGAONJCAAxKCiDN4qs9523.js"
+        // suffix:"js"
+        // uploadId:1467
       ],
       // 激活的折叠面板
       activeCollapse: [],

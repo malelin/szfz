@@ -1,3 +1,10 @@
+<!--
+ * @Author: 旺苍扛把子
+ * @LastEditors: 旺苍扛把子
+ * @Description: 任务详情组件
+ * @Date: 2019-04-11 14:32:10
+ * @LastEditTime: 2019-04-12 18:30:43
+ -->
 <template>
   <div class="task-detail">
     <div class="detail-header">
@@ -10,6 +17,7 @@
         >
           <el-form-item label="任务名称 :">
             <el-input
+              :disabled="taskForm.taskStatus !== 1"
               style="width:300px;"
               v-model="taskForm.taskName"
               placeholder="请输入任务名称"
@@ -17,6 +25,7 @@
           </el-form-item>
           <el-form-item label="任务描述 :">
             <el-input
+              :disabled="taskForm.taskStatus !== 1"
               type="textarea"
               :rows="1"
               style="width:300px;"
@@ -24,18 +33,16 @@
               v-model="taskForm.remarks"
             ></el-input
           ></el-form-item>
-          <el-row type="flex" justify="start">
-            <el-col>
-              <el-form-item label="创建时间 :">
-                <span>{{ taskForm.createTime }}</span>
-              </el-form-item></el-col
-            >
-            <el-col>
-              <el-form-item label="完成时间 :">
-                <span>{{ taskForm.endTime }}</span>
-              </el-form-item></el-col
-            >
-          </el-row>
+
+          <el-form-item label="创建时间 :">
+            <span>{{ taskForm.createTime }}</span>
+          </el-form-item>
+          <el-form-item label="开始时间 :">
+            <span>{{ taskForm.startTime }}</span>
+          </el-form-item>
+          <el-form-item label="完成时间 :">
+            <span>{{ taskForm.endTime }}</span>
+          </el-form-item>
 
           <el-form-item label="任务内容 :">
             <span
@@ -92,7 +99,13 @@
       <div class="detail-top">
         <h1 class="title">任务详情</h1>
       </div>
-      <div class="detail-main"></div>
+      <div class="detail-main">
+        <BaseTable :tid="tid" :task-status="taskForm.taskStatus" />
+      </div>
+      <div class="detail-footer" v-if="taskForm.taskStatus === 1">
+        <el-button style="margin-right:20px;" type="info" plain>保存</el-button>
+        <el-button type="primary">保存并执行</el-button>
+      </div>
     </div>
   </div>
 </template>
@@ -103,15 +116,9 @@ export default {
   name: "TaskDetail",
   components: {
     /* 按需加载组件 */
-    // demo: () => import('@/pages/')
+    BaseTable: () => import("./BaseTable/BaseTable.vue")
   },
-  props: {
-    /*  <WelcomeMessage greeting-text="hi"/> */
-    //   'greetingText': {
-    //     type: [String,Number],
-    //     required: true
-    //  }
-  },
+  props: {},
   data() {
     return {
       // 任务表单
@@ -135,7 +142,7 @@ export default {
         remarks: "",
         createTime: "",
         taskUserName: "",
-        taskStatus: ""
+        taskStatus: -1
       },
       // 任务列表
       taskTable: [
@@ -164,13 +171,15 @@ export default {
       // 当前编辑的任务
       currentEditItem: -1,
       // 当前编辑row
-      currentRow: {}
+      currentRow: {},
+      // 计时器
+      timer: null
     };
   },
   computed: {
     // 任务id
     tid() {
-      return this.$route.params.tid;
+      return parseInt(this.$route.params.tid);
     },
     taskIcon() {
       let taskStatus = this.taskForm.taskStatus;
@@ -181,25 +190,59 @@ export default {
           return { src: require("./images/task_jxz.png") };
         case 3:
           return { src: require("./images/task_ywc.png") };
-        default:
+        case 4:
           return { src: require("./images/task_sb.png") };
+        default:
+          return { src: "" };
       }
     }
   },
   watch: {},
-  methods: {},
-  created() {
-    getTaskDetail(this.tid)
-      .then(({ status, data }) => {
+  methods: {
+    /**
+     * @description 获取任务详情
+  
+     */
+    async getTaskDetail() {
+      try {
+        let { status, data } = await getTaskDetail(this.tid);
         if (status === 200) {
           this.taskForm = data;
+          return data;
         }
+      } catch (e) {
+        throw e;
+      }
+    }
+  },
+  created() {
+    this.getTaskDetail()
+      .then(result => {
+        console.log(result);
       })
       .catch(err => {
         console.log(err);
       });
+    // this.timer = setInterval(() => {
+    //   console.log(this);
+    //   this.getTaskDetail()
+    //     .then(res => {
+    //       if (res.taskStatus === 3) {
+    //         clearInterval(this.timer);
+    //       }
+    //     })
+    //     .catch(err => {
+    //       console.log(err);
+    //     });
+    // }, 5000);
   },
-  mounted() {}
+  mounted() {},
+  beforeDestroy() {
+    // if (this.timer) {
+    //   //如果定时器还在运行 或者直接关闭，不用判断
+    //   window.clearInterval(this.timer); //关闭
+    // }
+  }
 };
 </script>
 
@@ -257,4 +300,9 @@ export default {
       padding 0 0 10px 30px
       border-bottom 1px solid #ccc
       line-height 30px
+
+    .detail-footer
+      display flex
+      justify-content flex-end
+      padding 10px 10px 5px 10px
 </style>

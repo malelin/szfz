@@ -8,13 +8,12 @@ import request from "@/utils/request";
  * @param {string} [remarks] - 申请备注
  * @returns {Promise<*>} Promise对象
  */
-export function register(account, password, username, remarks) {
-  return request({
+export const register = (account, password, username, remarks) =>
+  request({
     url: "/v1/sysmanage/regist",
     method: "post",
     data: { remarks, username, password, account }
   });
-}
 
 /**
  * @description 根据账号或昵称验证账号是否存在
@@ -22,10 +21,9 @@ export function register(account, password, username, remarks) {
  * @param {number} model 验证的模式,1是账号,2是昵称
  * @returns {Promise<*>} Promise对象
  */
-export function verify(info, model) {
-  return request({
+export const verify = (info, model) =>
+  request({
     url: "/v1/sysmanage/verify",
     method: "get",
     params: { info, model }
   });
-}

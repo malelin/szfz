@@ -3,7 +3,7 @@
  * @LastEditors: 旺苍扛把子
  * @Description:  上传下载管理模块
  * @Date: 2019-04-09 10:54:37
- * @LastEditTime: 2019-04-09 14:05:45
+ * @LastEditTime: 2019-04-12 10:20:17
  */
 import request from "@/utils/request";
 /**
@@ -12,8 +12,8 @@ import request from "@/utils/request";
  * @param {*} data 表单
  * @returns
  */
-export function upload(data) {
-  return request({
+export const upload = data =>
+  request({
     url: "/v1/filemanage/object",
     method: "post",
     timeout: 200000,
@@ -23,4 +23,3 @@ export function upload(data) {
       "Digark-Access-Header": sessionStorage.getItem("token")
     }
   });
-}
