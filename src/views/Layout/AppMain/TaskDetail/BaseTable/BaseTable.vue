@@ -3,7 +3,7 @@
  * @LastEditors: 旺苍扛把子
  * @Description: 封装任务详情和新建任务中的表格
  * @Date: 2019-04-12 09:46:16
- * @LastEditTime: 2019-04-15 10:48:43
+ * @LastEditTime: 2019-04-15 16:37:04
  -->
 <template>
   <div class="base-table">
@@ -46,7 +46,7 @@
     </modal>
     <el-table
       ref="multipleTable"
-      :data="taskTable"
+      :data="Object2File"
       tooltip-effect="dark"
       style="width: 100%"
       class="c-el-table"
@@ -143,7 +143,7 @@
       >
     </el-row>
 
-    <el-row justify="end">
+    <el-row type="flex" justify="end" v-if="taskStatus === 1">
       <el-button
         style="margin-right:20px;"
         type="info"
@@ -151,7 +151,10 @@
         plain
         >保存</el-button
       >
-      <el-button @click.native="handleSaveWithExecute" type="primary"
+      <el-button
+        style="margin-right:20px;"
+        @click.native="handleSaveWithExecute"
+        type="primary"
         >保存并执行</el-button
       >
     </el-row>
@@ -160,7 +163,7 @@
 
 <script>
 import _ from "lodash";
-import { getTaskDetailList, createTask } from "@/api/task";
+import { getTaskDetailList, createAndExecuteTask } from "@/api/task";
 export default {
   name: "BaseTable",
   components: {
@@ -212,43 +215,17 @@ export default {
       // 当前编辑的任务
       currentEditItem: -1,
       // 当前编辑row
-      currentRow: {}
+      currentRow: {},
+      // 1 保存 2 保存并执行
+      currentModel: 0
     };
   },
   computed: {
-    // 获取的接口数据转换成表格需要的数据
-    transFromTaskTable() {
+    /**
+     * @description object格式转file格式
+     */
+    Object2File() {
       let res = [];
-      // anaAnti: null
-      // anaHomo: null
-      // anaVeri: null
-      // analysis: Object
-      //   aTime: null
-      //   antivirus: 10
-      //   hTime: null
-      //   homology: 10
-      //   mTime: null
-      //   morph: 10
-      //   oid: 264
-      //   sTime: "2019-04-12T02:29:02.000+0000"
-      //   sensitivity: 25
-      //   vTime: null
-      //   verification: 10
-      // objectEndTime: "2019-04-11T09:24:47.000+0000"
-      // objectMd5: "4e0ebb2d1df24e00a5cd7b21f804740d"
-      // objectName: "tt - 副本.html"
-      // objectResult: null
-      // objectSha1: "4b229b7101db8e9cf7d38433680541b40dfd2184"
-      // objectSha256: "2c7a87bfe6c51906a3160e75bb4ca34133ec031f446cf0760709f4ddd8a75af6"
-      // objectSize: 13849
-      // objectSsdeep: "384:fFVkHCNlbHMFzxBimKxBQ/ex2yn7Y4SpyricE:TkHC3bHgNBiz2iMCa"
-      // objectSuffix: "html"
-      // objectTid: 61
-      // objectType: "docx"
-      // objectUploadTime: "2019-04-11T09:18:42.000+0000"
-      // objectUrl: "/group1/M00/00/0E/wKgCcFyvBluAYAySAAA2GTi3CHQ52.html"
-      // oid: 255
-      // 通过接口获取的任务详情的对象列表
       this.taskTable.forEach(item => {
         let {
           objectMd5: fileMD5,
@@ -259,8 +236,21 @@ export default {
           objectSize: fileSize,
           objectType: fileType,
           objectResult,
-          analysis
+          analysis,
+          oid,
+          objectUrl: url,
+          objectSuffix: suffix
         } = item;
+        let modalForm = { taskSensi: {} };
+        let openSensitivity;
+        if (analysis.sensitivity === 10) {
+          modalForm.taskSensi.isChecked = false;
+          openSensitivity = 2;
+        } else {
+          modalForm.taskSensi.isChecked = true;
+          openSensitivity = 1;
+        }
+
         let file = {
           fileMD5,
           fileName,
@@ -270,29 +260,35 @@ export default {
           fileSize,
           fileType,
           objectResult,
-          analysis
+          analysis,
+          modalForm,
+          openSensitivity,
+          oid,
+          url,
+          suffix
         };
         res.push(file);
       });
-
       return res;
     },
+    //创建任务时传递的参数
     createData() {
-      let objects = this.taskTable.map(item => {
+      let objects = this.Object2File.map(item => {
         let {
           uploadId,
           fileSHA1,
           fileSHA256,
           fileSSDEEP,
           suffix,
-          saveUrl,
+          url,
           fileMD5,
           fileType,
           fileSize,
           fileName,
-          openSensitivity
+          openSensitivity,
+          oid
         } = item;
-        return {
+        let res = {
           md5: fileMD5,
           objectName: fileName,
           openMorph: 2,
@@ -304,17 +300,27 @@ export default {
           suffix: suffix,
           type: fileType,
           uploadId: uploadId,
-          url: saveUrl
+          url,
+          oid
         };
+        if (res.uploadId === undefined) {
+          delete res.uploadId;
+        }
+        if (res.oid === undefined) {
+          delete res.oid;
+        }
+        return res;
       });
       let { remarks, taskname } = this.taskForm;
-      let taskData = {
-        model: 1,
-        objects,
+      let model = this.currentModel;
+      let tid = this.tid;
+      let res = {
+        req: { model, objects },
+        tid,
         remarks,
         taskname
       };
-      return taskData;
+      return res;
     }
   },
   watch: {},
@@ -364,7 +370,7 @@ export default {
           fileSize
         } = data;
         if (
-          this.transFromTaskTable.findIndex(item => {
+          this.taskTable.findIndex(item => {
             return item.fileMD5 === fileMD5;
           }) !== -1
         ) {
@@ -382,16 +388,14 @@ export default {
           fileSSDEEP,
           suffix,
           fileName,
-          saveUrl,
+          url: saveUrl,
           fileMD5,
           fileType,
           openSensitivity: 2,
           modalForm: { taskSensi: { isChecked: false } },
           fileSize
         };
-        debugger;
-        this.taskTable.push(file);
-        debugger;
+        this.Object2File.push(file);
       } else {
         this.$message({
           type: "warning",
@@ -423,7 +427,6 @@ export default {
      * @param {row} 数组某一项
      */
     handleEdit: _.debounce(function(index, row) {
-      debugger;
       this.currentEditItem = index;
       this.currentRow = row;
       this.modalForm = JSON.parse(JSON.stringify(row.modalForm));
@@ -467,14 +470,12 @@ export default {
           }
         }
       } else {
-        debugger;
         //  开启敏感检测，1/开启，2/不开启 ,
         if (this.modalForm.taskSensi.isChecked === true) {
           this.$set(this.currentRow, "openSensitivity", 1);
         } else {
           this.$set(this.currentRow, "openSensitivity", 2);
         }
-        debugger;
         this.$set(this.currentRow, "modalForm", this.modalForm);
       }
 
@@ -491,61 +492,52 @@ export default {
     handleSelectionChange(val) {
       this.multipleSelection = val;
     },
-    /**
-     * @description object格式转file格式
-     */
-    Object2File(arr) {
-      let res = [];
-      arr.forEach(item => {
-        let {
-          objectMd5: fileMD5,
-          objectName: fileName,
-          objectSha1: fileSHA1,
-          objectSha256: fileSHA256,
-          objectSsdeep: fileSSDEEP,
-          objectSize: fileSize,
-          objectType: fileType,
-          objectResult,
-          analysis
-        } = item;
-        let modalForm = { taskSensi: {} };
-        modalForm.taskSensi.isChecked =
-          analysis.sensitivity === 10 ? false : true;
-        let file = {
-          fileMD5,
-          fileName,
-          fileSHA1,
-          fileSHA256,
-          fileSSDEEP,
-          fileSize,
-          fileType,
-          objectResult,
-          analysis,
-          modalForm
-        };
-        res.push(file);
-      });
-      return res;
-    },
+
     /**
      * @description 保存
      */
-    handleSave() {},
+    handleSave: _.debounce(async function() {
+      this.currentModel = 1;
+      try {
+        console.log(this.createData);
+        let { status } = await createAndExecuteTask(this.createData);
+        if (status === 200) {
+          this.$message({
+            type: "success",
+            message: "保存成功"
+          });
+          this.$router.push({ path: "/taskOverview" });
+        }
+      } catch (e) {
+        console.log(e);
+      }
+    }, 300),
     /**
      * @description 保存并执行
      */
-
     handleSaveWithExecute: _.debounce(async function() {
-      createTask(this.createData);
+      this.currentModel = 2;
+      try {
+        console.log(this.createData);
+        let { data, status } = await createAndExecuteTask(this.createData);
+        if (status === 200) {
+          console.log(data);
+          this.$message({
+            type: "success",
+            message: "保存并执行成功"
+          });
+          this.$router.push({ path: "/taskOverview" });
+        }
+      } catch (e) {
+        console.log(e);
+      }
     }, 300)
   },
   created() {
     getTaskDetailList(this.tid)
       .then(({ data, status }) => {
         if (status === 200) {
-          console.log(data);
-          debugger;
-          this.taskTable = this.Object2File(data);
+          this.taskTable = data;
         }
       })
       .catch(err => {

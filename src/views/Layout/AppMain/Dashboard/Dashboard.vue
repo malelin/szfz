@@ -3,7 +3,7 @@
  * @LastEditors: 旺苍扛把子
  * @Description: 控制面板组件
  * @Date: 2019-03-29 10:14:42
- * @LastEditTime: 2019-04-08 16:44:58
+ * @LastEditTime: 2019-04-15 19:51:09
  -->
 <template>
   <div class="dashboard">
@@ -12,8 +12,11 @@
       <div class="jcjgtj">
         <div class="chart-header">
           <span class="title">检测结果统计</span>
-          <el-tabs v-model="activeResult" @tab-click="handleJcjgtjClick">
-            <el-tab-pane label="今日" name="today"></el-tab-pane>
+          <el-tabs
+            v-model="chartRing.detectTimeRange"
+            @tab-click="handleDetectResTabClick"
+          >
+            <el-tab-pane label="今日" name="day"></el-tab-pane>
             <el-tab-pane label="本周" name="week"></el-tab-pane>
             <el-tab-pane label="本月" name="month"></el-tab-pane>
             <el-tab-pane label="全年" name="year"></el-tab-pane>
@@ -22,37 +25,37 @@
         <div class="chart-body">
           <el-col :span="6">
             <ve-ring
-              :data="chartRing.dataGW"
+              :data="chartRingData.dataFailure"
               :legend-visible="false"
               :tooltip-visible="false"
               :judge-width="true"
-              :colors="['#DA4E4E', '#F6F6F6']"
+              :colors="['rgba(212, 48, 48, 1)', '#F6F6F6']"
               :settings="chartRing.settings"
             ></ve-ring
           ></el-col>
           <el-col :span="6">
             <ve-ring
-              :data="chartRing.dataZW"
+              :data="chartRingData.dataHighRisk"
               :legend-visible="false"
               :tooltip-visible="false"
               :judge-width="true"
-              :colors="['#ffc300', '#F6F6F6']"
+              :colors="['#fb6d08', '#F6F6F6']"
               :settings="chartRing.settings"
             ></ve-ring
           ></el-col>
           <el-col :span="6">
             <ve-ring
-              :data="chartRing.dataAQ"
+              :data="chartRingData.dataMiddleRisk"
               :legend-visible="false"
               :tooltip-visible="false"
               :judge-width="true"
-              :colors="['#2ae445', '#F6F6F6']"
+              :colors="['rgba(255, 195, 0, 1)', '#F6F6F6']"
               :settings="chartRing.settings"
             ></ve-ring
           ></el-col>
           <el-col :span="6">
             <ve-ring
-              :data="chartRing.dataAQ"
+              :data="chartRingData.dataSafety"
               :legend-visible="false"
               :tooltip-visible="false"
               :judge-width="true"
@@ -65,9 +68,10 @@
           <div class="res-info">
             <div class="amount-container">
               <span class="title">总计&nbsp;:</span>
-              <span class="amount">1000&nbsp;个</span>
+              <span class="amount">{{ chartRingData.total }}&nbsp;个</span>
             </div>
             <div class="res-type">
+              <div class="type fail">失败</div>
               <div class="type high">高危</div>
               <div class="type middle">中危</div>
               <div class="type safe">安全</div>
@@ -79,8 +83,11 @@
       <div class="wxlxfb">
         <div class="chart-header">
           <span class="title">威胁类型分布</span
-          ><el-tabs v-model="activeResult" @tab-click="handleWxlxfbClick">
-            <el-tab-pane label="今日" name="today"></el-tab-pane>
+          ><el-tabs
+            v-model="chartPie.threatTimeRange"
+            @tab-click="handleThreatTabClick"
+          >
+            <el-tab-pane label="今日" name="day"></el-tab-pane>
             <el-tab-pane label="本周" name="week"></el-tab-pane>
             <el-tab-pane label="本月" name="month"></el-tab-pane>
             <el-tab-pane label="全年" name="year"></el-tab-pane>
@@ -88,11 +95,10 @@
         </div>
         <div class="chart-body">
           <ve-pie
-            :data="chartPie.data"
+            :data="chartPieData"
             width="100%"
             :judge-width="true"
             :legend="chartPie.legend"
-            :grid="chartPie.grid"
             :settings="chartPie.settings"
           ></ve-pie>
         </div>
@@ -190,15 +196,14 @@
 </template>
 
 <script>
+import { getDetectRes, getThreatRes } from "@/api/indexManage";
 export default {
   name: "Dashboard",
   components: {},
   props: {},
   data() {
     return {
-      // 激活的检测结果统计:[全年,本月,本周,今日]
-      activeResult: "today",
-      // 三个环形图
+      //  检测结果统计配置
       chartRing: {
         // 环形图设置
         settings: {
@@ -206,7 +211,7 @@ export default {
             show: true,
             position: "center",
             formatter({ data, percent }) {
-              let flag = ["高危", "中危", "安全"];
+              let flag = ["高危", "中危", "安全", "失败"];
               return flag.indexOf(data.name) !== -1
                 ? ["{a|" + data.name + "}", "{b|" + percent + "%}"].join("\n")
                 : "";
@@ -227,62 +232,173 @@ export default {
           offsetY: 100,
           hoverAnimation: false
         },
-        // 高危环形图数据
-        dataGW: {
-          columns: ["类型", "数量"],
-          rows: [{ 类型: "高危", 数量: 1393 }, { 类型: "其它", 数量: 100 }]
-        },
-        // 中危环形图数据
-        dataZW: {
-          columns: ["类型", "数量"],
-          rows: [{ 类型: "中危", 数量: 1393 }, { 类型: "其它", 数量: 100 }]
-        },
-        // 安全环形图数据
-        dataAQ: {
-          columns: ["类型", "数量"],
-          rows: [{ 类型: "安全", 数量: 1393 }, { 类型: "其它", 数量: 100 }]
-        }
+        //默认tab激活
+        detectTimeRange: "day"
       },
-      // 威胁类型分布图表数据
+      detectRes: {
+        day: {},
+        year: {},
+        month: {},
+        week: {}
+      },
+      //威胁类型分布配置
       chartPie: {
-        data: {
-          columns: ["类型", "数量"],
-          rows: [
-            { 类型: "涉我信息", 数量: 1393 },
-            { 类型: "开发痕迹", 数量: 3530 },
-            { 类型: "同源信息", 数量: 2923 },
-            { 类型: "仿真分析", 数量: 1723 },
-            { 类型: "IOC风险", 数量: 3792 },
-            { 类型: "其他", 数量: 4593 }
-          ]
-        },
         settings: {
           radius: 60,
           offsetY: 130
         },
-        legend: { orient: "vertical", right: 30, top: 50, bottom: 20 }
-      }
+        legend: { orient: "vertical", right: 30, top: 50, bottom: 20 },
+        threatTimeRange: "day"
+      },
+      threatRes: { day: {}, week: {}, month: {}, year: [] }
     };
   },
-  computed: {},
+  computed: {
+    // 检测结果统计数据
+    chartRingData() {
+      return {
+        // failure: 34
+        // highRisk: 26
+        // middleRisk: 5
+        // safety: 0
+        // total: 34
+        // 安全环形图数据
+        dataFailure: {
+          columns: ["类型", "数量"],
+          rows: [
+            {
+              类型: "失败",
+              数量: this.detectRes[this.chartRing.detectTimeRange].failure
+            },
+            {
+              类型: "其它",
+              数量:
+                this.detectRes[this.chartRing.detectTimeRange].total -
+                this.detectRes[this.chartRing.detectTimeRange].failure
+            }
+          ]
+        },
+        // 高危环形图数据
+        dataHighRisk: {
+          columns: ["类型", "数量"],
+          rows: [
+            {
+              类型: "高危",
+              数量: this.detectRes[this.chartRing.detectTimeRange].highRisk
+            },
+            {
+              类型: "其它",
+              数量:
+                this.detectRes[this.chartRing.detectTimeRange].total -
+                this.detectRes[this.chartRing.detectTimeRange].highRisk
+            }
+          ]
+        },
+        // 中危环形图数据
+        dataMiddleRisk: {
+          columns: ["类型", "数量"],
+          rows: [
+            {
+              类型: "中危",
+              数量: this.detectRes[this.chartRing.detectTimeRange].middleRisk
+            },
+            {
+              类型: "其它",
+              数量:
+                this.detectRes[this.chartRing.detectTimeRange].total -
+                this.detectRes[this.chartRing.detectTimeRange].middleRisk
+            }
+          ]
+        },
+        // 安全环形图数据
+        dataSafety: {
+          columns: ["类型", "数量"],
+          rows: [
+            {
+              类型: "安全",
+              数量: this.detectRes[this.chartRing.detectTimeRange].safety
+            },
+            {
+              类型: "其它",
+              数量:
+                this.detectRes[this.chartRing.detectTimeRange].total -
+                this.detectRes[this.chartRing.detectTimeRange].safety
+            }
+          ]
+        },
+        total: this.detectRes[this.chartRing.detectTimeRange].total
+      };
+    },
+    // 威胁类型分布数据
+    chartPieData() {
+      return {
+        columns: ["类型", "数量"],
+        rows: [
+          {
+            类型: "涉我信息",
+            数量: this.threatRes[this.chartPie.threatTimeRange].relateType
+          },
+          {
+            类型: "开发痕迹",
+            数量: this.threatRes[this.chartPie.threatTimeRange].developType
+          },
+          {
+            类型: "同源信息",
+            数量: this.threatRes[this.chartPie.threatTimeRange].homoType
+          },
+          {
+            类型: "仿真分析",
+            数量: this.threatRes[this.chartPie.threatTimeRange].antiType
+          },
+          {
+            类型: "IOC风险",
+            数量: this.threatRes[this.chartPie.threatTimeRange].iocType
+          },
+          {
+            类型: "其他",
+            数量: this.threatRes[this.chartPie.threatTimeRange].otherType
+          }
+        ]
+      };
+    }
+  },
   watch: {},
   methods: {
     /**
      * @description 威胁类型分布tab点击
      * @param {object} 被选中的标签 tab 实例
      */
-    handleWxlxfbClick(tab) {
-      console.log(tab);
+    handleThreatTabClick(tab) {
+      this.chartPie.threatTimeRange = tab.name;
     },
     /**
      * @description 检测结果统计tab点击
      * @param {object} 被选中的标签 tab 实例
      */
-    handleJcjgtjClick(tab) {
-      console.log(tab);
+    handleDetectResTabClick(tab) {
+      this.chartRing.detectTimeRange = tab.name;
     }
   },
-  created() {},
+  created() {
+    getDetectRes()
+      .then(({ status, data }) => {
+        if (status === 200) {
+          this.detectRes = data;
+        }
+      })
+      .catch(err => {
+        console.log(err);
+      });
+    getThreatRes()
+      .then(({ status, data }) => {
+        if (status === 200) {
+          this.threatRes = data;
+        }
+      })
+      .catch(err => {
+        console.log(err);
+      });
+  },
   mounted() {}
 };
 </script>
@@ -351,7 +467,7 @@ export default {
           .type
             display flex
             align-items center
-            margin-right 8px
+            margin-right 10px
             color #666
 
             &::before
@@ -364,6 +480,10 @@ export default {
               content ''
 
             &.high
+              &::before
+                background-color #fb6d08
+
+            &.fail
               &::before
                 background-color rgba(212, 48, 48, 1)
 
