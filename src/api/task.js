@@ -3,7 +3,7 @@
  * @LastEditors: 旺苍扛把子
  * @Description: 任务api
  * @Date: 2019-04-03 14:45:44
- * @LastEditTime: 2019-04-12 14:56:55
+ * @LastEditTime: 2019-04-15 10:00:58
  */
 import request from "@/utils/request";
 /**
@@ -39,7 +39,7 @@ export const getTask = data => {
   });
 };
 /**
- * @description 创建任务
+ * @description 创建任务,创建并执行
  * @param {object} data
  * @returns {Promise<*>} Promise
  */

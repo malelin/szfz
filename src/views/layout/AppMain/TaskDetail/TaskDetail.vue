@@ -3,7 +3,7 @@
  * @LastEditors: 旺苍扛把子
  * @Description: 任务详情组件
  * @Date: 2019-04-11 14:32:10
- * @LastEditTime: 2019-04-12 18:30:43
+ * @LastEditTime: 2019-04-15 11:06:16
  -->
 <template>
   <div class="task-detail">
@@ -102,10 +102,6 @@
       <div class="detail-main">
         <BaseTable :tid="tid" :task-status="taskForm.taskStatus" />
       </div>
-      <div class="detail-footer" v-if="taskForm.taskStatus === 1">
-        <el-button style="margin-right:20px;" type="info" plain>保存</el-button>
-        <el-button type="primary">保存并执行</el-button>
-      </div>
     </div>
   </div>
 </template>
@@ -201,7 +197,6 @@ export default {
   methods: {
     /**
      * @description 获取任务详情
-  
      */
     async getTaskDetail() {
       try {

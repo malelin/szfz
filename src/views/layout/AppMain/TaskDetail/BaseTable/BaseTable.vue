@@ -3,7 +3,7 @@
  * @LastEditors: 旺苍扛把子
  * @Description: 封装任务详情和新建任务中的表格
  * @Date: 2019-04-12 09:46:16
- * @LastEditTime: 2019-04-15 09:25:31
+ * @LastEditTime: 2019-04-15 10:48:43
  -->
 <template>
   <div class="base-table">
@@ -31,7 +31,6 @@
           <el-form-item>
             <el-checkbox
               size="medium"
-              @click.native.stop="stopProp"
               v-model="modalForm.taskSensi.isChecked"
             ></el-checkbox
             ><span class="engine-name">敏感信息分析</span>
@@ -64,12 +63,7 @@
       <el-table-column prop="fileMD5" label="MD5"> </el-table-column>
       <el-table-column label="任务内容">
         <template slot-scope="{ row }">
-          <span
-            class="task-item"
-            v-if="
-              typeof row.analysis !== 'undefined' &&
-                row.analysis.sensitivity !== 10
-            "
+          <span class="task-item" v-if="row.modalForm.taskSensi.isChecked"
             >敏感信息分析</span
           >
         </template>
@@ -148,12 +142,25 @@
         </el-upload></el-col
       >
     </el-row>
+
+    <el-row justify="end">
+      <el-button
+        style="margin-right:20px;"
+        type="info"
+        @click.native="handleSave"
+        plain
+        >保存</el-button
+      >
+      <el-button @click.native="handleSaveWithExecute" type="primary"
+        >保存并执行</el-button
+      >
+    </el-row>
   </div>
 </template>
 
 <script>
 import _ from "lodash";
-import { getTaskDetailList } from "@/api/task";
+import { getTaskDetailList, createTask } from "@/api/task";
 export default {
   name: "BaseTable",
   components: {
@@ -186,199 +193,7 @@ export default {
         showFileList: false
       },
       taskForm: { taskname: "", isDefaultName: true, remarks: "" },
-      taskTable: [
-        {
-          fileMD5: "3fb42cd646add8453f86c667c8f973ac",
-          fileName: "AB.bundle~CB.bundle.bdcfc084.js",
-          fileSHA1: "9c19aff835e6534ae61295ddbb79d2cdea344457",
-          fileSHA256:
-            "50c515d4b03bab731b62c47dce5598b6e1128ddd44356863a96739e46c621d2e",
-          fileSSDEEP:
-            "384:LAaOmPk7AgtKeMIkdVQ1cW+YIs99mHPhEv/Ti9V:0aOmPkkgwgkschYL99mvGv/Ti9V",
-          fileSize: 19200,
-          fileType: "未识别",
-          objectResult: 5,
-          analysis: {
-            oid: 326,
-            homology: 10,
-            sensitivity: 21,
-            antivirus: 10,
-            verification: 10,
-            morph: 10,
-            hTime: null,
-            sTime: null,
-            aTime: null,
-            vTime: null,
-            mTime: null
-          }
-        },
-        {
-          fileMD5: "f3d29b9602a292fca20ccefd2679dabf",
-          fileName: "AB.bundle~CB.bundle.fd644765.js",
-          fileSHA1: "02a0f276cfa4119ed8a8591e015091f5442f2bdd",
-          fileSHA256:
-            "c9f28b7aae3e90bb98ed9eb21b63a81a3d1787864c6af6115ecc34baa8f9b167",
-          fileSSDEEP:
-            "384:L1aOmPHANFSGBIk0VQ1cW+YIs99mHPMjjVNa9V:ZaOmPgNcVkvchYL99mvGjVNa9V",
-          fileSize: 19200,
-          fileType: "未识别",
-          objectResult: 5,
-          analysis: {
-            oid: 327,
-            homology: 10,
-            sensitivity: 21,
-            antivirus: 10,
-            verification: 10,
-            morph: 10,
-            hTime: null,
-            sTime: null,
-            aTime: null,
-            vTime: null,
-            mTime: null
-          }
-        },
-        {
-          fileMD5: "28c9b240c7251e2110136cbd485c34d3",
-          fileName: "AB.bundle~AMB.bundle.e68e6808.js",
-          fileSHA1: "f15a7d89f0d1dd57dc1ffab001cff11f349b5e98",
-          fileSHA256:
-            "4dec1f7bac480ffeed1e8b4831a8729bfdaf8b40c47e44e1b84a0288bd745214",
-          fileSSDEEP:
-            "384:TkSgg+A6hmw94jqQ4kCI1DRwekBYRZ+1hjIW0xJOIDPcjTMaqMV1j8RkcQ:TkSJ+3hB4+yq/BYRQ1SFPDPKpqMLekcQ",
-          fileSize: 35203,
-          fileType: "未识别",
-          objectResult: 5,
-          analysis: {
-            oid: 328,
-            homology: 10,
-            sensitivity: 21,
-            antivirus: 10,
-            verification: 10,
-            morph: 10,
-            hTime: null,
-            sTime: null,
-            aTime: null,
-            vTime: null,
-            mTime: null
-          }
-        },
-        {
-          fileMD5: "f888e744d0955ed0b1c8ba95c9438f6b",
-          fileName: "AMB.bundle.c141f692.js",
-          fileSHA1: "5f0a7a4198d23b69b5d80ee81382ee15a61807d4",
-          fileSHA256:
-            "e59560765eece1f7a18e03a4b62d888af6757980bdf5c5388328ceeb96645219",
-          fileSSDEEP:
-            "1536:hS7cBAz/ZnrsjNlSlD9QfCcXzTiC8pqa1hDcTQtECSyh20hg3iGsBHGKmW95CytI:87RVsjnSl+E15R20hFHGKmu5Bc",
-          fileSize: 190052,
-          fileType: "html",
-          objectResult: 5,
-          analysis: {
-            oid: 329,
-            homology: 10,
-            sensitivity: 21,
-            antivirus: 10,
-            verification: 10,
-            morph: 10,
-            hTime: null,
-            sTime: null,
-            aTime: null,
-            vTime: null,
-            mTime: null
-          }
-        },
-        {
-          fileMD5: "4de69294d108dfab7369f06be3d0008a",
-          fileName: "AMB.bundle.dd99e738.js",
-          fileSHA1: "98c1fc132fb89c2f8a6b881271392a0b1c999c3b",
-          fileSHA256:
-            "0586e447484b11bc2d8f6fcf8d26167006b206cc827509a2c9d9746f1169ceaa",
-          fileSSDEEP:
-            "1536:vSJcBA1/ZnrsjNlSlD9QfCcXzTiC8pqa1hDcTQtECSyh20hg3iGsBj5GKmW95Cy7:aJfVsjnSl+E15R20hF1GKmu5Bd",
-          fileSize: 190052,
-          fileType: "html",
-          objectResult: 5,
-          analysis: {
-            oid: 330,
-            homology: 10,
-            sensitivity: 21,
-            antivirus: 10,
-            verification: 10,
-            morph: 10,
-            hTime: null,
-            sTime: null,
-            aTime: null,
-            vTime: null,
-            mTime: null
-          }
-        },
-        {
-          fileMD5: "2ef8b48d0d52f56cece2d184cd1728b4",
-          fileName: "CB.bundle.b6a33a5b.js",
-          fileSHA1: "cc5bada057266b328591780ad23958804d5ce495",
-          fileSHA256:
-            "f892463119c8a3fd3d2f74f0ee77eaefb8dfe3359d8c6141976d92dc25b0ea34",
-          fileSSDEEP:
-            "6144:it375kFz77Ue8DNt29N9NYQzsuiIWsfsWmMUMushwBh73DBN3pQzs38BMWEIanbm:CklAK9zi4H0VxNV387ab9OYplhkKH1FO",
-          fileSize: 1199954,
-          fileType: "html",
-          objectResult: 5,
-          analysis: {
-            oid: 331,
-            homology: 10,
-            sensitivity: 21,
-            antivirus: 10,
-            verification: 10,
-            morph: 10,
-            hTime: null,
-            sTime: null,
-            aTime: null,
-            vTime: null,
-            mTime: null
-          }
-        },
-        {
-          fileMD5: "3fe5a5b1c3863c63b65248e24513406e",
-          fileName: "CB.bundle.313c7ae9.js",
-          fileSHA1: "8898dce9009b665edc53c167890af92e41d9ace5",
-          fileSHA256:
-            "d4a25db1e40c3abe8d6ce53e8e65c2960c36ff7833094f930900896ddfd07a0f",
-          fileSSDEEP:
-            "6144:Ht375kFz77Ue8DNt29N9NYQzsuiIWsfsWmMUMushwBh73DBN3pQzs38BMWEIanba:bklAK9zi4H0VxNV387ab9OYplhz2H1Fd",
-          fileSize: 1199954,
-          fileType: "html",
-          objectResult: 5,
-          analysis: {
-            oid: 332,
-            homology: 10,
-            sensitivity: 21,
-            antivirus: 10,
-            verification: 10,
-            morph: 10,
-            hTime: null,
-            sTime: null,
-            aTime: null,
-            vTime: null,
-            mTime: null
-          }
-        },
-        {
-          uploadId: 1602,
-          fileSHA1: "3a727e4b3cf73f5d496a7b912c9f4ec964f8f396",
-          fileSHA256:
-            "57fff245a6c38010a18d915fdf990b10ee4887b594ce98624179c72b134a780d",
-          fileSSDEEP:
-            "49152:wuj+gqXaEnPZEQ/ekJ50GR5B4xiZ35b542C+EGPu6CMfBHMmylKUCae14vB8pGN:OnP3/ekJe24qX42CCsTlK5a28Bx",
-          suffix: "dll",
-          fileName: "2345Image.dll",
-          saveUrl: "/group1/M00/00/10/wKgCcFywZxOAM060AChGOJqZaNE345.dll",
-          fileMD5: "0eb5c116a2bae2ee21d9560a2a7aaa57",
-          fileType: "exe",
-          openSensitivity: 2,
-          modalForm: { taskSensi: { isChecked: false } },
-          fileSize: 2639416
-        }
-      ],
+      taskTable: [],
       // 上传的文件列表
       uploadFiles: [],
       // modal表单
@@ -461,6 +276,45 @@ export default {
       });
 
       return res;
+    },
+    createData() {
+      let objects = this.taskTable.map(item => {
+        let {
+          uploadId,
+          fileSHA1,
+          fileSHA256,
+          fileSSDEEP,
+          suffix,
+          saveUrl,
+          fileMD5,
+          fileType,
+          fileSize,
+          fileName,
+          openSensitivity
+        } = item;
+        return {
+          md5: fileMD5,
+          objectName: fileName,
+          openMorph: 2,
+          openSensitivity,
+          sha1: fileSHA1,
+          sha256: fileSHA256,
+          size: fileSize,
+          ssdeep: fileSSDEEP,
+          suffix: suffix,
+          type: fileType,
+          uploadId: uploadId,
+          url: saveUrl
+        };
+      });
+      let { remarks, taskname } = this.taskForm;
+      let taskData = {
+        model: 1,
+        objects,
+        remarks,
+        taskname
+      };
+      return taskData;
     }
   },
   watch: {},
@@ -655,7 +509,6 @@ export default {
           analysis
         } = item;
         let modalForm = { taskSensi: {} };
-        debugger;
         modalForm.taskSensi.isChecked =
           analysis.sensitivity === 10 ? false : true;
         let file = {
@@ -673,13 +526,25 @@ export default {
         res.push(file);
       });
       return res;
-    }
+    },
+    /**
+     * @description 保存
+     */
+    handleSave() {},
+    /**
+     * @description 保存并执行
+     */
+
+    handleSaveWithExecute: _.debounce(async function() {
+      createTask(this.createData);
+    }, 300)
   },
   created() {
     getTaskDetailList(this.tid)
       .then(({ data, status }) => {
         if (status === 200) {
           console.log(data);
+          debugger;
           this.taskTable = this.Object2File(data);
         }
       })
