@@ -3,6 +3,8 @@ import "@/plugins/animated.js";
 import "@/plugins/element.js";
 import "@/plugins/vcharts.js";
 import "@/plugins/modal.js";
+import "@/plugins/vueAsyncComputed.js";
+import "@/plugins/vuetify.js";
 
 // 引入eventbus
 import eventbus from "@/eventbus";

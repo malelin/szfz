@@ -3,7 +3,7 @@
  * @LastEditors: 旺苍扛把子
  * @Description: AppMain组件下的router-view的所有路由
  * @Date: 2019-03-29 10:18:42
- * @LastEditTime: 2019-04-11 17:11:39
+ * @LastEditTime: 2019-04-16 15:41:56
  */
 import Dashboard from "@/views/Layout/AppMain/Dashboard/Dashboard";
 import CreateTask from "@/views/Layout/AppMain/CreateTask/CreateTask";
@@ -11,6 +11,7 @@ import TaskOverview from "@/views/Layout/AppMain/TaskOverview/TaskOverview";
 import UserManage from "@/views/Layout/AppMain/UserManage/UserManage";
 import AuditLog from "@/views/Layout/AppMain/AuditLog/AuditLog";
 import TaskDetail from "@/views/Layout/AppMain/TaskDetail/TaskDetail";
+import DetectReport from "@/views/Layout/AppMain/DetectReport/DetectReport";
 const AppMain = [
   // 默认AppMain子路由
   { path: "", redirect: { path: "/dashboard" } },
@@ -49,6 +50,12 @@ const AppMain = [
     name: "taskDetail",
     component: TaskDetail,
     alias: "/taskDetail",
+    props: true
+  },
+  {
+    path: "detectReport/:rid",
+    component: DetectReport,
+    alias: "/detectReport/:rid",
     props: true
   }
 ];
