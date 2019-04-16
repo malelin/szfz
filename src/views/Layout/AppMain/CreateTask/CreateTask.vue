@@ -3,7 +3,7 @@
  * @LastEditors: 旺苍扛把子
  * @Description: 新建任务组件
  * @Date: 2019-04-02 09:23:23
- * @LastEditTime: 2019-04-12 10:56:38
+ * @LastEditTime: 2019-04-15 20:21:04
  -->
 
 <template>
@@ -495,26 +495,19 @@ export default {
      * @description 创建任务
      */
     handleCreate: _.debounce(async function() {
-      if (this.multipleSelection.length === 0) {
-        this.$message({
-          type: "warning",
-          message: "请选择任务"
-        });
-      } else {
-        try {
-          debugger;
-          let { status } = await createTask(this.taskData);
-          if (status === 200) {
-            this.$message({
-              type: "success",
-              message: "任务创建成功"
-            });
-          }
-          this.setDefaultActive("2-1");
-          this.$router.push({ path: "/taskOverview" });
-        } catch (e) {
-          console.log(e);
+      try {
+        debugger;
+        let { status } = await createTask(this.taskData);
+        if (status === 200) {
+          this.$message({
+            type: "success",
+            message: "任务创建成功"
+          });
         }
+        this.setDefaultActive("2-1");
+        this.$router.push({ path: "/taskOverview" });
+      } catch (e) {
+        console.log(e);
       }
     }, 300),
     /**
