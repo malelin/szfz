@@ -3,7 +3,7 @@
  * @LastEditors: 旺苍扛把子
  * @Description: 封装任务详情和新建任务中的表格
  * @Date: 2019-04-12 09:46:16
- * @LastEditTime: 2019-04-15 16:37:04
+ * @LastEditTime: 2019-04-16 19:06:03
  -->
 <template>
   <div class="base-table">
@@ -94,13 +94,34 @@
               style="font-size:20px;"
               @click.native="handleRemove($index, row)"
             ></svg-icon>
-            <el-button
-              v-show="taskStatus === 3"
-              type="success"
-              size="mini"
-              @click.native="handleView($index, row)"
-              >查看报告</el-button
+            <el-popover
+              placement="top-start"
+              width="300"
+              :open-delay="300"
+              trigger="hover"
             >
+              <el-scrollbar class="el-card-wrapper">
+                <div class="report-wrapper">
+                  <div
+                    v-for="report in objectReport.list"
+                    :key="report.rid"
+                    class="report"
+                    @click="handleReportListClick(report.rid)"
+                  >
+                    <p class="report-name">{{ report.reportName }}</p>
+                    <p class="generate-time">{{ report.generateTime }}</p>
+                  </div>
+                </div>
+              </el-scrollbar>
+              <el-button
+                slot="reference"
+                v-show="taskStatus === 3"
+                type="success"
+                size="mini"
+                @mouseenter.native="handleView(row)"
+                >查看报告</el-button
+              >
+            </el-popover>
           </div>
         </template>
       </el-table-column>
@@ -164,6 +185,7 @@
 <script>
 import _ from "lodash";
 import { getTaskDetailList, createAndExecuteTask } from "@/api/task";
+import { getReportList } from "@/api/report";
 export default {
   name: "BaseTable",
   components: {
@@ -204,6 +226,7 @@ export default {
         // 敏感信息分析
         taskSensi: { isChecked: false }
       },
+      // status组件配置
       statusConfig: [
         { text: "安全", color: "#67C23A" },
         { text: "中危", color: "#aaaaaa" },
@@ -217,7 +240,14 @@ export default {
       // 当前编辑row
       currentRow: {},
       // 1 保存 2 保存并执行
-      currentModel: 0
+      currentModel: 0,
+      // 每个对象的报告
+      objectReport: {
+        list: [],
+        meta: {},
+        basic: {},
+        oid: ""
+      }
     };
   },
   computed: {
@@ -323,7 +353,13 @@ export default {
       return res;
     }
   },
-  watch: {},
+  watch: {
+    // 监听objectReport的oid改变,执行获取该oid的报告信息的请求
+    async "objectReport.oid"(newValue) {
+      console.log(newValue);
+      await getReportList(newValue);
+    }
+  },
   methods: {
     /**
      * @description modal打开之前,获取数据
@@ -432,7 +468,30 @@ export default {
       this.modalForm = JSON.parse(JSON.stringify(row.modalForm));
       this.$modal.show("taskSetting");
     }, 300),
+    /**
+     * @description 查看报告
+     * @param {row} 数组某一项
+     */
+    handleView: _.debounce(async function({ oid }) {
+      console.log(oid);
+      try {
+        let { data, status } = await getReportList(oid);
+        if (status === 200) {
+          this.objectReport.list = data;
+          this.objectReport.oid = oid;
+        }
+      } catch (e) {
+        console.log(e);
+      }
+    }, 300),
 
+    handleReportListClick: _.debounce(function(rid) {
+      console.log(rid);
+      this.$router.push({ path: `/detectReport/${rid}` });
+    }, 300),
+    /**
+     * @description modal关闭
+     */
     handleModalClose() {
       this.$modal.hide("taskSetting");
     },
@@ -547,6 +606,31 @@ export default {
   mounted() {}
 };
 </script>
+<style>
+.report-wrapper {
+  padding: 10px 0;
+}
+.report {
+  cursor: pointer;
+}
+
+.report .report-name {
+  color: #40aefc;
+  padding: 0 10px 5px 10px;
+}
+.report .generate-time {
+  padding: 0 10px;
+  color: #ccc;
+  margin-right: 10px;
+}
+.el-card-wrapper {
+  height: 300px;
+  overflow-x: hidden;
+}
+.el-card-wrapper .el-scrollbar__wrap {
+  overflow-x: hidden;
+}
+</style>
 
 <style lang="stylus" scoped>
 .base-table
