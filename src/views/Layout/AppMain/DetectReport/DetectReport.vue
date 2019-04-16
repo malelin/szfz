@@ -3,7 +3,7 @@
  * @LastEditors: 旺苍扛把子
  * @Description: 检测报告
  * @Date: 2019-04-16 10:07:40
- * @LastEditTime: 2019-04-16 18:23:02
+ * @LastEditTime: 2019-04-16 19:16:33
  -->
 <template>
   <div class="detect-report">
