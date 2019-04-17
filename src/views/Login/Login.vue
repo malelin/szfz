@@ -3,7 +3,7 @@
  * @LastEditors: 旺苍扛把子
  * @Description: 登录组件
  * @Date: 2019-03-25 15:26:28
- * @LastEditTime: 2019-04-10 12:49:56
+ * @LastEditTime: 2019-04-17 13:36:48
  -->
 <template>
   <div class="login">
@@ -62,6 +62,8 @@
 </template>
 
 <script>
+import { createNamespacedHelpers } from "vuex";
+const { mapMutations } = createNamespacedHelpers("layout");
 import { login } from "@/api/login";
 // 导入正则表达式
 import { accountRegx } from "@/regxs";
@@ -129,6 +131,7 @@ export default {
   computed: {},
   watch: {},
   methods: {
+    ...mapMutations(["setDefaultActive"]),
     /**
      * @description 点击登录,防抖处理,不要使用箭头函数
      */
@@ -141,6 +144,7 @@ export default {
           let { status, msg } = await login(account, password);
           if (status === 200) {
             this.$router.replace("/layout");
+            this.setDefaultActive("1-1");
           } else {
             this.$message({
               type: "warning",
