@@ -3,7 +3,7 @@
  * @LastEditors: 旺苍扛把子
  * @Description: 检测报告
  * @Date: 2019-04-16 10:07:40
- * @LastEditTime: 2019-04-18 16:40:52
+ * @LastEditTime: 2019-04-18 18:04:57
  -->
 <template>
   <div class="detect-report">
@@ -14,7 +14,8 @@
           :title="step.title"
           v-for="(step, index) in steps.list"
           :key="step.title"
-          @click.native="handleStepClick(index)"
+          href="#basic"
+          @click.native="handleStepClick(index, step)"
         ></el-step>
       </el-steps>
     </div>
@@ -72,7 +73,7 @@
         </div>
       </div>
       <!-- 报告基本信息 -->
-      <div class="report-basic">
+      <div class="report-basic" ref="basic">
         <div class="basic-header">
           <svg-icon icon-class="basic"></svg-icon>
           <span class="basic-title">基本信息</span>
@@ -115,7 +116,7 @@
         </div>
       </div>
       <!-- 报告敏感信息 -->
-      <div class="report-sensi">
+      <div class="report-sensi" ref="sensi">
         <div class="sensi-header">
           <svg-icon icon-class="sensi"></svg-icon>
           <span class="sensi-title">敏感信息</span>
@@ -285,12 +286,12 @@ export default {
       // 步骤条
       steps: {
         list: [
-          { title: "基本信息" },
-          { title: "敏感信息分析结果" },
-          { title: "同源分析结果" },
-          { title: "网络仿真检测结果" },
-          { title: "工具变形结果" },
-          { title: "漏洞工具验证结果" }
+          { title: "基本信息", ref: "basic" },
+          { title: "敏感信息分析结果", ref: "sensi" },
+          { title: "同源分析结果", ref: "sensi" },
+          { title: "网络仿真检测结果", ref: "sensi" },
+          { title: "工具变形结果", ref: "sensi" },
+          { title: "漏洞工具验证结果", ref: "sensi" }
         ],
         active: 0
       },
@@ -304,10 +305,18 @@ export default {
         basic: {},
         // 敏感信息
         sensi: {
-          signatures: [],
           chineseStringConfig: {
             activeCollapseItems: []
           }
+        }
+      },
+      // 敏感信息
+      sensi: {
+        developmentTrace: {},
+        languageInfo: {
+          chineseStrings: [],
+          sensiFeatures: {},
+          sensitiveLanguage: []
         }
       },
       // 元数据右侧的操作盒子
@@ -479,18 +488,27 @@ export default {
       ]
     };
   },
-  computed: {
+  computed: {},
+  watch: {},
+  methods: {
+    /**
+     * @description 步骤条点击,设置当前激活的步骤条
+     */
+    handleStepClick(index, step) {
+      console.log(step);
+      this.steps.active = index;
+      console.log(this.$refs.basic.scrollTop);
+      console.log(this.$refs.basic.clientTop);
+    },
     // 资源特征信息
-    _sensitiveLanguage() {
-      let signatures = this.report.sensi.signatures;
+    _getSensitiveLanguage(signatures) {
       let res = signatures.find(signature => {
         return signature.name === "has_sensitiveLanguage";
       });
       return res === undefined ? [] : res.marks;
     },
     // 开发痕迹
-    _developmentTrace() {
-      let signatures = this.report.sensi.signatures;
+    _getDevelopmentTrace(signatures) {
       // 作者
       let authorTemp = signatures.find(signature => {
         return signature.name === "has_author";
@@ -521,16 +539,14 @@ export default {
       return { author, compileTime, codePage, pdb };
     },
     //中文字符串
-    _chineseStrings() {
-      let signatures = this.report.sensi.signatures;
+    _getChineseStrings(signatures) {
       let chineseStringTemp = signatures.find(signature => {
         return signature.name === "has_chinese";
       });
       return chineseStringTemp === undefined ? [] : chineseStringTemp.marks;
     },
     // 敏感特征信息
-    _sensiFeature() {
-      let signatures = this.report.sensi.signatures;
+    _getSensiFeature(signatures) {
       // 清单文件
       let mainfestTemp = signatures.find(signature => {
         return signature.name === "has_manifest";
@@ -562,27 +578,19 @@ export default {
       };
     },
     // 敏感信息
-    sensi() {
+    getSensi(signatures) {
       // 敏感信息为空
-      if (this.report.sensi.signatures.length === 0) {
+      if (signatures.length === 0) {
         return {};
+      } else {
+        let sensitiveLanguage = this._getSensitiveLanguage(signatures);
+        let chineseStrings = this._getChineseStrings(signatures);
+        let sensiFeatures = this._getSensiFeature(signatures);
+        let languageInfo = { sensitiveLanguage, chineseStrings, sensiFeatures };
+        let developmentTrace = this._getDevelopmentTrace(signatures);
+        debugger;
+        return { languageInfo, developmentTrace };
       }
-      let languageInfo = {
-        sensitiveLanguage: this._sensitiveLanguage,
-        chineseStrings: this._chineseStrings,
-        sensiFeatures: this._sensiFeature
-      };
-      let developmentTrace = this._developmentTrace;
-      return { languageInfo, developmentTrace };
-    }
-  },
-  watch: {},
-  methods: {
-    /**
-     * @description 步骤条点击,设置当前激活的步骤条
-     */
-    handleStepClick(index) {
-      this.steps.active = index;
     }
   },
   created() {},
@@ -601,8 +609,9 @@ export default {
           next(vm => {
             vm.report.meta = reportMeta;
             vm.report.basic = reportBasic;
-            vm.report.sensi.signatures =
-              reportSensi === null ? [] : reportSensi.signatures;
+            vm.sensi =
+              reportSensi === null ? {} : vm.getSensi(reportSensi.signatures);
+            debugger;
           });
         })
       );
@@ -630,7 +639,7 @@ export default {
     left 30px
     width 300px
     height 400px
-    transform translateY(-80%)
+    transform translateY(-50%)
 
   .report-content
     padding-left 310px
