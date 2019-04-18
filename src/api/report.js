@@ -3,7 +3,7 @@
  * @LastEditors: 旺苍扛把子
  * @Description: 报告管理模块相关接口
  * @Date: 2019-04-16 10:08:49
- * @LastEditTime: 2019-04-17 15:29:49
+ * @LastEditTime: 2019-04-18 10:06:49
  */
 import request from "@/utils/request";
 
@@ -66,7 +66,6 @@ export function getReportBasic(rid) {
  */
 export function getReportSensi(rid) {
   let token = sessionStorage.getItem("token");
-  debugger;
   return request({
     url: "/v1/report/sensi",
     method: "get",

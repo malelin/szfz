@@ -3,7 +3,7 @@
  * @LastEditors: 旺苍扛把子
  * @Description: 检测报告
  * @Date: 2019-04-16 10:07:40
- * @LastEditTime: 2019-04-17 16:29:51
+ * @LastEditTime: 2019-04-18 16:40:52
  -->
 <template>
   <div class="detect-report">
@@ -23,19 +23,19 @@
       <div class="report-meta clearfix">
         <div class="meta-info fl">
           <div class="meta-obj-name">
-            <span class="meta-title">文件名称</span>
+            <span class="meta-title">• 文件名称</span>
             <span class="meta-content">{{ report.meta.objName }}</span>
           </div>
           <div class="meta-md5">
-            <span class="meta-title">MD5</span>
+            <span class="meta-title">• MD5</span>
             <span class="meta-content">{{ report.meta.md5 }}</span>
           </div>
           <div class="meta-finish-time">
-            <span class="meta-title">检测完成时间</span>
+            <span class="meta-title">• 检测完成时间</span>
             <span class="meta-content">{{ report.meta.finishTime }}</span>
           </div>
           <div class="meta-detect-content">
-            <span class="meta-title">检测内容</span>
+            <span class="meta-title">• 检测内容</span>
             <el-tag
               style="margin-right:5px;"
               v-for="item in report.meta.detectContent"
@@ -44,11 +44,11 @@
             >
           </div>
           <div class="meta-level">
-            <span class="meta-title">危险等级</span>
+            <span class="meta-title">• 危险等级</span>
             <span class="meta-content">{{ report.meta.level }}</span>
           </div>
           <div class="meta-tags" v-if="report.meta.tags.length">
-            <span class="meta-title">标签</span>
+            <span class="meta-title">• 标签</span>
             <el-tag
               style="margin-right:5px;"
               type="warning"
@@ -59,8 +59,12 @@
           </div>
         </div>
         <div class="meta-manipulate-wrapper fr">
-          <svg-icon icon-class="manipulate" class="manipulate-icon"></svg-icon>
-          <div class="manipulate">
+          <svg-icon
+            icon-class="manipulate"
+            class="manipulate-icon"
+            @mouseenter.native="handleEnterManipulate"
+          ></svg-icon>
+          <div class="manipulate" v-show="manipulate.visible">
             <svg-icon icon-class="download" class="manipulate-item"></svg-icon>
             <svg-icon icon-class="save" class="manipulate-item"></svg-icon>
             <svg-icon icon-class="refresh" class="manipulate-item"></svg-icon>
@@ -76,35 +80,35 @@
         <div class="basic-body">
           <ul class="basic-list">
             <li>
-              <span class="field">文件名称</span>
+              <span class="field">• 文件名称</span>
               <span class="description">{{ report.basic.objName }}</span>
             </li>
             <li>
-              <span class="field">文件类型</span>
+              <span class="field">• 文件类型</span>
               <span class="description">{{ report.basic.objType }}</span>
             </li>
             <li>
-              <span class="field">文件大小</span>
+              <span class="field">• 文件大小</span>
               <span class="description">{{ report.basic.size }}</span>
             </li>
             <li>
-              <span class="field">上传时间</span>
+              <span class="field">• 上传时间</span>
               <span class="description">{{ report.basic.uploadTime }}</span>
             </li>
             <li>
-              <span class="field">MD5</span>
+              <span class="field">• MD5</span>
               <span class="description">{{ report.basic.md5 }}</span>
             </li>
             <li>
-              <span class="field">SHA1</span>
+              <span class="field">• SHA1</span>
               <span class="description">{{ report.basic.sha1 }}</span>
             </li>
             <li>
-              <span class="field">SHA256</span>
+              <span class="field">• SHA256</span>
               <span class="description">{{ report.basic.sha256 }}</span>
             </li>
             <li>
-              <span class="field">SSDEEP</span>
+              <span class="field">• SSDEEP</span>
               <span class="description">{{ report.basic.ssdeep }}</span>
             </li>
           </ul>
@@ -120,11 +124,113 @@
           <!-- 语言信息 -->
           <div class="sensi-type language-info">
             <p class="title">语言信息</p>
-            <el-collapse v-model="activeNames" @change="handleChange">
-              <el-collapse-item title="中文字符串" name="1"> </el-collapse-item>
-              <el-collapse-item title="资源特性信息" name="2">
+            <el-collapse
+              v-model="report.sensi.chineseStringConfig.activeCollapseItems"
+            >
+              <el-collapse-item title="• 中文字符串" name="1">
+                <el-table :data="sensi.languageInfo.chineseStrings" border>
+                  <el-table-column prop="offset" label="偏移">
+                  </el-table-column>
+                  <el-table-column prop="value" label="内容"> </el-table-column>
+                </el-table>
               </el-collapse-item>
-              <el-collapse-item title="敏感特征信息" name="3">
+              <el-collapse-item title="• 资源特性信息" name="2">
+                <el-table :data="sensi.languageInfo.sensitiveLanguage" border>
+                  <el-table-column prop="offset" label="偏移">
+                  </el-table-column>
+                  <el-table-column prop="language" label="语言">
+                  </el-table-column>
+                  <el-table-column prop="sublanguage" label="子语言">
+                  </el-table-column>
+                </el-table>
+              </el-collapse-item>
+              <el-collapse-item title="• 敏感特征信息" name="3">
+                <el-card
+                  class="box-card"
+                  style="margin-top:20px;"
+                  shadow="hover"
+                >
+                  <div slot="header" class="clearfix">
+                    <span class="sensi-feature-title">• 清单文件</span>
+                  </div>
+                  <el-table
+                    :data="sensi.languageInfo.sensiFeatures.mainfest"
+                    border
+                  >
+                    <el-table-column prop="filename" label="文件名">
+                    </el-table-column>
+                    <el-table-column prop="offset" label="偏移">
+                    </el-table-column>
+                    <el-table-column prop="size" label="大小">
+                    </el-table-column>
+                  </el-table>
+                </el-card>
+                <el-card
+                  class="box-card"
+                  style="margin-top:20px;"
+                  shadow="hover"
+                >
+                  <div slot="header" class="clearfix">
+                    <span class="sensi-feature-title">• 敏感字符</span>
+                  </div>
+                  <el-table
+                    :data="
+                      sensi.languageInfo !== undefined &&
+                        sensi.languageInfo.sensiFeatures.length !== 0 &&
+                        sensi.languageInfo.sensiFeatures.sensitiveChars
+                    "
+                    border
+                  >
+                    <el-table-column prop="filename" label="文件名">
+                    </el-table-column>
+                    <el-table-column prop="offset" label="偏移">
+                    </el-table-column>
+                    <el-table-column prop="value" label="内容">
+                    </el-table-column>
+                  </el-table>
+                </el-card>
+                <el-card
+                  class="box-card"
+                  style="margin-top:20px;"
+                  shadow="hover"
+                >
+                  <div slot="header" class="clearfix">
+                    <span class="sensi-feature-title">• 拼音</span>
+                  </div>
+                  <el-table
+                    :data="sensi.languageInfo.sensiFeatures.pinyins"
+                    border
+                  >
+                    <el-table-column prop="filename" label="文件名">
+                    </el-table-column>
+                    <el-table-column prop="offset" label="偏移">
+                    </el-table-column>
+                    <el-table-column prop="value" label="内容">
+                    </el-table-column>
+                  </el-table>
+                </el-card>
+                <el-card
+                  class="box-card"
+                  style="margin-top:20px;"
+                  shadow="hover"
+                >
+                  <div slot="header" class="clearfix">
+                    <span class="sensi-feature-title"
+                      >• version资源中存在中文</span
+                    >
+                  </div>
+                  <el-table
+                    :data="sensi.languageInfo.sensiFeatures.versionChineses"
+                    border
+                  >
+                    <el-table-column prop="filename" label="文件名">
+                    </el-table-column>
+                    <el-table-column prop="offset" label="偏移">
+                    </el-table-column>
+                    <el-table-column prop="value" label="内容">
+                    </el-table-column>
+                  </el-table>
+                </el-card>
               </el-collapse-item>
             </el-collapse>
           </div>
@@ -133,6 +239,30 @@
             <p class="title">
               开发痕迹
             </p>
+            <el-card shadow="hover">
+              <div class="development-trace-item">
+                <span class="title">• PDB调试符号路径</span
+                ><span class="content"> {{ sensi.developmentTrace.pdb }}</span>
+              </div>
+              <div class="development-trace-item">
+                <span class="title">• 编译时间</span
+                ><span class="content">{{
+                  sensi.developmentTrace.compileTime
+                }}</span>
+              </div>
+              <div class="development-trace-item">
+                <span class="title">• CodePage</span
+                ><span class="content">{{
+                  sensi.developmentTrace.codePage
+                }}</span>
+              </div>
+              <div class="development-trace-item">
+                <span class="title">• 作者</span
+                ><span class="content">{{
+                  sensi.developmentTrace.author
+                }}</span>
+              </div>
+            </el-card>
           </div>
         </div>
       </div>
@@ -149,11 +279,7 @@ export default {
     /* 按需加载组件 */
     // demo: () => import('@/pages/')
   },
-  props: {
-    rid: {
-      type: Number
-    }
-  },
+  props: ["rid"],
   data() {
     return {
       // 步骤条
@@ -170,15 +296,286 @@ export default {
       },
       // 报告信息
       report: {
+        // 元数据
         meta: {
           tags: []
         },
+        // 基本信息
         basic: {},
-        sensi: {}
-      }
+        // 敏感信息
+        sensi: {
+          signatures: [],
+          chineseStringConfig: {
+            activeCollapseItems: []
+          }
+        }
+      },
+      // 元数据右侧的操作盒子
+      manipulate: {
+        visible: true
+      },
+      // 调试数据
+      signatures: [
+        {
+          severity: 1,
+          marks: [
+            {
+              size: "0x0000015a",
+              offset: "0x000dfff8",
+              filename: "Server.exe"
+            }
+          ],
+          name: "has_manifest",
+          categories: "Chinese Information",
+          description:
+            "\u00e5\u00ad\u0098\u00e5\u009c\u00a8\u00e6\u00b8\u0085\u00e5\u008d\u0095\u00e6\u0096\u0087\u00e4\u00bb\u00b6"
+        },
+        {
+          severity: 1,
+          marks: [
+            {
+              size: "0x00000468",
+              offset: "0x000f5150",
+              sublanguage: "SUBLANG_CHINESE_SIMPLIFIED",
+              language: "LANG_CHINESE",
+              filename: "Server.exe"
+            },
+            {
+              size: "0x0000003e",
+              offset: "0x000f55b8",
+              sublanguage: "SUBLANG_CHINESE_SIMPLIFIED",
+              language: "LANG_CHINESE",
+              filename: "Server.exe"
+            }
+          ],
+          name: "has_sensitiveLanguage", //资源特征
+          categories: "Chinese Information",
+          description:
+            "\u00e5\u00ad\u0098\u00e5\u009c\u00a8\u00e6\u0095\u008f\u00e6\u0084\u009f\u00e7\u009a\u0084\u00e5\u008c\u00ba\u00e5\u009f\u009f\u00e6\u0080\u00a7\u00e8\u00af\u00ad\u00e8\u00a8\u0080"
+        },
+        {
+          severity: 1,
+          marks: [
+            {
+              offset: "ea471HH",
+              value: ":$:,:4:<:D:L:T:\\:h:",
+              filename: "Server.exe"
+            }
+          ],
+          name: "has_sensitiveChar",
+          categories: "Chinese Information",
+          description:
+            "\u00e5\u00ad\u0098\u00e5\u009c\u00a8\u00e6\u0095\u008f\u00e6\u0084\u009f\u00e5\u00ad\u0097\u00e7\u00ac\u00a6"
+        },
+        {
+          severity: 1,
+          marks: [
+            {
+              author: "admin"
+            }
+          ],
+          name: "has_author", //作者
+          categories: "Author Information",
+          description:
+            "\u00e5\u00ad\u0098\u00e5\u009c\u00a8\u00e6\u0095\u008f\u00e6\u0084\u009f\u00e5\u00ad\u0097\u00e7\u00ac\u00a6"
+        },
+        {
+          severity: 1,
+          marks: [
+            {
+              create_time: "2019-03-25 20:12:25"
+            }
+          ],
+          name: "has_beijingTime", //编译时间
+          categories: "BeijingTime Information",
+          description:
+            "\u00e5\u00ad\u0098\u00e5\u009c\u00a8\u00e6\u0095\u008f\u00e6\u0084\u009f\u00e5\u00ad\u0097\u00e7\u00ac\u00a6"
+        },
+        {
+          severity: 1,
+          marks: [
+            {
+              codepage: "947"
+            }
+          ],
+          name: "has_codepage", //codepage
+          categories: "CodePage Information",
+          description:
+            "\u00e5\u00ad\u0098\u00e5\u009c\u00a8\u00e6\u0095\u008f\u00e6\u0084\u009f\u00e5\u00ad\u0097\u00e7\u00ac\u00a6"
+        },
+        {
+          severity: 1,
+          marks: [
+            {
+              filename: "ee.exe",
+              pdb_path: "/jds/dsd.sd",
+              offset: "ea471HH"
+            }
+          ],
+          name: "has_pdb", //pdb调试符号路径
+          categories: "Chinese Information ",
+          description:
+            "\u00e5\u00ad\u0098\u00e5\u009c\u00a8\u00e6\u0095\u008f\u00e6\u0084\u009f\u00e5\u00ad\u0097\u00e7\u00ac\u00a6"
+        },
+        {
+          severity: 1,
+          marks: [
+            {
+              offset: "2226bcH",
+              value: "??_7QStateMachine@@6B@",
+              filename: "QtCore4.dll"
+            },
+            {
+              offset: "254f90H",
+              value: ".?AVQStateMachine@@",
+              filename: "QtCore4.dll"
+            }
+          ],
+          name: "has_pinyin",
+          categories: "Chinese Information",
+          description:
+            "\u00e5\u00ad\u0098\u00e5\u009c\u00a8\u00e6\u008b\u00bc\u00e9\u009f\u00b3\u00e5\u00ad\u0097\u00e7\u00ac\u00a6"
+        },
+        {
+          severity: 1,
+          marks: [
+            {
+              offset: "2226bcH",
+              value: "??_7QStateMachine@@6B@",
+              filename: "QtCore4.dll"
+            },
+            {
+              offset: "254f90H",
+              value: ".?AVQStateMachine@@",
+              filename: "QtCore4.dll"
+            }
+          ],
+          name: "has_chinese", //中文字符川
+          categories: "Chinese Information",
+          description:
+            "\u00e5\u00ad\u0098\u00e5\u009c\u00a8\u00e6\u008b\u00bc\u00e9\u009f\u00b3\u00e5\u00ad\u0097\u00e7\u00ac\u00a6"
+        },
+        {
+          severity: 1,
+          marks: [
+            {
+              filename: "dds.txt",
+              offset: "254f90H",
+              value: "value",
+              attribute: "attribute"
+            },
+            {
+              filename: "dds.txt",
+              offset: "254f90H",
+              value: "value",
+              attribute: "attribute"
+            }
+          ],
+          name: "has_versionChinese",
+          categories: "Chinese Information",
+          description:
+            "\u00e5\u00ad\u0098\u00e5\u009c\u00a8\u00e6\u008b\u00bc\u00e9\u009f\u00b3\u00e5\u00ad\u0097\u00e7\u00ac\u00a6"
+        }
+      ]
     };
   },
-  computed: {},
+  computed: {
+    // 资源特征信息
+    _sensitiveLanguage() {
+      let signatures = this.report.sensi.signatures;
+      let res = signatures.find(signature => {
+        return signature.name === "has_sensitiveLanguage";
+      });
+      return res === undefined ? [] : res.marks;
+    },
+    // 开发痕迹
+    _developmentTrace() {
+      let signatures = this.report.sensi.signatures;
+      // 作者
+      let authorTemp = signatures.find(signature => {
+        return signature.name === "has_author";
+      });
+      let author =
+        authorTemp === undefined ? "---------" : authorTemp.marks[0].author;
+      // 编译时间
+      let compileTimeTemp = signatures.find(signature => {
+        return signature.name === "has_beijingTime";
+      });
+      let compileTime =
+        compileTimeTemp === undefined
+          ? "---------"
+          : compileTimeTemp.marks[0].create_time;
+      //codepage
+      let codePageTemp = signatures.find(signature => {
+        return signature.name === "has_codepage";
+      });
+      let codePage =
+        codePageTemp === undefined
+          ? "---------"
+          : codePageTemp.marks[0].codepage;
+      //pdb调试符号路径
+      let pdbTemp = signatures.find(signature => {
+        return signature.name === "has_pdb";
+      });
+      let pdb = pdbTemp === undefined ? "---------" : pdbTemp.marks[0].pdb_path;
+      return { author, compileTime, codePage, pdb };
+    },
+    //中文字符串
+    _chineseStrings() {
+      let signatures = this.report.sensi.signatures;
+      let chineseStringTemp = signatures.find(signature => {
+        return signature.name === "has_chinese";
+      });
+      return chineseStringTemp === undefined ? [] : chineseStringTemp.marks;
+    },
+    // 敏感特征信息
+    _sensiFeature() {
+      let signatures = this.report.sensi.signatures;
+      // 清单文件
+      let mainfestTemp = signatures.find(signature => {
+        return signature.name === "has_manifest";
+      });
+      let mainfest = mainfestTemp === undefined ? [] : mainfestTemp.marks;
+      // 敏感字符
+      let sensitiveCharsTemp = signatures.find(signature => {
+        return signature.name === "has_sensitiveChar";
+      });
+      let sensitiveChars =
+        sensitiveCharsTemp === undefined ? [] : sensitiveCharsTemp.marks;
+      // 拼音
+      let pinyinTemp = signatures.find(signature => {
+        return signature.name === "has_pinyin";
+      });
+      let pinyins = pinyinTemp === undefined ? [] : pinyinTemp.marks;
+      // version资源中存在中文
+      let versionChineseTemp = signatures.find(signature => {
+        return signature.name === "has_versionChinese";
+      });
+      let versionChineses =
+        versionChineseTemp === undefined ? [] : versionChineseTemp.marks;
+
+      return {
+        mainfest,
+        sensitiveChars,
+        pinyins,
+        versionChineses
+      };
+    },
+    // 敏感信息
+    sensi() {
+      // 敏感信息为空
+      if (this.report.sensi.signatures.length === 0) {
+        return {};
+      }
+      let languageInfo = {
+        sensitiveLanguage: this._sensitiveLanguage,
+        chineseStrings: this._chineseStrings,
+        sensiFeatures: this._sensiFeature
+      };
+      let developmentTrace = this._developmentTrace;
+      return { languageInfo, developmentTrace };
+    }
+  },
   watch: {},
   methods: {
     /**
@@ -199,12 +596,13 @@ export default {
         axios.spread(function(resReportMeta, resReportBasic, resReportSensi) {
           let { data: reportMeta } = resReportMeta;
           let { data: reportBasic } = resReportBasic;
-          let { data: ReportSensi } = resReportSensi;
+          let { data: reportSensi } = resReportSensi;
           // 两个请求现在都执行完成
           next(vm => {
             vm.report.meta = reportMeta;
             vm.report.basic = reportBasic;
-            vm.report.sensi = ReportSensi;
+            vm.report.sensi.signatures =
+              reportSensi === null ? [] : reportSensi.signatures;
           });
         })
       );
@@ -212,24 +610,30 @@ export default {
 };
 </script>
 <style>
+/* 重写element折叠面板标题字体大小 */
 .detect-report .el-collapse-item__header {
   font-size: 16px;
+}
+.detect-report .el-step {
+  cursor: pointer;
 }
 </style>
 
 <style lang="stylus" scoped>
 .detect-report
-  display flex
   padding 20px
   background-color #fff
 
   .report-steps-wrapper
-    padding 100px 100px 0 0
+    position absolute
+    top 50%
+    left 30px
+    width 300px
     height 400px
+    transform translateY(-80%)
 
   .report-content
-    flex 1
-    overflow hidden
+    padding-left 310px
 
     .report-meta
       margin 12px
@@ -247,6 +651,7 @@ export default {
           .meta-title
             width 150px
             color #666
+            color #2a82e4
             text-align left
 
           .meta-content
@@ -310,6 +715,7 @@ export default {
             .field
               display inline-block
               width 150px
+              color #2a82e4
 
             .description
               color #999
@@ -340,7 +746,8 @@ export default {
         .sensi-type
           padding 10px 0
 
-          .title
+          >.title
+            padding-bottom 15px
             vertical-align middle
             font-weight 600
             font-size 16px
@@ -354,4 +761,16 @@ export default {
               background-color #73ADED
               content ''
               vertical-align middle
+
+          .box-card
+            .sensi-feature-title
+              color #2a82e4
+              font-size 15px
+
+          .development-trace-item
+            padding 10px 0
+
+            .title
+              width 250px
+              color #2a82e4
 </style>

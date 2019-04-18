@@ -3,7 +3,7 @@
  * @LastEditors: 旺苍扛把子
  * @Description: 封装任务详情和新建任务中的表格
  * @Date: 2019-04-12 09:46:16
- * @LastEditTime: 2019-04-17 15:20:53
+ * @LastEditTime: 2019-04-18 10:20:07
  -->
 <template>
   <div class="base-table">
@@ -356,7 +356,6 @@ export default {
   watch: {
     // 监听objectReport的oid改变,执行获取该oid的报告信息的请求
     async "objectReport.oid"(newValue) {
-      console.log(newValue);
       await getReportList(newValue);
     }
   },
@@ -473,7 +472,6 @@ export default {
      * @param {row} 数组某一项
      */
     handleView: _.debounce(async function({ oid }) {
-      console.log(oid);
       try {
         let { data, status } = await getReportList(oid);
         if (status === 200) {

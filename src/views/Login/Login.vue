@@ -3,7 +3,7 @@
  * @LastEditors: 旺苍扛把子
  * @Description: 登录组件
  * @Date: 2019-03-25 15:26:28
- * @LastEditTime: 2019-04-17 13:36:48
+ * @LastEditTime: 2019-04-18 11:17:49
  -->
 <template>
   <div class="login">
@@ -139,6 +139,7 @@ export default {
       try {
         // 对整个表单进行校验
         let isSuccess = await this.$refs.loginForm.validate();
+        debugger;
         let { account, password } = this.loginForm;
         if (isSuccess) {
           let { status, msg } = await login(account, password);

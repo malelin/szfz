@@ -3,7 +3,7 @@
  * @LastEditors: 旺苍扛把子
  * @Description: 新建任务组件
  * @Date: 2019-04-02 09:23:23
- * @LastEditTime: 2019-04-15 20:21:04
+ * @LastEditTime: 2019-04-18 09:17:06
  -->
 
 <template>
@@ -203,7 +203,7 @@ export default {
       // el-upload配置
       upload: {
         name: "object",
-        action: "http://192.168.2.112:8081/v1/filemanage/object",
+        action: process.env.VUE_APP_BASE_API + "/v1/filemanage/object",
         percent: 0,
         showProgress: false,
         headers: {

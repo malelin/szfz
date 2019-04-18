@@ -3,7 +3,7 @@
  * @LastEditors: 旺苍扛把子
  * @Description: 任务详情组件
  * @Date: 2019-04-11 14:32:10
- * @LastEditTime: 2019-04-15 11:06:16
+ * @LastEditTime: 2019-04-18 10:20:52
  -->
 <template>
   <div class="task-detail">
@@ -211,13 +211,9 @@ export default {
     }
   },
   created() {
-    this.getTaskDetail()
-      .then(result => {
-        console.log(result);
-      })
-      .catch(err => {
-        console.log(err);
-      });
+    this.getTaskDetail().catch(err => {
+      console.log(err);
+    });
     // this.timer = setInterval(() => {
     //   console.log(this);
     //   this.getTaskDetail()
