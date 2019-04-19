@@ -3,7 +3,7 @@
  * @LastEditors: 旺苍扛把子
  * @Description: 任务api
  * @Date: 2019-04-03 14:45:44
- * @LastEditTime: 2019-04-15 17:04:21
+ * @LastEditTime: 2019-04-19 16:05:36
  */
 import request from "@/utils/request";
 /**
@@ -46,7 +46,6 @@ export const getTask = data => {
 export const createTask = data => {
   let token = sessionStorage.getItem("token");
   console.log(data);
-  debugger;
   return request({
     url: "/v1/sysmanage/task",
     method: "post",

@@ -3,7 +3,7 @@
  * @LastEditors: 旺苍扛把子
  * @Description: 控制面板组件
  * @Date: 2019-03-29 10:14:42
- * @LastEditTime: 2019-04-15 19:51:09
+ * @LastEditTime: 2019-04-19 16:09:40
  -->
 <template>
   <div class="dashboard">
@@ -107,32 +107,38 @@
     <div class="engine-container">
       <div class="engine-container-header">
         <span class="title">应用列表</span>
-        <el-dropdown>
-          <span class="el-dropdown-link">
-            全部应用<i class="el-icon-arrow-down el-icon--right"></i>
-          </span>
-          <el-dropdown-menu slot="dropdown">
-            <el-dropdown-item>敏感信息分析</el-dropdown-item>
-            <el-dropdown-item>同源分析</el-dropdown-item>
-            <el-dropdown-item>安全仿真</el-dropdown-item>
-            <el-dropdown-item>漏洞工具验证</el-dropdown-item>
-            <el-dropdown-item>辅助工具</el-dropdown-item>
-            <el-dropdown-item>知识库</el-dropdown-item>
-          </el-dropdown-menu>
-        </el-dropdown>
       </div>
       <div class="engine-container-body">
         <ul class="engine-list">
           <li class="engine-item">
-            <div class="engine-item-header">
-              <svg-icon icon-class="mgxxfx"></svg-icon>
-              <span class="engine-name">敏感信息分析</span>
-            </div>
-            <div class="engine-item-body">
-              <p class="engine-desc">
-                我们这个引擎可牛逼了,我们这个引擎可牛逼了,我们这个引擎可牛逼了,
-              </p>
-            </div>
+            <el-upload
+              class="upload-sensi"
+              drag
+              :show-file-list="false"
+              :name="config.engines.engineSensi.name"
+              :action="config.engines.engineSensi.action"
+              :headers="config.engines.engineSensi.headers"
+              :on-error="onSensiUploadErr"
+              :on-success="onSensiUploadSuccess"
+              :before-upload="SensiFileBeforeUpload"
+            >
+              <div class="engine-item-header">
+                <svg-icon icon-class="mgxxfx"></svg-icon>
+                <span class="engine-name">敏感信息分析</span>
+              </div>
+              <div class="engine-item-body">
+                <p class="engine-desc">
+                  我们这个引擎可牛逼了,我们这个引擎可牛逼了,我们这个引擎可牛逼了,
+                </p>
+              </div>
+              <!-- <i class="el-icon-upload"></i>
+              <div class="el-upload__text">
+                将文件拖到此处，或<em>点击上传</em>
+              </div>
+              <div class="el-upload__tip" slot="tip">
+                只能上传jpg/png文件，且不超过500kb
+              </div> -->
+            </el-upload>
           </li>
           <li class="engine-item">
             <div class="engine-item-header">
@@ -196,6 +202,7 @@
 </template>
 
 <script>
+import { createTask } from "@/api/task";
 import { getDetectRes, getThreatRes } from "@/api/indexManage";
 export default {
   name: "Dashboard",
@@ -250,7 +257,19 @@ export default {
         legend: { orient: "vertical", right: 30, top: 50, bottom: 20 },
         threatTimeRange: "day"
       },
-      threatRes: { day: {}, week: {}, month: {}, year: [] }
+      threatRes: { day: {}, week: {}, month: {}, year: [] },
+      config: {
+        engines: {
+          // 敏感引擎
+          engineSensi: {
+            name: "object",
+            action: process.env.VUE_APP_BASE_API + "/v1/filemanage/object",
+            headers: {
+              "Digark-Access-Header": sessionStorage.getItem("token")
+            }
+          }
+        }
+      }
     };
   },
   computed: {
@@ -377,6 +396,73 @@ export default {
      */
     handleDetectResTabClick(tab) {
       this.chartRing.detectTimeRange = tab.name;
+    },
+    /**
+     * @description 敏感信息引擎上传文件成功
+     */
+    async onSensiUploadSuccess({ status, data: object }) {
+      if (status === 200) {
+        let obj = this._formatFile2SensiObject(object);
+        let taskData = {
+          model: 2,
+          objects: [obj]
+        };
+        try {
+          let { status } = await createTask(taskData);
+          if (status === 200) {
+            this.$message({
+              type: "success",
+              message: "敏感信息风行引擎任务创建成功"
+            });
+            this.$router.push("/taskOverview");
+          }
+        } catch (e) {
+          this.$message({
+            type: "error",
+            message: e.toString()
+          });
+        }
+      }
+    },
+    /**
+     * @description 敏感信息引擎上传文件出错
+     */
+    onSensiUploadErr(err, file, fileList) {
+      console.log(fileList);
+    },
+    /**
+     * @description 敏感信息引擎上传文件之前
+     */
+    SensiFileBeforeUpload() {},
+    /**
+     * @description 把上传接受到的file类型格式的数据转化成object类型的敏感信息引擎创建任务的格式
+     */
+    _formatFile2SensiObject({
+      uploadId,
+      fileSHA1: sha1,
+      fileSHA256: sha256,
+      fileSSDEEP: ssdeep,
+      suffix,
+      saveUrl: url,
+      fileMD5: md5,
+      fileType: type,
+      fileSize: size,
+      fileName: objectName
+    }) {
+      return {
+        uploadId,
+        sha1,
+        sha256,
+        ssdeep,
+        suffix,
+        url,
+        md5,
+        type,
+        size,
+        objectName,
+        openSensitivity: 1,
+        openMorph: 2
+      };
     }
   },
   created() {
@@ -415,7 +501,14 @@ export default {
 .dashboard .el-dropdown-link {
   cursor: pointer;
   color: #409eff;
-  font-size: 20px;
+  font-size: 18px;
+}
+.dashboard .el-upload {
+  width: 100%;
+}
+.dashboard .el-upload-dragger {
+  width: 100%;
+  border-color: #fff;
 }
 </style>
 
@@ -424,14 +517,14 @@ export default {
   .charts-container
     display flex
     justify-content space-between
-    padding-bottom 30px
+    margin 0 12px
 
     .chart-header
       display flex
       justify-content space-between
       align-items center
       padding 0 15px 0 20px
-      box-shadow 0 0px 10px #ccc
+      border-bottom 1px solid #ebeef5
       line-height 40px
 
       .title
@@ -496,33 +589,43 @@ export default {
                 background-color rgba(42, 228, 69, 1)
 
     .jcjgtj
-      flex 0 0 58%
+      flex 0 0 54%
       overflow hidden
+      margin 12px 0
       background-color #fff
-      box-shadow 0 1px 10px #ccc
+      box-shadow 0 2px 12px 0 rgba(0, 0, 0, 0.1)
+
+      &:hover
+        box-shadow 0 2px 12px 0 rgba(0, 0, 0, 0.2)
 
     .wxlxfb
-      flex 0 0 40%
-      overflow hidden
+      flex 0 0 45%
+      margin 12px 0
       background-color #fff
-      box-shadow 0 1px 10px #ccc
+      box-shadow 0 2px 12px 0 rgba(0, 0, 0, 0.1)
+
+      &:hover
+        box-shadow 0 2px 12px 0 rgba(0, 0, 0, 0.2)
 
   .engine-container
     box-sizing border-box
+    margin 0 12px
     margin-bottom 20px
-    height calc(100% - 330px)
     background-color #fff
-    box-shadow 0 0px 10px #ccc
+    box-shadow 0 2px 12px 3px rgba(0, 0, 0, 0.1)
+
+    &:hover
+      box-shadow 0 2px 12px 3px rgba(0, 0, 0, 0.2)
 
     &-header
       display flex
       justify-content space-between
-      padding 20px 15px
-      box-shadow 0 0px 10px #ccc
+      padding 20px
+      border-bottom 1px solid #ebeef5
 
       .title
         font-weight 700
-        font-size 20px
+        font-size 16px
 
     &-body
       height calc(100% - 61px)
@@ -536,15 +639,12 @@ export default {
           flex 0 0 33.33%
           box-sizing border-box
           padding 20px
-          height 200px
-          border 1px solid #ccc
-          border-bottom none
-          border-left none
+          border 1px solid #ebeef5
 
           &-header
             display flex
             align-items center
-            padding-bottom 20px
+            padding 0 0 10px 10px
 
             >>>.svg-icon
               font-size 40px
@@ -553,7 +653,7 @@ export default {
               padding-left 20px
               color #333
               font-weight 700
-              font-size 26px
+              font-size 20px
 
           &-body
             .engine-desc
