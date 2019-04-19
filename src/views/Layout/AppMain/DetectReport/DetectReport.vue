@@ -3,7 +3,7 @@
  * @LastEditors: 旺苍扛把子
  * @Description: 检测报告
  * @Date: 2019-04-16 10:07:40
- * @LastEditTime: 2019-04-18 18:04:57
+ * @LastEditTime: 2019-04-19 10:57:06
  -->
 <template>
   <div class="detect-report">
@@ -41,7 +41,7 @@
               style="margin-right:5px;"
               v-for="item in report.meta.detectContent"
               :key="item.id"
-              >{{ item }}</el-tag
+              >{{ item.detectContent }}</el-tag
             >
           </div>
           <div class="meta-level">
@@ -60,11 +60,7 @@
           </div>
         </div>
         <div class="meta-manipulate-wrapper fr">
-          <svg-icon
-            icon-class="manipulate"
-            class="manipulate-icon"
-            @mouseenter.native="handleEnterManipulate"
-          ></svg-icon>
+          <svg-icon icon-class="manipulate" class="manipulate-icon"></svg-icon>
           <div class="manipulate" v-show="manipulate.visible">
             <svg-icon icon-class="download" class="manipulate-item"></svg-icon>
             <svg-icon icon-class="save" class="manipulate-item"></svg-icon>
@@ -129,14 +125,20 @@
               v-model="report.sensi.chineseStringConfig.activeCollapseItems"
             >
               <el-collapse-item title="• 中文字符串" name="1">
-                <el-table :data="sensi.languageInfo.chineseStrings" border>
+                <el-table
+                  :data="report.sensi.languageInfo.chineseStrings"
+                  border
+                >
                   <el-table-column prop="offset" label="偏移">
                   </el-table-column>
                   <el-table-column prop="value" label="内容"> </el-table-column>
                 </el-table>
               </el-collapse-item>
               <el-collapse-item title="• 资源特性信息" name="2">
-                <el-table :data="sensi.languageInfo.sensitiveLanguage" border>
+                <el-table
+                  :data="report.sensi.languageInfo.sensitiveLanguage"
+                  border
+                >
                   <el-table-column prop="offset" label="偏移">
                   </el-table-column>
                   <el-table-column prop="language" label="语言">
@@ -155,7 +157,7 @@
                     <span class="sensi-feature-title">• 清单文件</span>
                   </div>
                   <el-table
-                    :data="sensi.languageInfo.sensiFeatures.mainfest"
+                    :data="report.sensi.languageInfo.sensiFeatures.mainfest"
                     border
                   >
                     <el-table-column prop="filename" label="文件名">
@@ -176,9 +178,7 @@
                   </div>
                   <el-table
                     :data="
-                      sensi.languageInfo !== undefined &&
-                        sensi.languageInfo.sensiFeatures.length !== 0 &&
-                        sensi.languageInfo.sensiFeatures.sensitiveChars
+                      report.sensi.languageInfo.sensiFeatures.sensitiveChars
                     "
                     border
                   >
@@ -199,7 +199,7 @@
                     <span class="sensi-feature-title">• 拼音</span>
                   </div>
                   <el-table
-                    :data="sensi.languageInfo.sensiFeatures.pinyins"
+                    :data="report.sensi.languageInfo.sensiFeatures.pinyins"
                     border
                   >
                     <el-table-column prop="filename" label="文件名">
@@ -221,7 +221,9 @@
                     >
                   </div>
                   <el-table
-                    :data="sensi.languageInfo.sensiFeatures.versionChineses"
+                    :data="
+                      report.sensi.languageInfo.sensiFeatures.versionChineses
+                    "
                     border
                   >
                     <el-table-column prop="filename" label="文件名">
@@ -243,24 +245,26 @@
             <el-card shadow="hover">
               <div class="development-trace-item">
                 <span class="title">• PDB调试符号路径</span
-                ><span class="content"> {{ sensi.developmentTrace.pdb }}</span>
+                ><span class="content">
+                  {{ report.sensi.developmentTrace.pdb || "---------" }}</span
+                >
               </div>
               <div class="development-trace-item">
                 <span class="title">• 编译时间</span
                 ><span class="content">{{
-                  sensi.developmentTrace.compileTime
+                  report.sensi.developmentTrace.compileTime || "---------"
                 }}</span>
               </div>
               <div class="development-trace-item">
                 <span class="title">• CodePage</span
                 ><span class="content">{{
-                  sensi.developmentTrace.codePage
+                  report.sensi.developmentTrace.codePage || "---------"
                 }}</span>
               </div>
               <div class="development-trace-item">
                 <span class="title">• 作者</span
                 ><span class="content">{{
-                  sensi.developmentTrace.author
+                  report.sensi.developmentTrace.author || "---------"
                 }}</span>
               </div>
             </el-card>
@@ -299,193 +303,44 @@ export default {
       report: {
         // 元数据
         meta: {
+          level: "",
+          detectContent: [],
+          finishTime: "",
+          md5: "",
+          objName: "",
           tags: []
         },
         // 基本信息
-        basic: {},
+        basic: {
+          objName: "",
+          ssdeep: "",
+          sha256: "",
+          sha1: "",
+          md5: "",
+          uploadTime: "",
+          size: "",
+          objType: ""
+        },
         // 敏感信息
         sensi: {
           chineseStringConfig: {
-            activeCollapseItems: []
+            activeCollapseItems: ["1", "2", "3"]
+          },
+          // 敏感信息
+          developmentTrace: {},
+          languageInfo: {
+            chineseStrings: [],
+            sensiFeatures: {},
+            sensitiveLanguage: []
           }
         }
       },
-      // 敏感信息
-      sensi: {
-        developmentTrace: {},
-        languageInfo: {
-          chineseStrings: [],
-          sensiFeatures: {},
-          sensitiveLanguage: []
-        }
-      },
+      // 页面上的所有返回数据
+      res: { signatures: [] },
       // 元数据右侧的操作盒子
       manipulate: {
         visible: true
-      },
-      // 调试数据
-      signatures: [
-        {
-          severity: 1,
-          marks: [
-            {
-              size: "0x0000015a",
-              offset: "0x000dfff8",
-              filename: "Server.exe"
-            }
-          ],
-          name: "has_manifest",
-          categories: "Chinese Information",
-          description:
-            "\u00e5\u00ad\u0098\u00e5\u009c\u00a8\u00e6\u00b8\u0085\u00e5\u008d\u0095\u00e6\u0096\u0087\u00e4\u00bb\u00b6"
-        },
-        {
-          severity: 1,
-          marks: [
-            {
-              size: "0x00000468",
-              offset: "0x000f5150",
-              sublanguage: "SUBLANG_CHINESE_SIMPLIFIED",
-              language: "LANG_CHINESE",
-              filename: "Server.exe"
-            },
-            {
-              size: "0x0000003e",
-              offset: "0x000f55b8",
-              sublanguage: "SUBLANG_CHINESE_SIMPLIFIED",
-              language: "LANG_CHINESE",
-              filename: "Server.exe"
-            }
-          ],
-          name: "has_sensitiveLanguage", //资源特征
-          categories: "Chinese Information",
-          description:
-            "\u00e5\u00ad\u0098\u00e5\u009c\u00a8\u00e6\u0095\u008f\u00e6\u0084\u009f\u00e7\u009a\u0084\u00e5\u008c\u00ba\u00e5\u009f\u009f\u00e6\u0080\u00a7\u00e8\u00af\u00ad\u00e8\u00a8\u0080"
-        },
-        {
-          severity: 1,
-          marks: [
-            {
-              offset: "ea471HH",
-              value: ":$:,:4:<:D:L:T:\\:h:",
-              filename: "Server.exe"
-            }
-          ],
-          name: "has_sensitiveChar",
-          categories: "Chinese Information",
-          description:
-            "\u00e5\u00ad\u0098\u00e5\u009c\u00a8\u00e6\u0095\u008f\u00e6\u0084\u009f\u00e5\u00ad\u0097\u00e7\u00ac\u00a6"
-        },
-        {
-          severity: 1,
-          marks: [
-            {
-              author: "admin"
-            }
-          ],
-          name: "has_author", //作者
-          categories: "Author Information",
-          description:
-            "\u00e5\u00ad\u0098\u00e5\u009c\u00a8\u00e6\u0095\u008f\u00e6\u0084\u009f\u00e5\u00ad\u0097\u00e7\u00ac\u00a6"
-        },
-        {
-          severity: 1,
-          marks: [
-            {
-              create_time: "2019-03-25 20:12:25"
-            }
-          ],
-          name: "has_beijingTime", //编译时间
-          categories: "BeijingTime Information",
-          description:
-            "\u00e5\u00ad\u0098\u00e5\u009c\u00a8\u00e6\u0095\u008f\u00e6\u0084\u009f\u00e5\u00ad\u0097\u00e7\u00ac\u00a6"
-        },
-        {
-          severity: 1,
-          marks: [
-            {
-              codepage: "947"
-            }
-          ],
-          name: "has_codepage", //codepage
-          categories: "CodePage Information",
-          description:
-            "\u00e5\u00ad\u0098\u00e5\u009c\u00a8\u00e6\u0095\u008f\u00e6\u0084\u009f\u00e5\u00ad\u0097\u00e7\u00ac\u00a6"
-        },
-        {
-          severity: 1,
-          marks: [
-            {
-              filename: "ee.exe",
-              pdb_path: "/jds/dsd.sd",
-              offset: "ea471HH"
-            }
-          ],
-          name: "has_pdb", //pdb调试符号路径
-          categories: "Chinese Information ",
-          description:
-            "\u00e5\u00ad\u0098\u00e5\u009c\u00a8\u00e6\u0095\u008f\u00e6\u0084\u009f\u00e5\u00ad\u0097\u00e7\u00ac\u00a6"
-        },
-        {
-          severity: 1,
-          marks: [
-            {
-              offset: "2226bcH",
-              value: "??_7QStateMachine@@6B@",
-              filename: "QtCore4.dll"
-            },
-            {
-              offset: "254f90H",
-              value: ".?AVQStateMachine@@",
-              filename: "QtCore4.dll"
-            }
-          ],
-          name: "has_pinyin",
-          categories: "Chinese Information",
-          description:
-            "\u00e5\u00ad\u0098\u00e5\u009c\u00a8\u00e6\u008b\u00bc\u00e9\u009f\u00b3\u00e5\u00ad\u0097\u00e7\u00ac\u00a6"
-        },
-        {
-          severity: 1,
-          marks: [
-            {
-              offset: "2226bcH",
-              value: "??_7QStateMachine@@6B@",
-              filename: "QtCore4.dll"
-            },
-            {
-              offset: "254f90H",
-              value: ".?AVQStateMachine@@",
-              filename: "QtCore4.dll"
-            }
-          ],
-          name: "has_chinese", //中文字符川
-          categories: "Chinese Information",
-          description:
-            "\u00e5\u00ad\u0098\u00e5\u009c\u00a8\u00e6\u008b\u00bc\u00e9\u009f\u00b3\u00e5\u00ad\u0097\u00e7\u00ac\u00a6"
-        },
-        {
-          severity: 1,
-          marks: [
-            {
-              filename: "dds.txt",
-              offset: "254f90H",
-              value: "value",
-              attribute: "attribute"
-            },
-            {
-              filename: "dds.txt",
-              offset: "254f90H",
-              value: "value",
-              attribute: "attribute"
-            }
-          ],
-          name: "has_versionChinese",
-          categories: "Chinese Information",
-          description:
-            "\u00e5\u00ad\u0098\u00e5\u009c\u00a8\u00e6\u008b\u00bc\u00e9\u009f\u00b3\u00e5\u00ad\u0097\u00e7\u00ac\u00a6"
-        }
-      ]
+      }
     };
   },
   computed: {},
@@ -495,10 +350,18 @@ export default {
      * @description 步骤条点击,设置当前激活的步骤条
      */
     handleStepClick(index, step) {
-      console.log(step);
       this.steps.active = index;
-      console.log(this.$refs.basic.scrollTop);
-      console.log(this.$refs.basic.clientTop);
+      this.goAnchor(step.ref);
+    },
+
+    // 锚点跳转
+    goAnchor(ref) {
+      let scrollbar = document.querySelector(
+        ".app-content .el-scrollbar__wrap"
+      );
+      let target = this.$refs[ref];
+      let offsetTop = target.offsetTop;
+      scrollbar.scrollTop = offsetTop;
     },
     // 资源特征信息
     _getSensitiveLanguage(signatures) {
@@ -588,7 +451,6 @@ export default {
         let sensiFeatures = this._getSensiFeature(signatures);
         let languageInfo = { sensitiveLanguage, chineseStrings, sensiFeatures };
         let developmentTrace = this._getDevelopmentTrace(signatures);
-        debugger;
         return { languageInfo, developmentTrace };
       }
     }
@@ -609,9 +471,13 @@ export default {
           next(vm => {
             vm.report.meta = reportMeta;
             vm.report.basic = reportBasic;
-            vm.sensi =
-              reportSensi === null ? {} : vm.getSensi(reportSensi.signatures);
-            debugger;
+            if (reportSensi !== null) {
+              vm.signatures = reportSensi.signatures;
+              let obj = vm.getSensi(reportSensi.signatures);
+              vm.report.sensi = Object.assign({}, vm.report.sensi, obj);
+            } else {
+              vm.report.sensi = Object.assign({}, vm.report.sensi);
+            }
           });
         })
       );
@@ -635,7 +501,7 @@ export default {
 
   .report-steps-wrapper
     position absolute
-    top 50%
+    top 30%
     left 30px
     width 300px
     height 400px

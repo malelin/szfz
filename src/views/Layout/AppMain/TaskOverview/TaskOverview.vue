@@ -3,7 +3,7 @@
  * @LastEditors: 旺苍扛把子
  * @Description: 任务概览组件
  * @Date: 2019-04-01 18:17:27
- * @LastEditTime: 2019-04-18 13:58:23
+ * @LastEditTime: 2019-04-19 10:54:16
  -->
 <template>
   <div class="task-overview">
@@ -135,9 +135,8 @@
         style="width: 100%;"
         class="c-el-table"
       >
-        <el-table-column align="center" type="selection" width="55">
-        </el-table-column>
-        <el-table-column align="center" label="任务编号" width="80" prop="tid">
+        <el-table-column align="center" type="selection"> </el-table-column>
+        <el-table-column align="center" label="任务编号" prop="tid">
         </el-table-column>
         <el-table-column align="center" prop="taskName" label="任务名称">
         </el-table-column>
@@ -531,7 +530,6 @@ export default {
     // 请求默认任务;
     getDefaultTask()
       .then(res => {
-        console.log(res);
         this.tableData = res.data;
       })
       .catch(err => console.log(err));
