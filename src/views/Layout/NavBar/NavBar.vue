@@ -3,7 +3,7 @@
  * @LastEditors: 旺苍扛把子
  * @Description: 头部栏,包含搜索,注销,消息
  * @Date: 2019-03-27 10:03:36
- * @LastEditTime: 2019-04-17 13:34:54
+ * @LastEditTime: 2019-04-19 12:36:44
  -->
 <template>
   <div class="navbar">
@@ -31,12 +31,13 @@
       <el-badge :value="12" class="badge-message">
         <svg-icon icon-class="message" class-name="svg-message"></svg-icon>
       </el-badge>
-      <svg-icon
-        title="注销"
-        icon-class="logout"
-        @click.native="handleLogout"
-        class-name="svg-logout"
-      ></svg-icon>
+      <el-tooltip content="注销" placement="bottom" effect="light">
+        <svg-icon
+          icon-class="logout"
+          @click.native="handleLogout"
+          class-name="svg-logout"
+        ></svg-icon>
+      </el-tooltip>
     </div>
   </div>
 </template>
