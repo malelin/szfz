@@ -3,7 +3,7 @@
  * @LastEditors: 旺苍扛把子
  * @Description: siderbar组件
  * @Date: 2019-03-27 10:01:30
- * @LastEditTime: 2019-04-08 18:30:14
+ * @LastEditTime: 2019-04-19 12:25:37
  -->
 <template>
   <div class="siderbar">
@@ -19,10 +19,13 @@
       <el-menu
         @select="onSelect"
         :default-active="defaultActive"
+        :default-openeds="defaultOpeneds"
         class="el-menu-vertical-demo"
         :collapse="isCollapse"
         background-color="#001529"
         text-color="#ffffff"
+        @open="onSubMenuOpen"
+        @close="onSubMenuClose"
       >
         <el-submenu index="1">
           <template slot="title">
@@ -67,13 +70,7 @@ export default {
     /* 按需加载组件 */
     // demo: () => import('@/pages/')
   },
-  props: {
-    /*  <WelcomeMessage greeting-text="hi"/> */
-    //   'greetingText': {
-    //     type: [String,Number],
-    //     required: true
-    //  }
-  },
+  props: {},
   /**
    * @description
    * @returns {any}
@@ -93,12 +90,17 @@ export default {
   computed: {
     ...mapState([
       "isCollapse",
-      "defaultActive" // 默认激活的菜单
+      "defaultActive", // 默认激活的菜单
+      "defaultOpeneds" //默认打开的子菜单
     ])
   },
   watch: {},
   methods: {
-    ...mapMutations(["setDefaultActive"]),
+    ...mapMutations([
+      "setDefaultActive",
+      "spliceDefaultOpeneds",
+      "unshiftDefaultOpeneds"
+    ]),
     /**
      * @description 菜单激活回调
      * @param {any} index 选中菜单项的 index
@@ -108,6 +110,23 @@ export default {
       let { path } = this.routerMap[index];
       this.setDefaultActive(index);
       this.$router.push({ path });
+    },
+    /**
+     * @description sub-menu 展开的回调
+     * @param {any} index 打开的 sub-menu 的 index
+     * @param {any} indexPath 打开的 sub-menu 的 index path
+     */
+    onSubMenuOpen(index, indexPath) {
+      this.unshiftDefaultOpeneds("" + indexPath);
+    },
+    /**
+     * @description sub-menu 关闭的回调
+     * @param {any} index 收起的 sub-menu 的 index
+     * @param {any} indexPath 收起的 sub-menu 的 index path
+     */
+    onSubMenuClose(index, indexPath) {
+      console.log(index, indexPath);
+      this.spliceDefaultOpeneds("" + indexPath);
     }
   },
   created() {},
