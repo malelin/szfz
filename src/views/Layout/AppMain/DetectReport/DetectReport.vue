@@ -3,7 +3,7 @@
  * @LastEditors: 旺苍扛把子
  * @Description: 检测报告
  * @Date: 2019-04-16 10:07:40
- * @LastEditTime: 2019-04-19 10:57:06
+ * @LastEditTime: 2019-04-19 13:37:23
  -->
 <template>
   <div class="detect-report">
@@ -61,7 +61,7 @@
         </div>
         <div class="meta-manipulate-wrapper fr">
           <svg-icon icon-class="manipulate" class="manipulate-icon"></svg-icon>
-          <div class="manipulate" v-show="manipulate.visible">
+          <div class="manipulate" v-show="config.manipulate.visible">
             <svg-icon icon-class="download" class="manipulate-item"></svg-icon>
             <svg-icon icon-class="save" class="manipulate-item"></svg-icon>
             <svg-icon icon-class="refresh" class="manipulate-item"></svg-icon>
@@ -277,6 +277,7 @@
 
 <script>
 import axios from "axios";
+import _ from "lodash";
 import { getReportMeta, getReportBasic, getReportSensi } from "@/api/report";
 export default {
   name: "DetectReport",
@@ -337,9 +338,12 @@ export default {
       },
       // 页面上的所有返回数据
       res: { signatures: [] },
-      // 元数据右侧的操作盒子
-      manipulate: {
-        visible: true
+      // 页面所有的配置
+      config: {
+        // 元数据右侧的操作盒子
+        manipulate: {
+          visible: true
+        }
       }
     };
   },
@@ -363,6 +367,20 @@ export default {
       let offsetTop = target.offsetTop;
       scrollbar.scrollTop = offsetTop;
     },
+    /**
+     * @description 元数据右侧的操作按钮进入事件
+     */
+    handleManipulateEnter: _.debounce(function() {
+      this.config.manipulate.visible = true;
+    }, 300),
+    /**
+     * @description 元数据右侧的操作按钮离开事件
+     */
+    handleManipulateLeave: _.debounce(function() {
+      setTimeout(() => {
+        this.config.manipulate.visible = false;
+      }, 800);
+    }, 300),
     // 资源特征信息
     _getSensitiveLanguage(signatures) {
       let res = signatures.find(signature => {
@@ -533,8 +551,6 @@ export default {
             color #999
 
       .meta-manipulate-wrapper
-        padding-top 20px
-
         .svg-icon
           display block
           font-size 25px

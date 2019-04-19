@@ -3,7 +3,7 @@
  * @LastEditors: 旺苍扛把子
  * @Description: 头部栏,包含搜索,注销,消息
  * @Date: 2019-03-27 10:03:36
- * @LastEditTime: 2019-04-19 12:36:44
+ * @LastEditTime: 2019-04-19 12:52:21
  -->
 <template>
   <div class="navbar">
