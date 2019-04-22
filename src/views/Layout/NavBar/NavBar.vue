@@ -3,7 +3,7 @@
  * @LastEditors: 旺苍扛把子
  * @Description: 头部栏,包含搜索,注销,消息
  * @Date: 2019-03-27 10:03:36
- * @LastEditTime: 2019-04-19 12:52:21
+ * @LastEditTime: 2019-04-22 18:00:37
  -->
 <template>
   <div class="navbar">
@@ -26,8 +26,8 @@
       <el-button slot="append" type="primary">搜&nbsp;索</el-button>
     </el-input>
     <div class="operation-box">
-      <span class="username" v-text="username"></span>
-      <img src="./images/avatar.gif" alt="头像" class="avatar" />
+      <span class="username" v-text="userInfo.username"></span>
+      <img :src="userInfo.avatar" alt="头像" class="avatar" />
       <el-badge :value="12" class="badge-message">
         <svg-icon icon-class="message" class-name="svg-message"></svg-icon>
       </el-badge>
@@ -46,7 +46,6 @@
 import { createNamespacedHelpers } from "vuex";
 const { mapMutations } = createNamespacedHelpers("layout");
 import { logout } from "@/api/login";
-import { getUserInfo } from "@/api/user";
 import _ from "lodash";
 export default {
   name: "NavBar",
@@ -64,7 +63,9 @@ export default {
   data() {
     return {
       searchText: "",
-      username: ""
+      userInfo: {},
+      // websocket对象
+      ws: null
     };
   },
   computed: {},
@@ -79,12 +80,13 @@ export default {
       try {
         let token = sessionStorage.getItem("token");
         let { status } = await logout(token);
-        debugger;
         if (status === 200) {
           this.$message({
             type: "success",
             message: "注销成功"
           });
+          this.ws.close();
+          alert("msg");
           this.$router.push("/login");
           // 清空sessionStorage
           sessionStorage.clear();
@@ -93,27 +95,42 @@ export default {
         console.log(e);
       }
     }, 300),
+
     /**
-     * @description 数据初始化
+     * @description 创建websocket
      */
-    async init() {
-      try {
-        let { status, data, msg } = await getUserInfo();
-        if (status === 200) {
-          this.username = data.username;
-        } else {
-          this.$message({
-            type: "warning",
-            message: msg
-          });
+    createWs() {
+      let token = sessionStorage.getItem("token");
+      this.ws = new WebSocket(
+        "ws://192.168.2.112:8081/v1/ws/user_state/" + token
+      );
+      this.ws.onopen = () => {
+        console.log("open");
+        this.ws.send("hello");
+      };
+      this.ws.onmessage = event => {
+        let userInfo = JSON.parse(event.data);
+        if (userInfo.isLogin === 2) {
+          this.$router.replace("/login");
+          this.ws.close();
         }
-      } catch (e) {
-        console.log(e);
-      }
+        if (userInfo.isLogin === 1) {
+          this.userInfo = Object.assign({}, this.userInfo, userInfo);
+        }
+      };
+      this.ws.onclose = event => {
+        console.log(event);
+        console.log("WebSocketClosed!");
+      };
+      this.ws.onerror = event => {
+        console.log(event);
+        console.log("WebSocketError!");
+      };
     }
   },
   created() {
-    this.init();
+    // 创建websocket
+    this.createWs();
   },
   mounted() {}
 };
