@@ -3,7 +3,7 @@
  * @LastEditors: 旺苍扛把子
  * @Description: 控制面板组件
  * @Date: 2019-03-29 10:14:42
- * @LastEditTime: 2019-04-22 14:53:38
+ * @LastEditTime: 2019-04-22 15:56:41
  -->
 <template>
   <div class="dashboard">
@@ -561,8 +561,11 @@ export default {
   background-color: transparent;
   text-align: center;
 }
-.engine-item .el-upload-dragger:hover {
+.engine-item .el-upload-dragger {
   border: none;
+}
+.engine-item .el-upload-dragger:hover {
+  border: #fff;
 }
 .engine-item .el-upload-dragger .upload-text-wrapper {
   background-color: rgba(0, 0, 0, 0.1);
@@ -718,6 +721,7 @@ export default {
           position relative
           flex 0 0 33.33%
           box-sizing border-box
+          border 1px solid #ebeef5
           color #333
 
           .upload-inner
@@ -738,6 +742,8 @@ export default {
                 font-size 20px
 
             .engine-item-body
+              box-sizing border-box
+
               .engine-desc
                 padding 0 20px
                 color #999
