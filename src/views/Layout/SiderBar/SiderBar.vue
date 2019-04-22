@@ -54,6 +54,8 @@
           <el-menu-item-group>
             <el-menu-item index="3-1">系统管理</el-menu-item>
             <el-menu-item index="3-2">审计日志</el-menu-item>
+            <el-menu-item index="3-4">系统管理</el-menu-item>
+            <el-menu-item index="3-2">审计日志</el-menu-item>
           </el-menu-item-group>
         </el-submenu>
       </el-menu>
@@ -83,7 +85,9 @@ export default {
         "2-1": { path: "/taskOverview" },
         "2-2": { path: "/createTask" },
         "3-1": { path: "/userManage" },
-        "3-2": { path: "/auditLog" }
+        "3-2": { path: "/auditLog" },
+        "3-3": { path: "/selfManage" },
+        "3-4": { path: "/sysManage" }
       }
     };
   },
@@ -163,26 +167,32 @@ export default {
 </style>
 
 <style lang="stylus" scoped>
-.siderbar
-  line-height 1
+.siderbar {
+  line-height: 1;
 
-  .c-scrollbar
-    height calc(100% - 75px)
+  .c-scrollbar {
+    height: calc(100% - 75px);
+  }
 
-  .logo-container
-    text-align center
+  .logo-container {
+    text-align: center;
 
-    img
-      width 180px
+    img {
+      width: 180px;
+    }
+  }
+}
 
-.svg-icon
-  margin-right 10px
-  vertical-align middle
-  font-size 28px
+.svg-icon {
+  margin-right: 10px;
+  vertical-align: middle;
+  font-size: 28px;
+}
 
-.svg-logo
-  padding-bottom 20px
-  width 180px
-  height 55px
-  transition width height 0.2s
+.svg-logo {
+  padding-bottom: 20px;
+  width: 180px;
+  height: 55px;
+  transition: width height 0.2s;
+}
 </style>
