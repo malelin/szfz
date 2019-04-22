@@ -52,8 +52,8 @@
             <span slot="title">系统管理</span>
           </template>
           <el-menu-item-group>
-            <el-menu-item index="3-1">系统管理</el-menu-item>
-            <el-menu-item index="3-2">审计日志</el-menu-item>
+            <el-menu-item index="3-3">个人设置</el-menu-item>
+            <el-menu-item index="3-1">用户管理</el-menu-item>
             <el-menu-item index="3-4">系统管理</el-menu-item>
             <el-menu-item index="3-2">审计日志</el-menu-item>
           </el-menu-item-group>
