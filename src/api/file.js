@@ -23,3 +23,20 @@ export const upload = data =>
       "Digark-Access-Header": sessionStorage.getItem("token")
     }
   });
+/**
+ * @description 上传图片接口
+ * @export
+ * @param {*} data 表单
+ * @returns
+ */
+export const uploadImg = data =>
+  request({
+    url: "/v1/filemanage/avatar",
+    method: "post",
+    timeout: 200000,
+    data,
+    headers: {
+      "Content-Type": "multipart/form-data",
+      "Digark-Access-Header": sessionStorage.getItem("token")
+    }
+  });

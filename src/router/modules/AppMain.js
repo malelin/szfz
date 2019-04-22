@@ -12,6 +12,8 @@ import UserManage from "@/views/Layout/AppMain/UserManage/UserManage";
 import AuditLog from "@/views/Layout/AppMain/AuditLog/AuditLog";
 import TaskDetail from "@/views/Layout/AppMain/TaskDetail/TaskDetail";
 import DetectReport from "@/views/Layout/AppMain/DetectReport/DetectReport";
+import SysManage from "@/views/Layout/AppMain/SysManage/SysManage";
+import SelfManage from "@/views/Layout/AppMain/SelfManage/SelfManage";
 const AppMain = [
   // 默认AppMain子路由
   { path: "", redirect: { path: "/dashboard" } },
@@ -58,6 +60,18 @@ const AppMain = [
     name: "detectReport",
     alias: "/detectReport",
     props: true
+  },
+  {
+    path: "selfManage",
+    name: "selfManage",
+    component: SelfManage,
+    alias: "/selfManage"
+  },
+  {
+    path: "sysManage",
+    name: "sysManage",
+    component: SysManage,
+    alias: "/sysManage"
   }
 ];
 export default AppMain;
