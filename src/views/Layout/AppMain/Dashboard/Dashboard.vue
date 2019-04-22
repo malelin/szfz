@@ -3,7 +3,7 @@
  * @LastEditors: 旺苍扛把子
  * @Description: 控制面板组件
  * @Date: 2019-03-29 10:14:42
- * @LastEditTime: 2019-04-19 16:09:40
+ * @LastEditTime: 2019-04-22 14:53:38
  -->
 <template>
   <div class="dashboard">
@@ -110,7 +110,11 @@
       </div>
       <div class="engine-container-body">
         <ul class="engine-list">
-          <li class="engine-item">
+          <li
+            class="engine-item"
+            @mouseenter="onEnterEngineSensi"
+            @mouseleave="onLeaveEngineSensi"
+          >
             <el-upload
               class="upload-sensi"
               drag
@@ -121,83 +125,70 @@
               :on-error="onSensiUploadErr"
               :on-success="onSensiUploadSuccess"
               :before-upload="SensiFileBeforeUpload"
+              :on-progress="onSensiUploadProgress"
             >
-              <div class="engine-item-header">
-                <svg-icon icon-class="mgxxfx"></svg-icon>
-                <span class="engine-name">敏感信息分析</span>
+              <!-- 上传内容说明盒子 -->
+              <div
+                class="upload-inner"
+                v-show="config.engines.engineSensi.showUploadInner"
+              >
+                <div class="engine-item-header">
+                  <svg-icon icon-class="mgxxfx"></svg-icon>
+                  <span class="engine-name">敏感信息分析</span>
+                </div>
+                <div class="engine-item-body">
+                  <p class="engine-desc">
+                    网络武器涉我安全性检测,从涉我语言信息泄露和开发痕迹两方面对网络武器二进制或源代码进行涉我安全性检测
+                  </p>
+                </div>
               </div>
-              <div class="engine-item-body">
-                <p class="engine-desc">
-                  我们这个引擎可牛逼了,我们这个引擎可牛逼了,我们这个引擎可牛逼了,
-                </p>
+              <div
+                class="upload-text-wrapper"
+                v-show="config.engines.engineSensi.showUploadText"
+              >
+                <svg-icon icon-class="add"></svg-icon>
+                <p class="upload-text">拖动到此处上传,或点击上传</p>
               </div>
-              <!-- <i class="el-icon-upload"></i>
-              <div class="el-upload__text">
-                将文件拖到此处，或<em>点击上传</em>
-              </div>
-              <div class="el-upload__tip" slot="tip">
-                只能上传jpg/png文件，且不超过500kb
-              </div> -->
             </el-upload>
+            <div
+              class="overlay"
+              v-show="config.engines.engineSensi.overlay.visible"
+            >
+              <el-progress
+                type="circle"
+                v-if="config.engines.engineSensi.showProgress"
+                :percentage="config.engines.engineSensi.progress.percentage"
+              ></el-progress>
+              <div
+                class="loading clearfix"
+                v-show="config.engines.engineSensi.isLoading"
+              >
+                <div class="loading-item"></div>
+                <div class="loading-item"></div>
+                <div class="loading-item"></div>
+                <div class="loading-item"></div>
+                <div class="loading-item"></div>
+                <p class="loading-text">正在创建任务</p>
+              </div>
+            </div>
+            <!-- 进度条盒子 -->
           </li>
-          <li class="engine-item">
-            <div class="engine-item-header">
-              <svg-icon icon-class="mgxxfx"></svg-icon>
-              <span class="engine-name">敏感信息分析</span>
-            </div>
-            <div class="engine-item-body">
-              <p class="engine-desc">
-                我们这个引擎可牛逼了,我们这个引擎可牛逼了,我们这个引擎可牛逼了,
-              </p>
-            </div>
-          </li>
-          <li class="engine-item">
-            <div class="engine-item-header">
-              <svg-icon icon-class="mgxxfx"></svg-icon>
-              <span class="engine-name">敏感信息分析</span>
-            </div>
-            <div class="engine-item-body">
-              <p class="engine-desc">
-                我们这个引擎可牛逼了,我们这个引擎可牛逼了,我们这个引擎可牛逼了,
-              </p>
-            </div>
-          </li>
-          <li class="engine-item">
-            <div class="engine-item-header">
-              <svg-icon icon-class="mgxxfx"></svg-icon>
-              <span class="engine-name">敏感信息分析</span>
-            </div>
-            <div class="engine-item-body">
-              <p class="engine-desc">
-                我们这个引擎可牛逼了,我们这个引擎可牛逼了,我们这个引擎可牛逼了,
-              </p>
-            </div>
-          </li>
-          <li class="engine-item">
-            <div class="engine-item-header">
-              <svg-icon icon-class="mgxxfx"></svg-icon>
-              <span class="engine-name">敏感信息分析</span>
-            </div>
-            <div class="engine-item-body">
-              <p class="engine-desc">
-                我们这个引擎可牛逼了,我们这个引擎可牛逼了,我们这个引擎可牛逼了,
-              </p>
-            </div>
-          </li>
-          <li class="engine-item">
-            <div class="engine-item-header">
-              <svg-icon icon-class="mgxxfx"></svg-icon>
-              <span class="engine-name">敏感信息分析</span>
-            </div>
-            <div class="engine-item-body">
-              <p class="engine-desc">
-                我们这个引擎可牛逼了,我们这个引擎可牛逼了,我们这个引擎可牛逼了,
-              </p>
-            </div>
-          </li>
+          <li></li>
         </ul>
       </div>
     </div>
+    <!-- <modal
+      name="modal-sensi"
+      :clickToClose="false"
+      :adaptive="true"
+      :height="126"
+      :classes="config.engines.engineSensi.modal.modalSensi.classes"
+    >
+      <el-progress
+        type="circle"
+        :percentage="config.engines.engineSensi.modal.progress.percentage"
+      ></el-progress>
+    </modal> -->
   </div>
 </template>
 
@@ -266,6 +257,23 @@ export default {
             action: process.env.VUE_APP_BASE_API + "/v1/filemanage/object",
             headers: {
               "Digark-Access-Header": sessionStorage.getItem("token")
+            },
+            // 是否正在上传中
+            isUploading: false,
+            showUploadInner: true,
+            showUploadText: false,
+            isLoading: false,
+            showProgress: false,
+            modal: {
+              modalSensi: {
+                classes: "modal-sensi"
+              }
+            },
+            progress: {
+              percentage: 0
+            },
+            overlay: {
+              visible: false
             }
           }
         }
@@ -402,6 +410,7 @@ export default {
      */
     async onSensiUploadSuccess({ status, data: object }) {
       if (status === 200) {
+        this.config.engines.engineSensi.overlay.visible = false;
         let obj = this._formatFile2SensiObject(object);
         let taskData = {
           model: 2,
@@ -425,6 +434,19 @@ export default {
       }
     },
     /**
+     * @description 敏感信息引擎上传中
+     */
+    async onSensiUploadProgress(event) {
+      this.config.engines.engineSensi.isUploading = true;
+      let percentage = parseInt(event.percent);
+      this.config.engines.engineSensi.progress.percentage = percentage;
+      if (percentage === 100) {
+        this.config.engines.engineSensi.progress.percentage = 0;
+        this.config.engines.engineSensi.showProgress = false;
+        this.config.engines.engineSensi.isLoading = true;
+      }
+    },
+    /**
      * @description 敏感信息引擎上传文件出错
      */
     onSensiUploadErr(err, file, fileList) {
@@ -433,7 +455,31 @@ export default {
     /**
      * @description 敏感信息引擎上传文件之前
      */
-    SensiFileBeforeUpload() {},
+    SensiFileBeforeUpload(file) {
+      let fileSize = file.size / 1024 / 1024;
+      if (fileSize > 30) {
+        this.$message({
+          type: "error",
+          message: "文件大小不能大于30MB"
+        });
+        return false;
+      }
+      this.config.engines.engineSensi.showProgress = true;
+      this.config.engines.engineSensi.overlay.visible = true;
+      this.config.engines.engineSensi.showUploadText = false;
+    },
+    onEnterEngineSensi() {
+      // 是否正在上传中
+      if (!this.config.engines.engineSensi.isUploading) {
+        this.config.engines.engineSensi.showUploadText = true;
+      }
+    },
+    onLeaveEngineSensi() {
+      // 是否正在上传中
+      if (!this.config.engines.engineSensi.isUploading) {
+        this.config.engines.engineSensi.showUploadText = false;
+      }
+    },
     /**
      * @description 把上传接受到的file类型格式的数据转化成object类型的敏感信息引擎创建任务的格式
      */
@@ -509,6 +555,39 @@ export default {
 .dashboard .el-upload-dragger {
   width: 100%;
   border-color: #fff;
+}
+
+.modal-sensi {
+  background-color: transparent;
+  text-align: center;
+}
+.engine-item .el-upload-dragger:hover {
+  border: none;
+}
+.engine-item .el-upload-dragger .upload-text-wrapper {
+  background-color: rgba(0, 0, 0, 0.1);
+  height: 180px;
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  color: #2a82e4;
+}
+.engine-item .upload-text-wrapper .svg-icon {
+  font-size: 50px;
+  margin-top: 50px;
+}
+.engine-item .el-upload-dragger .upload-text {
+  color: #2a82e4;
+  margin-top: 20px;
+}
+.dashboard .el-upload:focus .el-upload-dragger {
+  border: none;
+  color: #333;
+}
+.el-progress--circle .el-progress__text {
+  color: #2a82e4;
 }
 </style>
 
@@ -636,26 +715,92 @@ export default {
         height 100%
 
         .engine-item
+          position relative
           flex 0 0 33.33%
           box-sizing border-box
-          padding 20px
-          border 1px solid #ebeef5
+          color #333
 
-          &-header
-            display flex
-            align-items center
-            padding 0 0 10px 10px
+          .upload-inner
+            width 100%
 
-            >>>.svg-icon
-              font-size 40px
+            .engine-item-header
+              display flex
+              align-items center
+              padding 5px 0 10px 20px
 
-            .engine-name
-              padding-left 20px
-              color #333
-              font-weight 700
-              font-size 20px
+              >>>.svg-icon
+                font-size 40px
 
-          &-body
-            .engine-desc
-              color #999
+              .engine-name
+                padding-left 20px
+                color #333
+                font-weight 700
+                font-size 20px
+
+            .engine-item-body
+              .engine-desc
+                padding 0 20px
+                color #999
+                font-size 18px
+                line-height 26px
+
+        .overlay
+          position absolute
+          top 0
+          left 0
+          display flex
+          justify-content center
+          align-items center
+          width 100%
+          height 100%
+          background-color rgba(0, 0, 0, 0.2)
+
+          .svg-icon
+            font-size 50px
+            line-height 1
+
+.loading
+  .loading-text
+    padding-top 30px
+    color rgb(32, 160, 255)
+    text-align center
+
+  .loading-item
+    float left
+    margin 0 8px
+    width 8px
+    height 8px
+    border-radius 50%
+    background rgb(32, 160, 255)
+    animation loading-item linear 1s infinite
+    -webkit-animation loading-item linear 1s infinite
+
+  .loading-item:nth-child(1)
+    animation-delay 0s
+
+  .loading-item:nth-child(2)
+    animation-delay 0.15s
+
+  .loading-item:nth-child(3)
+    animation-delay 0.3s
+
+  .loading-item:nth-child(4)
+    animation-delay 0.45s
+
+  .loading-item:nth-child(5)
+    animation-delay 0.6s
+
+  @keyframes loading-item
+    0%, 60%, 100%
+      transform scale(1)
+
+    30%
+      transform scale(2.5)
+
+  @keyframes loading-item
+    0%, 60%, 100%
+      transform scale(1)
+
+    30%
+      transform scale(2.5)
 </style>
