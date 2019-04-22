@@ -16,3 +16,72 @@ export const getUserInfo = () =>
     method: "get",
     headers: { "Digark-Access-Header": sessionStorage.getItem("token") }
   });
+
+/**
+ * @description 修改用户昵称、头像或密码
+ * @export
+ * @param {*} data
+ * @returns
+ */
+export const updateUserInfo = data =>
+  request({
+    url: "/v1/sysmanage/user/current",
+    method: "put",
+    timeout: 200000,
+    data,
+    headers: {
+      "Digark-Access-Header": sessionStorage.getItem("token")
+    }
+  });
+
+/**
+ * @description 获得已注册用户列表
+ * @export
+ * @param {*} params
+ * @returns
+ */
+export const getUserList = params =>
+  request({
+    url: "/v1/sysmanage/users",
+    method: "get",
+    params: {
+      ...params
+    },
+    headers: {
+      "Digark-Access-Header": sessionStorage.getItem("token")
+    }
+  });
+
+/**
+ * @description 获得申请用户列表
+ * @export
+ * @param {*} data
+ * @returns
+ */
+export const getApplyUserList = params =>
+  request({
+    url: "/v1/sysmanage/users_apply",
+    method: "get",
+    params: {
+      ...params
+    },
+    headers: {
+      "Digark-Access-Header": sessionStorage.getItem("token")
+    }
+  });
+
+/**
+ * @description 修改用户高级信息
+ * @export
+ * @param {*} data
+ * @returns
+ */
+export const putUserAdvanceInfo = data =>
+  request({
+    url: "/v1/sysmanage/users",
+    method: "put",
+    data,
+    headers: {
+      "Digark-Access-Header": sessionStorage.getItem("token")
+    }
+  });
