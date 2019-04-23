@@ -3,7 +3,7 @@
  * @LastEditors: 旺苍扛把子
  * @Description: 封装任务详情和新建任务中的表格
  * @Date: 2019-04-12 09:46:16
- * @LastEditTime: 2019-04-18 10:20:07
+ * @LastEditTime: 2019-04-23 10:35:47
  -->
 <template>
   <div class="base-table">
@@ -468,7 +468,7 @@ export default {
       this.$modal.show("taskSetting");
     }, 300),
     /**
-     * @description 查看报告
+     * @description 查看报告鼠标移入
      * @param {row} 数组某一项
      */
     handleView: _.debounce(async function({ oid }) {
@@ -482,9 +482,12 @@ export default {
         console.log(e);
       }
     }, 300),
-
+    /**
+     * @description 查看报告鼠标点击某个报告
+     * @param {string} rid
+     */
     handleReportListClick: _.debounce(function(rid) {
-      this.$router.push({ name: "detectReport", params: { rid } });
+      this.$router.push({ path: `/detectReport/${rid}` });
     }, 300),
     /**
      * @description modal关闭
