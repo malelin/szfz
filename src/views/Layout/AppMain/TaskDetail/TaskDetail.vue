@@ -3,7 +3,7 @@
  * @LastEditors: 旺苍扛把子
  * @Description: 任务详情组件
  * @Date: 2019-04-11 14:32:10
- * @LastEditTime: 2019-04-18 10:20:52
+ * @LastEditTime: 2019-04-23 10:27:56
  -->
 <template>
   <div class="task-detail">
@@ -242,8 +242,8 @@ export default {
   .detail-header
     display flex
     justify-content space-between
-    margin-bottom 20px
-    padding 10px 10px 10px 40px
+    margin 0 12px 20px 6px
+    padding 15px 10px 10px 40px
     background-color #fff
     box-shadow 1px 0 10px #ccc
 
@@ -280,6 +280,7 @@ export default {
         width 200px
 
   .detail-body
+    margin 0 12px 20px 6px
     padding 10px
     background-color #fff
     box-shadow 1px 0 10px #ccc
