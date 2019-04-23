@@ -3,7 +3,7 @@
  * @LastEditors: 旺苍扛把子
  * @Description: 检测报告
  * @Date: 2019-04-16 10:07:40
- * @LastEditTime: 2019-04-23 16:30:02
+ * @LastEditTime: 2019-04-23 16:49:38
  -->
 <template>
   <div class="detect-report">
@@ -289,8 +289,6 @@
 import _ from "lodash";
 import axios from "axios";
 import { getReportMeta, getReportBasic, getReportSensi } from "@/api/report";
-import { createNamespacedHelpers } from "vuex";
-const { mapGetters } = createNamespacedHelpers("layout");
 export default {
   name: "DetectReport",
   components: {
@@ -360,7 +358,6 @@ export default {
     };
   },
   computed: {
-    ...mapGetters(["affix"]),
     target() {
       return { path: "/taskDetail/" + this.tid };
     }
