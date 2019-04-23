@@ -3,7 +3,7 @@
  * @LastEditors: 旺苍扛把子
  * @Description: 任务概览组件
  * @Date: 2019-04-01 18:17:27
- * @LastEditTime: 2019-04-19 10:54:16
+ * @LastEditTime: 2019-04-23 09:25:33
  -->
 <template>
   <div class="task-overview">
@@ -136,7 +136,7 @@
         class="c-el-table"
       >
         <el-table-column align="center" type="selection"> </el-table-column>
-        <el-table-column align="center" label="任务编号" prop="tid">
+        <el-table-column align="center" width="100" label="任务编号" prop="tid">
         </el-table-column>
         <el-table-column align="center" prop="taskName" label="任务名称">
         </el-table-column>
@@ -186,6 +186,7 @@
           align="center"
           prop="taskStatus"
           label="状态"
+          width="100"
           :filters="[
             { text: '完成', value: 1 },
             { text: '进行中', value: 2 },
@@ -202,7 +203,12 @@
             <status :status="row.taskStatus" />
           </template>
         </el-table-column>
-        <el-table-column align="center" prop="taskContent" label="任务内容">
+        <el-table-column
+          align="center"
+          prop="taskContent"
+          label="任务内容"
+          width="200"
+        >
           <template slot-scope="{ row }">
             <span class="task-item" v-if="row.taskHomo === 1">同源分析</span>
             <span class="task-item" v-if="row.taskAnti === 1"
@@ -219,7 +225,13 @@
             >
           </template>
         </el-table-column>
-        <el-table-column align="center" prop="operate" label="操作">
+        <el-table-column
+          fixed="right"
+          align="center"
+          prop="operate"
+          label="操作"
+          width="250"
+        >
           <template slot-scope="{ row, $index }">
             <el-button
               @click.native="handleTaskView(row, $index)"
