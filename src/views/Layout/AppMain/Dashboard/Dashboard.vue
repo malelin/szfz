@@ -3,7 +3,7 @@
  * @LastEditors: 旺苍扛把子
  * @Description: 控制面板组件
  * @Date: 2019-03-29 10:14:42
- * @LastEditTime: 2019-04-23 09:09:15
+ * @LastEditTime: 2019-04-23 10:12:43
  -->
 <template>
   <div class="dashboard">
@@ -137,9 +137,7 @@
                   <span class="engine-name">敏感信息分析</span>
                 </div>
                 <div class="engine-item-body">
-                  <p class="engine-desc">
-                    网络武器涉我安全性检测,从涉我语言信息泄露和开发痕迹两方面对网络武器二进制或源代码进行涉我安全性检测
-                  </p>
+                  <p class="engine-desc"></p>
                 </div>
               </div>
               <div
