@@ -3,7 +3,7 @@
  * @LastEditors: 旺苍扛把子
  * @Description: 检测报告
  * @Date: 2019-04-16 10:07:40
- * @LastEditTime: 2019-04-22 18:09:27
+ * @LastEditTime: 2019-04-23 09:36:16
  -->
 <template>
   <div class="detect-report">
@@ -277,6 +277,7 @@
 
 <script>
 import _ from "lodash";
+import axios from "axios";
 import { getReportMeta, getReportBasic, getReportSensi } from "@/api/report";
 export default {
   name: "DetectReport",
@@ -477,14 +478,10 @@ export default {
   beforeRouteEnter(to, from, next) {
     // 并发请求报告信息
     let rid = parseInt(to.params.rid);
-    this.$axios
+    axios
       .all([getReportMeta(rid), getReportBasic(rid), getReportSensi(rid)])
       .then(
-        this.$axios.spread(function(
-          resReportMeta,
-          resReportBasic,
-          resReportSensi
-        ) {
+        axios.spread(function(resReportMeta, resReportBasic, resReportSensi) {
           let { data: reportMeta } = resReportMeta;
           let { data: reportBasic } = resReportBasic;
           let { data: reportSensi } = resReportSensi;
