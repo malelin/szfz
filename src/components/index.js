@@ -6,9 +6,12 @@ import Chart from "@/components/Chart";
 import Copyright from "@/components/Copyright";
 // 任务状态组件
 import Status from "@/components/Status/Status";
+// 返回组件
+import Back from "@/components/Back/Back";
 export default {
   Chart,
   SvgIcon,
   Copyright,
-  Status
+  Status,
+  Back
 };

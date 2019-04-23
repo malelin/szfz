@@ -3,7 +3,7 @@
  * @LastEditors: 旺苍扛把子
  * @Description: 控制面板组件
  * @Date: 2019-03-29 10:14:42
- * @LastEditTime: 2019-04-23 10:12:43
+ * @LastEditTime: 2019-04-23 10:22:20
  -->
 <template>
   <div class="dashboard">
@@ -674,7 +674,7 @@ export default {
     .jcjgtj
       flex 0 0 54%
       overflow hidden
-      margin 12px 0
+      margin-bottom 12px
       background-color #fff
       box-shadow 0 2px 12px 0 rgba(0, 0, 0, 0.1)
 
@@ -683,7 +683,7 @@ export default {
 
     .wxlxfb
       flex 0 0 45%
-      margin 12px 0
+      margin-bottom 12px
       background-color #fff
       box-shadow 0 2px 12px 0 rgba(0, 0, 0, 0.1)
 

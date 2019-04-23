@@ -3,7 +3,7 @@
  * @LastEditors: 旺苍扛把子
  * @Description: 布局组件,包含SiderBar,NavBar,TagsView,AppMain
  * @Date: 2019-03-27 09:45:34
- * @LastEditTime: 2019-04-02 12:01:42
+ * @LastEditTime: 2019-04-23 10:40:50
  -->
 <template>
   <div class="layout">
@@ -14,7 +14,6 @@
     <!-- 右侧内容 -->
     <div class="main-container">
       <NavBar class="c-nav-bar" />
-      <TagsView class="c-tags-view" />
       <app-main />
     </div>
   </div>
@@ -24,7 +23,6 @@
 export default {
   name: "Layout",
   components: {
-    TagsView: () => import("./TagsView/TagsView"),
     NavBar: () => import("./NavBar/NavBar"),
     AppMain: () => import("./AppMain/AppMain"),
     SiderBar: () => import("./SiderBar/SiderBar")
@@ -53,6 +51,9 @@ export default {
   width 100%
   height 100%
   line-height 1
+
+  .c-nav-bar
+    margin-bottom 20px
 
   .siderbar-container
     float left

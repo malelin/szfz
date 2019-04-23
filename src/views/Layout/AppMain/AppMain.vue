@@ -3,7 +3,7 @@
  * @LastEditors: 旺苍扛把子
  * @Description: 内容主视图
  * @Date: 2019-03-27 10:03:14
- * @LastEditTime: 2019-04-12 14:32:46
+ * @LastEditTime: 2019-04-23 10:44:14
  -->
 <template>
   <div class="app-main">
@@ -52,6 +52,7 @@ export default {
 
 <style lang="stylus" scoped>
 .app-main
+  padding-top 20px
   height calc(100% - 96px)
   background-color #F0F2F5
   line-height 1

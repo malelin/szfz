@@ -3,7 +3,7 @@
  * @LastEditors: 旺苍扛把子
  * @Description: 任务概览组件
  * @Date: 2019-04-01 18:17:27
- * @LastEditTime: 2019-04-23 09:25:33
+ * @LastEditTime: 2019-04-23 10:37:49
  -->
 <template>
   <div class="task-overview">
@@ -525,7 +525,7 @@ export default {
      */
     handleTaskView: _.debounce(async function(row) {
       let tid = row.tid;
-      this.$router.push({ name: "taskDetail", params: { tid } });
+      this.$router.push({ path: `/taskDetail/${tid}` });
     }),
     /**
      * @description 过滤处理器
