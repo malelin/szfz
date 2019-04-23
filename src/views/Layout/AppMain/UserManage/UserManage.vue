@@ -1,9 +1,9 @@
 <!--
- * @Author: 旺苍扛把子
- * @LastEditors: malelin
+ * @Author: malelin
+ * @LastEditors: 旺苍扛把子
  * @Description: 用户管理组件
  * @Date: 2019-04-02 13:37:27
- * @LastEditTime: 2019-04-18 10:44:52
+ * @LastEditTime: 2019-04-23 09:48:30
  -->
 <template>
   <div class="user-manage">
@@ -985,47 +985,39 @@ export default {
 </script>
 
 <style lang="stylus" scoped>
-.user-manage {
-  display: flex;
-  flex-direction: column;
-  padding: 15px 15px 0;
-  background-color: #fff;
-  line-height: 1;
+.user-manage
+  display flex
+  flex-direction column
+  padding 15px 15px 0
+  background-color #fff
+  line-height 1
 
-  .c-modal {
-    .modal-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 10px;
-      padding: 0 20px;
-      border: 1px solid #ccc;
-      line-height: 40px;
-    }
+  .c-modal
+    .modal-header
+      display flex
+      justify-content space-between
+      align-items center
+      margin-bottom 10px
+      padding 0 20px
+      border 1px solid #ccc
+      line-height 40px
 
-    .modal-body {
-      width: 500px;
-      overflow: hidden;
-    }
+    .modal-body
+      overflow hidden
+      width 500px
 
-    .modal-footer {
-      display: flex;
-      justify-content: flex-end;
-      padding: 20px 20px 20px 0;
-    }
+    .modal-footer
+      display flex
+      justify-content flex-end
+      padding 20px 20px 20px 0
 
-    .svg-icon {
-      &:hover {
-        color: #409EFF;
-        cursor: pointer;
-      }
-    }
-  }
+    .svg-icon
+      &:hover
+        color #409EFF
+        cursor pointer
 
-  .table-container {
-    position: relative;
-    flex: 1;
-    overflow: hidden;
-  }
-}
+  .table-container
+    position relative
+    flex 1
+    overflow hidden
 </style>
