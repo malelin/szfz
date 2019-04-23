@@ -3,7 +3,7 @@
  * @LastEditors: 旺苍扛把子
  * @Description: 控制面板组件
  * @Date: 2019-03-29 10:14:42
- * @LastEditTime: 2019-04-22 15:56:41
+ * @LastEditTime: 2019-04-23 09:09:15
  -->
 <template>
   <div class="dashboard">
@@ -511,25 +511,28 @@ export default {
       };
     }
   },
-  created() {
-    getDetectRes()
-      .then(({ status, data }) => {
-        if (status === 200) {
-          this.detectRes = data;
-        }
-      })
-      .catch(err => {
-        console.log(err);
-      });
-    getThreatRes()
-      .then(({ status, data }) => {
-        if (status === 200) {
-          this.threatRes = data;
-        }
-      })
-      .catch(err => {
-        console.log(err);
-      });
+  created() {},
+  beforeRouteEnter(to, from, next) {
+    next(vm => {
+      getDetectRes()
+        .then(({ status, data }) => {
+          if (status === 200) {
+            vm.detectRes = data;
+          }
+        })
+        .catch(err => {
+          console.log(err);
+        });
+      getThreatRes()
+        .then(({ status, data }) => {
+          if (status === 200) {
+            vm.threatRes = data;
+          }
+        })
+        .catch(err => {
+          console.log(err);
+        });
+    });
   },
   mounted() {}
 };
@@ -730,7 +733,7 @@ export default {
             .engine-item-header
               display flex
               align-items center
-              padding 5px 0 10px 20px
+              padding 10px 0 10px 20px
 
               >>>.svg-icon
                 font-size 40px
@@ -745,7 +748,7 @@ export default {
               box-sizing border-box
 
               .engine-desc
-                padding 0 20px
+                padding 0 50px
                 color #999
                 font-size 18px
                 line-height 26px
