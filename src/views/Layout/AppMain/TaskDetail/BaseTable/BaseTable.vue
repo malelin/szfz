@@ -3,7 +3,7 @@
  * @LastEditors: 旺苍扛把子
  * @Description: 封装任务详情和新建任务中的表格
  * @Date: 2019-04-12 09:46:16
- * @LastEditTime: 2019-04-23 10:35:47
+ * @LastEditTime: 2019-04-23 16:25:36
  -->
 <template>
   <div class="base-table">
@@ -487,7 +487,13 @@ export default {
      * @param {string} rid
      */
     handleReportListClick: _.debounce(function(rid) {
-      this.$router.push({ path: `/detectReport/${rid}` });
+      this.$router.push({
+        name: `detectReport`,
+        params: {
+          rid,
+          tid: this.tid
+        }
+      });
     }, 300),
     /**
      * @description modal关闭

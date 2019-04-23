@@ -3,7 +3,7 @@
  * @LastEditors: 旺苍扛把子
  * @Description: layou组件的vuex数据
  * @Date: 2019-03-27 14:39:26
- * @LastEditTime: 2019-04-19 11:50:49
+ * @LastEditTime: 2019-04-23 16:36:53
  */
 // import Cookies from "js-cookie";
 
@@ -15,8 +15,13 @@ const layout = {
     // 菜单导航对应的路由
     defaultActive: "1-1",
     //默认打开的子菜单
-    defaultOpeneds: ["1"]
+    defaultOpeneds: ["1"],
+    // app-content滚动条
+    scrollbar: {
+      top: 0
+    }
   },
+  getters: {},
   mutations: {
     /**
      * @description 切换侧边栏显示
@@ -56,6 +61,15 @@ const layout = {
     spliceDefaultOpeneds(state, value) {
       let index = state.defaultOpeneds.indexOf(value);
       state.defaultOpeneds.splice(index, 1);
+    },
+
+    /**
+     * @description 设置app-content滚动条距离顶部的高度
+     * @param {*} state
+     * @param {*} value
+     */
+    setScrollbarTop(state, value) {
+      state.scrollbar.top = value;
     }
   },
   actions: {}

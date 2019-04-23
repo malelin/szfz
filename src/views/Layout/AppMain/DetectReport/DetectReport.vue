@@ -3,271 +3,281 @@
  * @LastEditors: 旺苍扛把子
  * @Description: 检测报告
  * @Date: 2019-04-16 10:07:40
- * @LastEditTime: 2019-04-23 09:36:16
+ * @LastEditTime: 2019-04-23 16:30:02
  -->
 <template>
   <div class="detect-report">
-    <div class="report-steps-wrapper">
-      <!-- 步骤条 -->
-      <el-steps direction="vertical" :active="steps.active">
-        <el-step
-          :title="step.title"
-          v-for="(step, index) in steps.list"
-          :key="step.title"
-          href="#basic"
-          @click.native="handleStepClick(index, step)"
-        ></el-step>
-      </el-steps>
-    </div>
-    <div class="report-content">
-      <!-- 报告元数据 -->
-      <div class="report-meta clearfix">
-        <div class="meta-info fl">
-          <div class="meta-obj-name">
-            <span class="meta-title">• 文件名称</span>
-            <span class="meta-content">{{ report.meta.objName }}</span>
-          </div>
-          <div class="meta-md5">
-            <span class="meta-title">• MD5</span>
-            <span class="meta-content">{{ report.meta.md5 }}</span>
-          </div>
-          <div class="meta-finish-time">
-            <span class="meta-title">• 检测完成时间</span>
-            <span class="meta-content">{{ report.meta.finishTime }}</span>
-          </div>
-          <div class="meta-detect-content">
-            <span class="meta-title">• 检测内容</span>
-            <el-tag
-              style="margin-right:5px;"
-              v-for="item in report.meta.detectContent"
-              :key="item.id"
-              >{{ item.detectContent }}</el-tag
-            >
-          </div>
-          <div class="meta-level">
-            <span class="meta-title">• 危险等级</span>
-            <span class="meta-content">{{ report.meta.level }}</span>
-          </div>
-          <div class="meta-tags" v-if="report.meta.tags.length">
-            <span class="meta-title">• 标签</span>
-            <el-tag
-              style="margin-right:5px;"
-              type="warning"
-              v-for="tag in report.meta.tags"
-              :key="tag.id"
-              >{{ tag }}</el-tag
-            >
-          </div>
-        </div>
-        <div class="meta-manipulate-wrapper fr">
-          <svg-icon icon-class="manipulate" class="manipulate-icon"></svg-icon>
-          <div class="manipulate" v-show="config.manipulate.visible">
-            <svg-icon icon-class="download" class="manipulate-item"></svg-icon>
-            <svg-icon icon-class="save" class="manipulate-item"></svg-icon>
-            <svg-icon icon-class="refresh" class="manipulate-item"></svg-icon>
-          </div>
-        </div>
+    <back :target="target" />
+    <div class="report-inner">
+      <div class="report-steps-wrapper">
+        <!-- 步骤条 -->
+        <el-steps direction="vertical" :active="steps.active">
+          <el-step
+            :title="step.title"
+            v-for="(step, index) in steps.list"
+            :key="step.title"
+            href="#basic"
+            @click.native="handleStepClick(index, step)"
+          ></el-step>
+        </el-steps>
       </div>
-      <!-- 报告基本信息 -->
-      <div class="report-basic" ref="basic">
-        <div class="basic-header">
-          <svg-icon icon-class="basic"></svg-icon>
-          <span class="basic-title">基本信息</span>
+      <div class="report-content">
+        <!-- 报告元数据 -->
+        <div class="report-meta clearfix">
+          <div class="meta-info fl">
+            <div class="meta-obj-name">
+              <span class="meta-title">• 文件名称</span>
+              <span class="meta-content">{{ report.meta.objName }}</span>
+            </div>
+            <div class="meta-md5">
+              <span class="meta-title">• MD5</span>
+              <span class="meta-content">{{ report.meta.md5 }}</span>
+            </div>
+            <div class="meta-finish-time">
+              <span class="meta-title">• 检测完成时间</span>
+              <span class="meta-content">{{ report.meta.finishTime }}</span>
+            </div>
+            <div class="meta-detect-content">
+              <span class="meta-title">• 检测内容</span>
+              <el-tag
+                style="margin-right:5px;"
+                v-for="item in report.meta.detectContent"
+                :key="item.id"
+                >{{ item.detectContent }}</el-tag
+              >
+            </div>
+            <div class="meta-level">
+              <span class="meta-title">• 危险等级</span>
+              <span class="meta-content">{{ report.meta.level }}</span>
+            </div>
+            <div class="meta-tags" v-if="report.meta.tags.length">
+              <span class="meta-title">• 标签</span>
+              <el-tag
+                style="margin-right:5px;"
+                type="warning"
+                v-for="tag in report.meta.tags"
+                :key="tag.id"
+                >{{ tag }}</el-tag
+              >
+            </div>
+          </div>
+          <div class="meta-manipulate-wrapper fr">
+            <svg-icon
+              icon-class="manipulate"
+              class="manipulate-icon"
+            ></svg-icon>
+            <div class="manipulate" v-show="config.manipulate.visible">
+              <svg-icon
+                icon-class="download"
+                class="manipulate-item"
+              ></svg-icon>
+              <svg-icon icon-class="save" class="manipulate-item"></svg-icon>
+              <svg-icon icon-class="refresh" class="manipulate-item"></svg-icon>
+            </div>
+          </div>
         </div>
-        <div class="basic-body">
-          <ul class="basic-list">
-            <li>
-              <span class="field">• 文件名称</span>
-              <span class="description">{{ report.basic.objName }}</span>
-            </li>
-            <li>
-              <span class="field">• 文件类型</span>
-              <span class="description">{{ report.basic.objType }}</span>
-            </li>
-            <li>
-              <span class="field">• 文件大小</span>
-              <span class="description">{{ report.basic.size }}</span>
-            </li>
-            <li>
-              <span class="field">• 上传时间</span>
-              <span class="description">{{ report.basic.uploadTime }}</span>
-            </li>
-            <li>
-              <span class="field">• MD5</span>
-              <span class="description">{{ report.basic.md5 }}</span>
-            </li>
-            <li>
-              <span class="field">• SHA1</span>
-              <span class="description">{{ report.basic.sha1 }}</span>
-            </li>
-            <li>
-              <span class="field">• SHA256</span>
-              <span class="description">{{ report.basic.sha256 }}</span>
-            </li>
-            <li>
-              <span class="field">• SSDEEP</span>
-              <span class="description">{{ report.basic.ssdeep }}</span>
-            </li>
-          </ul>
+        <!-- 报告基本信息 -->
+        <div class="report-basic" ref="basic">
+          <div class="basic-header">
+            <svg-icon icon-class="basic"></svg-icon>
+            <span class="basic-title">基本信息</span>
+          </div>
+          <div class="basic-body">
+            <ul class="basic-list">
+              <li>
+                <span class="field">• 文件名称</span>
+                <span class="description">{{ report.basic.objName }}</span>
+              </li>
+              <li>
+                <span class="field">• 文件类型</span>
+                <span class="description">{{ report.basic.objType }}</span>
+              </li>
+              <li>
+                <span class="field">• 文件大小</span>
+                <span class="description">{{ report.basic.size }}</span>
+              </li>
+              <li>
+                <span class="field">• 上传时间</span>
+                <span class="description">{{ report.basic.uploadTime }}</span>
+              </li>
+              <li>
+                <span class="field">• MD5</span>
+                <span class="description">{{ report.basic.md5 }}</span>
+              </li>
+              <li>
+                <span class="field">• SHA1</span>
+                <span class="description">{{ report.basic.sha1 }}</span>
+              </li>
+              <li>
+                <span class="field">• SHA256</span>
+                <span class="description">{{ report.basic.sha256 }}</span>
+              </li>
+              <li>
+                <span class="field">• SSDEEP</span>
+                <span class="description">{{ report.basic.ssdeep }}</span>
+              </li>
+            </ul>
+          </div>
         </div>
-      </div>
-      <!-- 报告敏感信息 -->
-      <div class="report-sensi" ref="sensi">
-        <div class="sensi-header">
-          <svg-icon icon-class="sensi"></svg-icon>
-          <span class="sensi-title">敏感信息</span>
-        </div>
-        <div class="sensi-body">
-          <!-- 语言信息 -->
-          <div class="sensi-type language-info">
-            <p class="title">语言信息</p>
-            <el-collapse
-              v-model="report.sensi.chineseStringConfig.activeCollapseItems"
-            >
-              <el-collapse-item title="• 中文字符串" name="1">
-                <el-table
-                  :data="report.sensi.languageInfo.chineseStrings"
-                  border
-                >
-                  <el-table-column prop="offset" label="偏移">
-                  </el-table-column>
-                  <el-table-column prop="value" label="内容"> </el-table-column>
-                </el-table>
-              </el-collapse-item>
-              <el-collapse-item title="• 资源特性信息" name="2">
-                <el-table
-                  :data="report.sensi.languageInfo.sensitiveLanguage"
-                  border
-                >
-                  <el-table-column prop="offset" label="偏移">
-                  </el-table-column>
-                  <el-table-column prop="language" label="语言">
-                  </el-table-column>
-                  <el-table-column prop="sublanguage" label="子语言">
-                  </el-table-column>
-                </el-table>
-              </el-collapse-item>
-              <el-collapse-item title="• 敏感特征信息" name="3">
-                <el-card
-                  class="box-card"
-                  style="margin-top:20px;"
-                  shadow="hover"
-                >
-                  <div slot="header" class="clearfix">
-                    <span class="sensi-feature-title">• 清单文件</span>
-                  </div>
+        <!-- 报告敏感信息 -->
+        <div class="report-sensi" ref="sensi">
+          <div class="sensi-header">
+            <svg-icon icon-class="sensi"></svg-icon>
+            <span class="sensi-title">敏感信息</span>
+          </div>
+          <div class="sensi-body">
+            <!-- 语言信息 -->
+            <div class="sensi-type language-info">
+              <p class="title">语言信息</p>
+              <el-collapse
+                v-model="report.sensi.chineseStringConfig.activeCollapseItems"
+              >
+                <el-collapse-item title="• 中文字符串" name="1">
                   <el-table
-                    :data="report.sensi.languageInfo.sensiFeatures.mainfest"
+                    :data="report.sensi.languageInfo.chineseStrings"
                     border
                   >
-                    <el-table-column prop="filename" label="文件名">
-                    </el-table-column>
-                    <el-table-column prop="offset" label="偏移">
-                    </el-table-column>
-                    <el-table-column prop="size" label="大小">
-                    </el-table-column>
-                  </el-table>
-                </el-card>
-                <el-card
-                  class="box-card"
-                  style="margin-top:20px;"
-                  shadow="hover"
-                >
-                  <div slot="header" class="clearfix">
-                    <span class="sensi-feature-title">• 敏感字符</span>
-                  </div>
-                  <el-table
-                    :data="
-                      report.sensi.languageInfo.sensiFeatures.sensitiveChars
-                    "
-                    border
-                  >
-                    <el-table-column prop="filename" label="文件名">
-                    </el-table-column>
                     <el-table-column prop="offset" label="偏移">
                     </el-table-column>
                     <el-table-column prop="value" label="内容">
                     </el-table-column>
                   </el-table>
-                </el-card>
-                <el-card
-                  class="box-card"
-                  style="margin-top:20px;"
-                  shadow="hover"
-                >
-                  <div slot="header" class="clearfix">
-                    <span class="sensi-feature-title">• 拼音</span>
-                  </div>
+                </el-collapse-item>
+                <el-collapse-item title="• 资源特性信息" name="2">
                   <el-table
-                    :data="report.sensi.languageInfo.sensiFeatures.pinyins"
+                    :data="report.sensi.languageInfo.sensitiveLanguage"
                     border
                   >
-                    <el-table-column prop="filename" label="文件名">
-                    </el-table-column>
                     <el-table-column prop="offset" label="偏移">
                     </el-table-column>
-                    <el-table-column prop="value" label="内容">
+                    <el-table-column prop="language" label="语言">
+                    </el-table-column>
+                    <el-table-column prop="sublanguage" label="子语言">
                     </el-table-column>
                   </el-table>
-                </el-card>
-                <el-card
-                  class="box-card"
-                  style="margin-top:20px;"
-                  shadow="hover"
-                >
-                  <div slot="header" class="clearfix">
-                    <span class="sensi-feature-title"
-                      >• version资源中存在中文</span
+                </el-collapse-item>
+                <el-collapse-item title="• 敏感特征信息" name="3">
+                  <el-card
+                    class="box-card"
+                    style="margin-top:20px;"
+                    shadow="hover"
+                  >
+                    <div slot="header" class="clearfix">
+                      <span class="sensi-feature-title">• 清单文件</span>
+                    </div>
+                    <el-table
+                      :data="report.sensi.languageInfo.sensiFeatures.mainfest"
+                      border
                     >
-                  </div>
-                  <el-table
-                    :data="
-                      report.sensi.languageInfo.sensiFeatures.versionChineses
-                    "
-                    border
+                      <el-table-column prop="filename" label="文件名">
+                      </el-table-column>
+                      <el-table-column prop="offset" label="偏移">
+                      </el-table-column>
+                      <el-table-column prop="size" label="大小">
+                      </el-table-column>
+                    </el-table>
+                  </el-card>
+                  <el-card
+                    class="box-card"
+                    style="margin-top:20px;"
+                    shadow="hover"
                   >
-                    <el-table-column prop="filename" label="文件名">
-                    </el-table-column>
-                    <el-table-column prop="offset" label="偏移">
-                    </el-table-column>
-                    <el-table-column prop="value" label="内容">
-                    </el-table-column>
-                  </el-table>
-                </el-card>
-              </el-collapse-item>
-            </el-collapse>
-          </div>
-          <!-- kf痕迹 -->
-          <div class="sensi-type develop-trace">
-            <p class="title">
-              开发痕迹
-            </p>
-            <el-card shadow="hover">
-              <div class="development-trace-item">
-                <span class="title">• PDB调试符号路径</span
-                ><span class="content">
-                  {{ report.sensi.developmentTrace.pdb || "---------" }}</span
-                >
-              </div>
-              <div class="development-trace-item">
-                <span class="title">• 编译时间</span
-                ><span class="content">{{
-                  report.sensi.developmentTrace.compileTime || "---------"
-                }}</span>
-              </div>
-              <div class="development-trace-item">
-                <span class="title">• CodePage</span
-                ><span class="content">{{
-                  report.sensi.developmentTrace.codePage || "---------"
-                }}</span>
-              </div>
-              <div class="development-trace-item">
-                <span class="title">• 作者</span
-                ><span class="content">{{
-                  report.sensi.developmentTrace.author || "---------"
-                }}</span>
-              </div>
-            </el-card>
+                    <div slot="header" class="clearfix">
+                      <span class="sensi-feature-title">• 敏感字符</span>
+                    </div>
+                    <el-table
+                      :data="
+                        report.sensi.languageInfo.sensiFeatures.sensitiveChars
+                      "
+                      border
+                    >
+                      <el-table-column prop="filename" label="文件名">
+                      </el-table-column>
+                      <el-table-column prop="offset" label="偏移">
+                      </el-table-column>
+                      <el-table-column prop="value" label="内容">
+                      </el-table-column>
+                    </el-table>
+                  </el-card>
+                  <el-card
+                    class="box-card"
+                    style="margin-top:20px;"
+                    shadow="hover"
+                  >
+                    <div slot="header" class="clearfix">
+                      <span class="sensi-feature-title">• 拼音</span>
+                    </div>
+                    <el-table
+                      :data="report.sensi.languageInfo.sensiFeatures.pinyins"
+                      border
+                    >
+                      <el-table-column prop="filename" label="文件名">
+                      </el-table-column>
+                      <el-table-column prop="offset" label="偏移">
+                      </el-table-column>
+                      <el-table-column prop="value" label="内容">
+                      </el-table-column>
+                    </el-table>
+                  </el-card>
+                  <el-card
+                    class="box-card"
+                    style="margin-top:20px;"
+                    shadow="hover"
+                  >
+                    <div slot="header" class="clearfix">
+                      <span class="sensi-feature-title"
+                        >• version资源中存在中文</span
+                      >
+                    </div>
+                    <el-table
+                      :data="
+                        report.sensi.languageInfo.sensiFeatures.versionChineses
+                      "
+                      border
+                    >
+                      <el-table-column prop="filename" label="文件名">
+                      </el-table-column>
+                      <el-table-column prop="offset" label="偏移">
+                      </el-table-column>
+                      <el-table-column prop="value" label="内容">
+                      </el-table-column>
+                    </el-table>
+                  </el-card>
+                </el-collapse-item>
+              </el-collapse>
+            </div>
+            <!-- kf痕迹 -->
+            <div class="sensi-type develop-trace">
+              <p class="title">
+                开发痕迹
+              </p>
+              <el-card shadow="hover">
+                <div class="development-trace-item">
+                  <span class="title">• PDB调试符号路径</span
+                  ><span class="content">
+                    {{ report.sensi.developmentTrace.pdb || "---------" }}</span
+                  >
+                </div>
+                <div class="development-trace-item">
+                  <span class="title">• 编译时间</span
+                  ><span class="content">{{
+                    report.sensi.developmentTrace.compileTime || "---------"
+                  }}</span>
+                </div>
+                <div class="development-trace-item">
+                  <span class="title">• CodePage</span
+                  ><span class="content">{{
+                    report.sensi.developmentTrace.codePage || "---------"
+                  }}</span>
+                </div>
+                <div class="development-trace-item">
+                  <span class="title">• 作者</span
+                  ><span class="content">{{
+                    report.sensi.developmentTrace.author || "---------"
+                  }}</span>
+                </div>
+              </el-card>
+            </div>
           </div>
         </div>
       </div>
@@ -279,13 +289,15 @@
 import _ from "lodash";
 import axios from "axios";
 import { getReportMeta, getReportBasic, getReportSensi } from "@/api/report";
+import { createNamespacedHelpers } from "vuex";
+const { mapGetters } = createNamespacedHelpers("layout");
 export default {
   name: "DetectReport",
   components: {
     /* 按需加载组件 */
     // demo: () => import('@/pages/')
   },
-  props: ["rid"],
+  props: ["rid", "tid"],
   data() {
     return {
       // 步骤条
@@ -347,7 +359,12 @@ export default {
       }
     };
   },
-  computed: {},
+  computed: {
+    ...mapGetters(["affix"]),
+    target() {
+      return { path: "/taskDetail/" + this.tid };
+    }
+  },
   watch: {},
   methods: {
     /**
@@ -514,7 +531,8 @@ export default {
 
 <style lang="stylus" scoped>
 .detect-report
-  padding 20px
+  margin-top 43px
+  padding 0 20px 20px 20px
   background-color #fff
 
   .report-steps-wrapper
@@ -526,7 +544,7 @@ export default {
     transform translateY(-50%)
 
   .report-content
-    padding-left 310px
+    padding 20px 0 0 310px
 
     .report-meta
       margin 12px

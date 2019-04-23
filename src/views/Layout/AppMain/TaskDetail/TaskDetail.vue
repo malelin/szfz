@@ -3,10 +3,11 @@
  * @LastEditors: 旺苍扛把子
  * @Description: 任务详情组件
  * @Date: 2019-04-11 14:32:10
- * @LastEditTime: 2019-04-23 10:27:56
+ * @LastEditTime: 2019-04-23 16:37:21
  -->
 <template>
   <div class="task-detail">
+    <back :target="{ path: '/taskOverview' }" />
     <div class="detail-header">
       <div class="header-left">
         <el-form
@@ -167,9 +168,7 @@ export default {
       // 当前编辑的任务
       currentEditItem: -1,
       // 当前编辑row
-      currentRow: {},
-      // 计时器
-      timer: null
+      currentRow: {}
     };
   },
   computed: {
@@ -243,9 +242,13 @@ export default {
     display flex
     justify-content space-between
     margin 0 12px 20px 6px
+    margin-top 43px
     padding 15px 10px 10px 40px
     background-color #fff
     box-shadow 1px 0 10px #ccc
+
+    &.affix
+      margin-top 40px
 
     .header-left
       padding-left 50px

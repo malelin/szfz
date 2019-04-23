@@ -3,17 +3,14 @@
  * @LastEditors: 旺苍扛把子
  * @Description: 内容主视图
  * @Date: 2019-03-27 10:03:14
- * @LastEditTime: 2019-04-23 13:56:00
+ * @LastEditTime: 2019-04-23 16:35:40
  -->
 <template>
   <div class="app-main">
     <div class="app-content">
-      <Back />
-      <div class="scroller-wrapper">
-        <el-scrollbar class="c-el-scrollbar">
-          <router-view class="app-main__router-view" />
-        </el-scrollbar>
-      </div>
+      <el-scrollbar class="c-el-scrollbar">
+        <router-view class="app-main__router-view" />
+      </el-scrollbar>
     </div>
   </div>
 </template>
@@ -61,13 +58,7 @@ export default {
   line-height 1
 
   .app-content
-    display flex
-    flex-direction column
     box-sizing border-box
-    padding 0 20px
+    padding 15px
     height 100%
-
-    .scroller-wrapper
-      flex 1
-      overflow hidden
 </style>
