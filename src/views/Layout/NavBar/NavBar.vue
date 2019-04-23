@@ -6,7 +6,7 @@
 <<<<<<< HEAD
  * @LastEditTime: 2019-04-22 18:04:18
 =======
- * @LastEditTime: 2019-04-22 18:19:39
+ * @LastEditTime: 2019-04-23 11:17:16
 >>>>>>> e9358a9e7517c0f68dc55802301c5129eaccfe63
  -->
 <template>
@@ -16,12 +16,6 @@
       class-name="svg-collapse"
       @click.native="toggleISCollapse"
     ></svg-icon>
-    <el-breadcrumb separator="|">
-      <el-breadcrumb-item :to="{ path: '/' }">数字方舟</el-breadcrumb-item>
-      <el-breadcrumb-item>活动管理</el-breadcrumb-item>
-      <el-breadcrumb-item>活动列表</el-breadcrumb-item>
-      <el-breadcrumb-item>活动详情</el-breadcrumb-item>
-    </el-breadcrumb>
     <el-input
       placeholder="搜索IP、域名、文件HASH、邮箱"
       v-model="searchText"
