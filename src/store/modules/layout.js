@@ -3,7 +3,7 @@
  * @LastEditors: 旺苍扛把子
  * @Description: layou组件的vuex数据
  * @Date: 2019-03-27 14:39:26
- * @LastEditTime: 2019-04-23 16:36:53
+ * @LastEditTime: 2019-04-24 11:19:04
  */
 // import Cookies from "js-cookie";
 
@@ -19,6 +19,10 @@ const layout = {
     // app-content滚动条
     scrollbar: {
       top: 0
+    },
+    // 任务对象
+    task: {
+      tid: 0
     }
   },
   getters: {},
@@ -70,6 +74,14 @@ const layout = {
      */
     setScrollbarTop(state, value) {
       state.scrollbar.top = value;
+    },
+    /**
+     * @description 设置任务id
+     * @param {*} state
+     * @param {*} tid
+     */
+    setTaskTid(state, tid) {
+      state.task.tid = tid;
     }
   },
   actions: {}

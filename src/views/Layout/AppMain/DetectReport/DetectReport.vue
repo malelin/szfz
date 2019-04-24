@@ -3,7 +3,7 @@
  * @LastEditors: 旺苍扛把子
  * @Description: 检测报告
  * @Date: 2019-04-16 10:07:40
- * @LastEditTime: 2019-04-24 11:03:18
+ * @LastEditTime: 2019-04-24 11:18:02
  -->
 <template>
   <div class="detect-report">
@@ -67,7 +67,9 @@
               class="manipulate-icon"
             ></svg-icon>
             <div class="manipulate" v-show="config.manipulate.visible">
-              <a :href="report.meta.downloadLink" download="aaa"
+              <a
+                :href="report.meta.downloadLink"
+                download="report.meta.downloadName"
                 ><svg-icon icon-class="download" class="manipulate-item">
                 </svg-icon
               ></a>
@@ -286,6 +288,8 @@
 </template>
 
 <script>
+import { createNamespacedHelpers } from "vuex";
+const { mapState } = createNamespacedHelpers("layout");
 import _ from "lodash";
 import axios from "axios";
 import { getReportMeta, getReportBasic, getReportSensi } from "@/api/report";
@@ -360,8 +364,9 @@ export default {
     };
   },
   computed: {
+    ...mapState(["task"]),
     target() {
-      return { path: "/taskDetail/" + this.tid };
+      return { path: "/taskDetail/" + this.task.tid };
     }
   },
   watch: {},

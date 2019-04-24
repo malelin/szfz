@@ -3,7 +3,7 @@
  * @LastEditors: 旺苍扛把子
  * @Description: 封装任务详情和新建任务中的表格
  * @Date: 2019-04-12 09:46:16
- * @LastEditTime: 2019-04-23 16:25:36
+ * @LastEditTime: 2019-04-24 11:12:29
  -->
 <template>
   <div class="base-table">
@@ -183,6 +183,8 @@
 </template>
 
 <script>
+import { createNamespacedHelpers } from "vuex";
+const { mapMutations } = createNamespacedHelpers("layout");
 import _ from "lodash";
 import { getTaskDetailList, createAndExecuteTask } from "@/api/task";
 import { getReportList } from "@/api/report";
@@ -360,6 +362,7 @@ export default {
     }
   },
   methods: {
+    ...mapMutations(["setTaskTid"]),
     /**
      * @description modal打开之前,获取数据
      */
@@ -487,11 +490,11 @@ export default {
      * @param {string} rid
      */
     handleReportListClick: _.debounce(function(rid) {
+      this.setTaskTid(this.tid);
       this.$router.push({
         name: `detectReport`,
         params: {
-          rid,
-          tid: this.tid
+          rid
         }
       });
     }, 300),
