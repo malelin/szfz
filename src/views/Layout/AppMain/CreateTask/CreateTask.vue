@@ -3,7 +3,7 @@
  * @LastEditors: 旺苍扛把子
  * @Description: 新建任务组件
  * @Date: 2019-04-02 09:23:23
- * @LastEditTime: 2019-04-18 09:17:06
+ * @LastEditTime: 2019-04-24 16:17:00
  -->
 
 <template>
@@ -526,10 +526,10 @@ export default {
      * @description 批量设置
      */
     handleSettings: _.debounce(async function() {
-      if (this.multipleSelection.length === 0) {
+      if (this.taskTable.length === 0) {
         this.$message({
           type: "warning",
-          message: "请选择任务"
+          message: "请先添加文件"
         });
       } else {
         this.$modal.show("taskSetting");
