@@ -3,7 +3,7 @@
  * @LastEditors: 旺苍扛把子
  * @Description: 新建任务组件
  * @Date: 2019-04-02 09:23:23
- * @LastEditTime: 2019-04-24 16:17:00
+ * @LastEditTime: 2019-04-24 16:44:59
  -->
 
 <template>
@@ -46,7 +46,7 @@
         <el-button @click.native="handleCancel" size="mini">取消</el-button>
       </div>
     </modal>
-    <div class="task-info">
+    <div class="task-info box-shadow-6">
       <el-form ref="form" :model="taskForm" label-width="80px">
         <el-form-item label="任务名称 :">
           <el-row :gutter="5"
@@ -74,7 +74,7 @@
         </el-form-item>
       </el-form>
     </div>
-    <div class="task-settings">
+    <div class="task-settings box-shadow-6">
       <div class="settings-header">
         <h2>任务设置</h2>
         <div class="tool-box">

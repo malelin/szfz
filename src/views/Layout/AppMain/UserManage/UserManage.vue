@@ -3,10 +3,10 @@
  * @LastEditors: 旺苍扛把子
  * @Description: 用户管理组件
  * @Date: 2019-04-02 13:37:27
- * @LastEditTime: 2019-04-23 09:48:30
+ * @LastEditTime: 2019-04-24 16:45:53
  -->
 <template>
-  <div class="user-manage">
+  <div class="user-manage  box-shadow-6">
     <!-- 重置密码弹出框 -->
     <modal
       name="resetPassword"

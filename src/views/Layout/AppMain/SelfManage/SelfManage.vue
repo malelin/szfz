@@ -1,12 +1,12 @@
 <!--
  * @Author: MaLelin
- * @LastEditors: MaLelin
+ * @LastEditors: 旺苍扛把子
  * @Description: 个人信息编辑
  * @Date: 2019-04-15 12:00:00
- * @LastEditTime: 2019-04-15 12:00:00
+ * @LastEditTime: 2019-04-24 16:45:30
  -->
 <template>
-  <div class="self-manage">
+  <div class="self-manage  box-shadow-6">
     <!-- 头像编辑弹出框 -->
     <modal
       name="avatarSetting"
