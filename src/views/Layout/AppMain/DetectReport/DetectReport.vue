@@ -3,7 +3,7 @@
  * @LastEditors: 旺苍扛把子
  * @Description: 检测报告
  * @Date: 2019-04-16 10:07:40
- * @LastEditTime: 2019-04-24 10:09:49
+ * @LastEditTime: 2019-04-24 11:03:18
  -->
 <template>
   <div class="detect-report">
@@ -67,10 +67,10 @@
               class="manipulate-icon"
             ></svg-icon>
             <div class="manipulate" v-show="config.manipulate.visible">
-              <svg-icon
-                icon-class="download"
-                class="manipulate-item"
-              ></svg-icon>
+              <a :href="report.meta.downloadLink" download="aaa"
+                ><svg-icon icon-class="download" class="manipulate-item">
+                </svg-icon
+              ></a>
               <svg-icon icon-class="save" class="manipulate-item"></svg-icon>
               <svg-icon icon-class="refresh" class="manipulate-item"></svg-icon>
             </div>
@@ -319,7 +319,9 @@ export default {
           finishTime: "",
           md5: "",
           objName: "",
-          tags: []
+          tags: [],
+          downloadLink:
+            "http://fastsoft.onlinedown.net/down/haozip_v5.9.8.10920.exe"
         },
         // 基本信息
         basic: {
@@ -371,8 +373,9 @@ export default {
       this.steps.active = index;
       this.goAnchor(step.ref);
     },
-
-    // 锚点跳转
+    /**
+     * @description 锚点跳转
+     */
     goAnchor(ref) {
       let scrollbar = document.querySelector(
         ".app-content .el-scrollbar__wrap"
@@ -433,14 +436,18 @@ export default {
       let pdb = pdbTemp === undefined ? "---------" : pdbTemp.marks[0].pdb_path;
       return { author, compileTime, codePage, pdb };
     },
-    //中文字符串
+    /**
+     * @description 中文字符串
+     */
     _getChineseStrings(signatures) {
       let chineseStringTemp = signatures.find(signature => {
         return signature.name === "has_chinese";
       });
       return chineseStringTemp === undefined ? [] : chineseStringTemp.marks;
     },
-    // 敏感特征信息
+    /**
+     * @description 敏感特征信息
+     */
     _getSensiFeature(signatures) {
       // 清单文件
       let mainfestTemp = signatures.find(signature => {
@@ -472,7 +479,9 @@ export default {
         versionChineses
       };
     },
-    // 敏感信息
+    /**
+     * @description 敏感信息总对象
+     */
     getSensi(signatures) {
       // 敏感信息为空
       if (signatures.length === 0) {
@@ -485,6 +494,17 @@ export default {
         let developmentTrace = this._getDevelopmentTrace(signatures);
         return { languageInfo, developmentTrace };
       }
+    },
+    /**
+     * @description 下载报告
+     */
+    handleReportDownload(downloadLink) {
+      let aTag = document.createElement("a");
+      let blob = new Blob(downloadLink); // 这个content是下载的文件内容，自己修改
+      aTag.download = "报告"; // 下载的文件名
+      aTag.href = URL.createObjectURL(blob);
+      aTag.click();
+      URL.revokeObjectURL(blob);
     }
   },
   created() {},
