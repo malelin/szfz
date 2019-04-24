@@ -1,0 +1,197 @@
+span {
+  display: inline-block;
+}
+
+ul {
+  list-style-type: none;
+}
+
+.detect-report .el-collapse-item__header {
+  font-size: 16px;
+}
+
+.detect-report .el-step {
+  cursor: pointer;
+}
+
+/* style */
+.detect-report {
+  margin-top: 43px;
+  padding: 0 20px 20px 20px;
+  background-color: #fff;
+}
+
+.detect-report .report-steps-wrapper {
+  position: fixed;
+  top: 30%;
+  left: 30px;
+  width: 300px;
+  height: 400px;
+  transform: translateY(-50%)
+}
+
+.detect-report .report-content {
+  padding: 20px 0 0 310px;
+}
+
+.detect-report .report-content .report-meta {
+  margin: 12px;
+  padding: 20px;
+  border: 1px solid #ebeef5;
+  border-radius: 4px;
+  background-color: #fff;
+  box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.1);
+  font-size: 14px;
+}
+
+.detect-report .report-content .report-meta .meta-info>div {
+  padding: 10px 0;
+}
+
+.detect-report .report-content .report-meta .meta-info>div .meta-title {
+  width: 150px;
+  color: #666;
+  color: #2a82e4;
+  text-align: left
+}
+
+.detect-report .report-content .report-meta .meta-info>div .meta-content {
+  color: #999
+}
+
+.detect-report .report-content .report-meta .meta-manipulate-wrapper .svg-icon {
+  display: block;
+  font-size: 25px
+}
+
+.detect-report .report-content .report-meta .meta-manipulate-wrapper .manipulate-icon {
+  fill: #2a82e4;
+}
+
+.detect-report .report-content .report-meta .meta-manipulate-wrapper .manipulate-icon:hover {
+  border-radius: 50%;
+  cursor: pointer;
+  fill: #44668c
+}
+
+.detect-report .report-content .report-meta .meta-manipulate-wrapper .manipulate {
+  margin-top: 15px;
+  line-height: 1;
+}
+
+.detect-report .report-content .report-meta .meta-manipulate-wrapper .manipulate .manipulate-item {
+  padding-top: 15px;
+  cursor: pointer;
+  fill: #a6a6a6;
+}
+
+.detect-report .report-content .report-meta .meta-manipulate-wrapper .manipulate .manipulate-item:hover {
+  fill: #4391e7
+}
+
+.detect-report .report-content .report-basic {
+  margin: 12px;
+  border: 1px solid #ebeef5;
+  box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.1);
+  font-size: 14px;
+}
+
+.detect-report .report-content .report-basic .basic-header {
+  padding: 10px 20px;
+  border-bottom: 1px solid #ebeef5;
+  font-size: 0;
+}
+
+.detect-report .report-content .report-basic .basic-header .svg-icon {
+  vertical-align: middle;
+  font-size: 30px
+}
+
+.detect-report .report-content .report-basic .basic-header .basic-title {
+  margin-left: 15px;
+  vertical-align: middle;
+  font-size: 20px
+}
+
+.detect-report .report-content .report-basic .basic-body {
+  padding: 10px 20px;
+}
+
+.detect-report .report-content .report-basic .basic-body .basic-list>li {
+  padding: 10px 0;
+  color: #666;
+}
+
+.detect-report .report-content .report-basic .basic-body .basic-list>li .field {
+  display: inline-block;
+  width: 150px;
+  color: #2a82e4
+}
+
+.detect-report .report-content .report-basic .basic-body .basic-list>li .description {
+  color: #999
+}
+
+.detect-report .report-content .report-sensi {
+  margin: 12px;
+  border: 1px solid #ebeef5;
+  box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.1);
+  font-size: 14px;
+}
+
+.detect-report .report-content .report-sensi .sensi-header {
+  padding: 10px 20px;
+  border-bottom: 1px solid #ebeef5;
+  font-size: 0;
+}
+
+.detect-report .report-content .report-sensi .sensi-header .svg-icon {
+  vertical-align: middle;
+  font-size: 30px
+}
+
+.detect-report .report-content .report-sensi .sensi-header .sensi-title {
+  margin-left: 15px;
+  vertical-align: middle;
+  font-size: 20px
+}
+
+.detect-report .report-content .report-sensi .sensi-body {
+  padding: 10px 20px;
+}
+
+.detect-report .report-content .report-sensi .sensi-body .sensi-type {
+  padding: 10px 0;
+}
+
+.detect-report .report-content .report-sensi .sensi-body .sensi-type>.title {
+  padding-bottom: 15px;
+  vertical-align: middle;
+  font-weight: 600;
+  font-size: 16px;
+  line-height: 25px;
+}
+
+.detect-report .report-content .report-sensi .sensi-body .sensi-type>.title::before {
+  display: inline-block;
+  margin-right: 8px;
+  width: 3px;
+  height: 25px;
+  background-color: #73aded;
+  content: '';
+  vertical-align: middle
+}
+
+.detect-report .report-content .report-sensi .sensi-body .sensi-type .box-card .sensi-feature-title {
+  color: #2a82e4;
+  font-size: 15px
+}
+
+.detect-report .report-content .report-sensi .sensi-body .sensi-type .development-trace-item {
+  padding: 10px 0;
+}
+
+.detect-report .report-content .report-sensi .sensi-body .sensi-type .development-trace-item .title {
+  width: 250px;
+  color: #2a82e4
+}
