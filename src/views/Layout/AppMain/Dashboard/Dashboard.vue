@@ -3,7 +3,7 @@
  * @LastEditors: 旺苍扛把子
  * @Description: 控制面板组件
  * @Date: 2019-03-29 10:14:42
- * @LastEditTime: 2019-04-24 15:53:44
+ * @LastEditTime: 2019-04-24 16:35:18
  -->
 <template>
   <div class="dashboard">
@@ -720,8 +720,9 @@ export default {
     .jcjgtj
       flex 0 0 54%
       overflow hidden
-      margin-bottom 12px
+      margin 8px 0
       background-color #fff
+      border-radius 6px
       box-shadow 0 2px 12px 0 rgba(0, 0, 0, 0.1)
 
       &:hover
@@ -729,7 +730,8 @@ export default {
 
     .wxlxfb
       flex 0 0 45%
-      margin-bottom 12px
+      border-radius 6px
+      margin 8px 0
       background-color #fff
       box-shadow 0 2px 12px 0 rgba(0, 0, 0, 0.1)
 
@@ -738,8 +740,8 @@ export default {
 
   .engine-container
     box-sizing border-box
-    margin 0 12px
-    margin-bottom 20px
+    margin 8px 12px
+    border-radius 6px
     background-color #fff
     box-shadow 0 2px 12px 3px rgba(0, 0, 0, 0.1)
 
