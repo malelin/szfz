@@ -3,7 +3,7 @@
  * @LastEditors: 旺苍扛把子
  * @Description: 控制面板组件
  * @Date: 2019-03-29 10:14:42
- * @LastEditTime: 2019-04-23 10:22:20
+ * @LastEditTime: 2019-04-24 15:53:44
  -->
 <template>
   <div class="dashboard">
@@ -110,14 +110,15 @@
       </div>
       <div class="engine-container-body">
         <ul class="engine-list">
-          <li
-            class="engine-item"
-            @mouseenter="onEnterEngineSensi"
-            @mouseleave="onLeaveEngineSensi"
-          >
+          <li class="engine-item">
             <el-upload
               class="upload-sensi"
               drag
+              @dragenter.native="onDragenterSensi"
+              @dragleave.native="onDragleaveSensi"
+              @mouseenter.native="onEnterEngineSensi"
+              @mouseleave.native="onLeaveEngineSensi"
+              @drop.native="onDropEngineSensi"
               :show-file-list="false"
               :name="config.engines.engineSensi.name"
               :action="config.engines.engineSensi.action"
@@ -262,6 +263,8 @@ export default {
             showUploadText: false,
             isLoading: false,
             showProgress: false,
+            // 最后一次拖动进入的目标
+            lastDragenter: null,
             modal: {
               modalSensi: {
                 classes: "modal-sensi"
@@ -466,14 +469,54 @@ export default {
       this.config.engines.engineSensi.overlay.visible = true;
       this.config.engines.engineSensi.showUploadText = false;
     },
+    /**
+     * @description 鼠标移入敏感引擎
+     */
     onEnterEngineSensi() {
+      console.log("onEnterEngineSensi");
       // 是否正在上传中
       if (!this.config.engines.engineSensi.isUploading) {
         this.config.engines.engineSensi.showUploadText = true;
       }
     },
+    /**
+     * @description 鼠标移出敏感引擎
+     */
     onLeaveEngineSensi() {
+      console.log("onLeaveEngineSensi");
       // 是否正在上传中
+      if (!this.config.engines.engineSensi.isUploading) {
+        this.config.engines.engineSensi.showUploadText = false;
+      }
+    },
+    /**
+     * @description 鼠标拖文件进入敏感引擎
+     */
+    onDragenterSensi(event) {
+      this.config.engines.engineSensi.lastDragenter = event.target;
+      // 是否正在上传中
+      if (!this.config.engines.engineSensi.isUploading) {
+        console.log("进入了   ", event.target);
+        this.config.engines.engineSensi.showUploadText = true;
+      }
+    },
+    /**
+     * @description  鼠标拖文件离开敏感引擎
+     */
+    onDragleaveSensi(event) {
+      // 是否正在上传中
+      if (!this.config.engines.engineSensi.isUploading) {
+        debugger;
+        if (this.config.engines.engineSensi.lastDragenter === event.target) {
+          console.log("dragleave", event.target);
+          this.config.engines.engineSensi.showUploadText = false;
+        }
+      }
+    },
+    /**
+     * @description 文件放入目标对象触发的事件
+     */
+    onDropEngineSensi() {
       if (!this.config.engines.engineSensi.isUploading) {
         this.config.engines.engineSensi.showUploadText = false;
       }
@@ -589,6 +632,9 @@ export default {
 .dashboard .el-upload:focus .el-upload-dragger {
   border: none;
   color: #333;
+}
+.el-upload-dragger.is-dragover {
+  border: none !important;
 }
 .el-progress--circle .el-progress__text {
   color: #2a82e4;
