@@ -3,7 +3,7 @@
  * @LastEditors: 旺苍扛把子
  * @Description: 检测报告
  * @Date: 2019-04-16 10:07:40
- * @LastEditTime: 2019-04-23 16:49:38
+ * @LastEditTime: 2019-04-24 10:09:49
  -->
 <template>
   <div class="detect-report">
@@ -534,7 +534,7 @@ export default {
 
   .report-steps-wrapper
     position absolute
-    top 30%
+    top 50%
     left 30px
     width 300px
     height 400px
