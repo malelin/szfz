@@ -56,7 +56,7 @@ const router = new Router({
   routes: constantRoutes
 });
 // 路由白名单，不需要进行token验证
-const routerWhiteList = ["/login", "/403", "/404", "/405"];
+const routerWhiteList = ["/login", "/register", "/403", "/404", "/405"];
 //在每次进行路由跳转之前进行
 router.beforeEach((to, from, next) => {
   let token = sessionStorage.getItem("token");
