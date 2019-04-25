@@ -3,11 +3,7 @@
  * @LastEditors: 旺苍扛把子
  * @Description: 头部栏,包含搜索,注销,消息
  * @Date: 2019-03-27 10:03:36
-<<<<<<< HEAD
- * @LastEditTime: 2019-04-22 18:04:18
-=======
- * @LastEditTime: 2019-04-23 11:17:16
->>>>>>> e9358a9e7517c0f68dc55802301c5129eaccfe63
+ * @LastEditTime: 2019-04-25 11:55:12
  -->
 <template>
   <div class="navbar">
@@ -133,11 +129,10 @@ export default {
 };
 </script>
 <style>
-/* 重写elementui样式 */
+/* 重写element-ui样式 */
 .search-box {
   margin-right: auto;
-  margin-left: 50px;
-  width: 600px;
+  margin-left: 40px;
   padding-right: 40px;
 }
 /* 强制改变搜索按钮背景颜色 */

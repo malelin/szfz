@@ -3,7 +3,7 @@
  * @LastEditors: 旺苍扛把子
  * @Description: siderbar组件
  * @Date: 2019-03-27 10:01:30
- * @LastEditTime: 2019-04-25 11:18:18
+ * @LastEditTime: 2019-04-25 11:48:21
  -->
 <template>
   <div class="siderbar">
@@ -154,6 +154,7 @@ export default {
 }
 /* 子菜单的背景颜色 */
 .el-submenu .el-menu-item {
+  padding-left: 50px !important;
   background-color: rgba(47, 51, 58, 0.53) !important;
 }
 /* 管理侧边栏横向滚动条 */
@@ -167,32 +168,31 @@ export default {
 </style>
 
 <style lang="stylus" scoped>
-.siderbar {
+.siderbar
   line-height: 1;
 
-  .c-scrollbar {
+  .c-scrollbar
     height: calc(100% - 75px);
-  }
 
-  .logo-container {
+
+  .logo-container
     text-align: center;
     background-color #20364a
-    img {
+    img
       width: 180px;
-    }
-  }
-}
 
-.svg-icon {
-  margin-right: 10px;
+
+
+
+.svg-icon
+  margin-right: 5px;
   vertical-align: middle;
   font-size: 28px;
-}
 
-.svg-logo {
+
+.svg-logo
   padding-bottom: 20px;
   width: 180px;
   height: 55px;
   transition: width height 0.2s;
-}
 </style>
