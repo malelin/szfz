@@ -3,7 +3,7 @@
  * @LastEditors: 旺苍扛把子
  * @Description: layou组件的vuex数据
  * @Date: 2019-03-27 14:39:26
- * @LastEditTime: 2019-04-24 11:19:04
+ * @LastEditTime: 2019-04-25 11:07:43
  */
 // import Cookies from "js-cookie";
 
@@ -44,7 +44,7 @@ const layout = {
       state.defaultActive = value;
     },
     /**
-     * @description 设置默认激活的侧边栏子菜单
+     * @description 添加激活的侧边栏子菜单
      * @param {State} state
      * @param {string} value
      */
@@ -55,7 +55,13 @@ const layout = {
         state.defaultOpeneds.unshift(value);
       }
     },
-
+    /**
+     * @description 清空激活的侧边栏子菜单
+     * @param {*} state
+     */
+    clearDefaultOpeneds(state) {
+      state.defaultOpeneds = [];
+    },
     /**
      * @description 删除默认激活的侧边栏某个子菜单
      * @param {State} state

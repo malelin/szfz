@@ -3,7 +3,7 @@
  * @LastEditors: 旺苍扛把子
  * @Description: siderbar组件
  * @Date: 2019-03-27 10:01:30
- * @LastEditTime: 2019-04-19 12:25:37
+ * @LastEditTime: 2019-04-25 11:18:18
  -->
 <template>
   <div class="siderbar">
@@ -176,7 +176,7 @@ export default {
 
   .logo-container {
     text-align: center;
-
+    background-color #20364a
     img {
       width: 180px;
     }
