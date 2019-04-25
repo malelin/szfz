@@ -3,89 +3,77 @@
  * @LastEditors: 旺苍扛把子
  * @Description: 注册组件
  * @Date: 2019-04-01 09:24:10
- * @LastEditTime: 2019-04-03 09:41:04
+ * @LastEditTime: 2019-04-25 11:02:26
  -->
 <template>
-  <div class="register center-box">
-    <div class="center-wrap">
-      <div class="center-content">
-        <el-form
-          :model="registerForm"
-          status-icon
-          :rules="registerRules"
-          ref="registerForm"
-          class="register-form"
-        >
-          <el-form-item class="logo-container">
-            <img src="./images/logo.png" alt="logo" title="logo" />
-          </el-form-item>
-          <el-form-item>
-            <h1>注册</h1>
-          </el-form-item>
-          <el-form-item prop="username">
-            <el-input
-              placeholder="昵称"
-              type="text"
-              v-model="registerForm.username"
-              ><svg-icon
-                icon-class="username"
-                slot="prefix"
-              ></svg-icon> </el-input
-          ></el-form-item>
+  <div class="register">
+    <el-form
+      :model="registerForm"
+      status-icon
+      :rules="registerRules"
+      ref="registerForm"
+      class="register-form"
+    >
+      <el-form-item class="logo-container">
+        <img src="./images/logo.png" alt="logo" title="logo" />
+      </el-form-item>
+      <el-form-item>
+        <h1>注册</h1>
+      </el-form-item>
+      <el-form-item prop="username">
+        <el-input placeholder="昵称" type="text" v-model="registerForm.username"
+          ><svg-icon icon-class="username" slot="prefix"></svg-icon> </el-input
+      ></el-form-item>
 
-          <el-form-item prop="account">
-            <el-input
-              placeholder="账号"
-              type="text"
-              v-model="registerForm.account"
-              ><svg-icon icon-class="account" slot="prefix"></svg-icon>
-            </el-input>
-          </el-form-item>
-          <el-form-item prop="password" placeholder="6-16位密码,区分大小写">
-            <el-input
-              type="password"
-              v-model="registerForm.password"
-              autocomplete="off"
-              placeholder="密码"
-            >
-              <svg-icon icon-class="password" slot="prefix"></svg-icon
-            ></el-input>
-          </el-form-item>
-          <el-form-item prop="repeatPassword">
-            <el-input
-              type="password"
-              v-model="registerForm.repeatPassword"
-              autocomplete="off"
-              placeholder="确认密码"
-              @keyup.enter.native="handleRegister"
-            >
-              <svg-icon icon-class="password" slot="prefix"></svg-icon
-            ></el-input>
-          </el-form-item>
-          <el-form-item prop="remarks"
-            ><el-input
-              type="textarea"
-              :rows="2"
-              placeholder="请输入备注内容,可选"
-              v-model="registerForm.remarks"
-            >
-            </el-input
-          ></el-form-item>
-          <el-form-item>
-            <el-button
-              type="primary"
-              style="width:30%"
-              title="注册"
-              @click.native="handleRegister"
-              >注&nbsp;&nbsp;册</el-button
-            >
-            <el-button @click.native="handleLoginByUser" class="fr" type="text"
-              >使用已有账号登录</el-button
-            >
-          </el-form-item>
-        </el-form>
-      </div>
-    </div>
+      <el-form-item prop="account">
+        <el-input placeholder="账号" type="text" v-model="registerForm.account"
+          ><svg-icon icon-class="account" slot="prefix"></svg-icon>
+        </el-input>
+      </el-form-item>
+      <el-form-item prop="password" placeholder="6-16位密码,区分大小写">
+        <el-input
+          type="password"
+          v-model="registerForm.password"
+          autocomplete="off"
+          placeholder="密码"
+        >
+          <svg-icon icon-class="password" slot="prefix"></svg-icon
+        ></el-input>
+      </el-form-item>
+      <el-form-item prop="repeatPassword">
+        <el-input
+          type="password"
+          v-model="registerForm.repeatPassword"
+          autocomplete="off"
+          placeholder="确认密码"
+          @keyup.enter.native="handleRegister"
+        >
+          <svg-icon icon-class="password" slot="prefix"></svg-icon
+        ></el-input>
+      </el-form-item>
+      <el-form-item prop="remarks"
+        ><el-input
+          type="textarea"
+          :rows="2"
+          placeholder="请输入备注内容,可选"
+          v-model="registerForm.remarks"
+        >
+        </el-input
+      ></el-form-item>
+      <el-form-item>
+        <el-button
+          type="primary"
+          style="width:30%"
+          title="注册"
+          @click.native="handleRegister"
+          >注&nbsp;&nbsp;册</el-button
+        >
+        <el-button @click.native="handleLoginByUser" class="fr" type="text"
+          >使用已有账号登录</el-button
+        >
+      </el-form-item>
+    </el-form>
+    <Copyright class="c-copyright" />
   </div>
 </template>
 
@@ -251,14 +239,23 @@ export default {
   width 100%
   height 100%
   line-height 1
-
+  position relative
+  background url('./images/bg.png') no-repeat 0 0 / 100% 100%
   .register-form
     width 500px
-
+    position absolute
+    left 50%
+    top 50%
+    transform translate(-50%, -50%)
     .svg-icon
       vertical-align middle
       font-size 16px
 
     .logo-container
       text-align center
+  .c-copyright
+    position absolute
+    left 50%
+    transform translateX(-50%)
+    bottom 50px
 </style>
