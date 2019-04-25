@@ -3,7 +3,7 @@
  * @LastEditors: 旺苍扛把子
  * @Description: 控制面板组件
  * @Date: 2019-03-29 10:14:42
- * @LastEditTime: 2019-04-24 16:35:18
+ * @LastEditTime: 2019-04-25 12:01:47
  -->
 <template>
   <div class="dashboard">
@@ -654,7 +654,7 @@ export default {
       align-items center
       padding 0 15px 0 20px
       border-bottom 1px solid #ebeef5
-      line-height 40px
+      line-height 46px
 
       .title
         color rgba(56, 56, 56, 1)
@@ -751,7 +751,10 @@ export default {
     &-header
       display flex
       justify-content space-between
-      padding 20px
+      height 47px
+      line-height 47px
+      padding-left 20px
+      box-sizing border-box
       border-bottom 1px solid #ebeef5
 
       .title
