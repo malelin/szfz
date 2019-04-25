@@ -3,7 +3,7 @@
  * @LastEditors: 旺苍扛把子
  * @Description: 任务概览组件
  * @Date: 2019-04-01 18:17:27
- * @LastEditTime: 2019-04-23 10:37:49
+ * @LastEditTime: 2019-04-24 17:52:37
  -->
 <template>
   <div class="task-overview">
@@ -187,12 +187,6 @@
           prop="taskStatus"
           label="状态"
           width="100"
-          :filters="[
-            { text: '完成', value: 1 },
-            { text: '进行中', value: 2 },
-            { text: '待启动', value: 3 }
-          ]"
-          :filter-method="filterHandler"
         >
           <!-- 1 带启动
           2 进行中
@@ -527,13 +521,6 @@ export default {
       let tid = row.tid;
       this.$router.push({ path: `/taskDetail/${tid}` });
     }),
-    /**
-     * @description 过滤处理器
-     */
-    filterHandler(value, row, column) {
-      const property = column["property"];
-      return row[property] === value;
-    },
     utc2LocalDate(utcDateString) {
       return utc2LocalDate(utcDateString);
     }
