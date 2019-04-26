@@ -3,7 +3,7 @@
  * @LastEditors: 旺苍扛把子
  * @Description: 控制面板组件
  * @Date: 2019-03-29 10:14:42
- * @LastEditTime: 2019-04-26 14:01:06
+ * @LastEditTime: 2019-04-26 16:16:34
  -->
 <template>
   <div class="dashboard">
@@ -132,11 +132,8 @@
               :before-upload="SensiFileBeforeUpload"
               :on-progress="onSensiUploadProgress"
             >
-              <!-- 上传内容说明盒子 -->
-              <div
-                class="upload-inner"
-                v-show="config.engines.engineSensi.showUploadInner"
-              >
+              <!-- 引擎内容说明 -->
+              <div class="upload-inner">
                 <div class="engine-item-header">
                   <svg-icon icon-class="mgxxfx"></svg-icon>
                   <span class="engine-name">敏感信息分析</span>
@@ -145,34 +142,38 @@
                   <p class="engine-desc"></p>
                 </div>
               </div>
+              <!-- 引擎停留阴影 -->
               <div
                 class="upload-text-wrapper"
-                v-show="config.engines.engineSensi.showUploadText"
+                v-show="config.engines.engineSensi.showUploadHoverShadow"
               >
-                <svg-icon icon-class="add"></svg-icon>
-                <p class="upload-text">拖动到此处上传,或点击上传</p>
+                <svg-icon icon-class="dashboard_add"></svg-icon>
               </div>
             </el-upload>
+            <!-- 上传任务遮罩 -->
             <div
               class="overlay"
-              v-show="config.engines.engineSensi.overlay.visible"
+              v-show="config.engines.engineSensi.isUploading"
             >
               <el-progress
                 type="circle"
                 v-if="config.engines.engineSensi.showProgress"
                 :percentage="config.engines.engineSensi.progress.percentage"
               ></el-progress>
-              <div
-                class="loading clearfix"
-                v-show="config.engines.engineSensi.isLoading"
-              >
+            </div>
+            <!-- 创建任务遮罩 -->
+            <div
+              class="loading clearfix"
+              v-show="config.engines.engineSensi.isLoading"
+            >
+              <div class="loading-inner">
                 <div class="loading-item"></div>
                 <div class="loading-item"></div>
                 <div class="loading-item"></div>
                 <div class="loading-item"></div>
                 <div class="loading-item"></div>
-                <p class="loading-text">正在创建任务</p>
               </div>
+              <p class="loading-text">正在创建任务</p>
             </div>
           </li>
           <li></li>
@@ -250,8 +251,7 @@ export default {
             },
             // 是否正在上传中
             isUploading: false,
-            showUploadInner: true,
-            showUploadText: false,
+            showUploadHoverShadow: false,
             isLoading: false,
             showProgress: false,
             // 最后一次拖动进入的目标
@@ -263,9 +263,6 @@ export default {
             },
             progress: {
               percentage: 0
-            },
-            overlay: {
-              visible: false
             }
           }
         }
@@ -490,20 +487,36 @@ export default {
      */
     async onSensiUploadSuccess({ status, data: object }) {
       if (status === 200) {
-        this.config.engines.engineSensi.overlay.visible = false;
+        // 完成上传,切换上传状态
+        this.config.engines.engineSensi.isUploading = false;
+        // 打开创建任务中的动画的遮罩
+        this.config.engines.engineSensi.overlay = true;
         let obj = this._formatFile2SensiObject(object);
         let taskData = {
           model: 2,
           objects: [obj]
         };
         try {
-          let { status } = await createTask(taskData);
-          if (status === 200) {
-            this.$message({
-              type: "success",
-              message: "敏感信息风行引擎任务创建成功"
-            });
-            this.$router.push("/taskOverview");
+          let { status, msg } = await createTask(taskData);
+          // 关闭创建任务中的动画的遮罩
+          this.config.engines.engineSensi.isLoading = false;
+          debugger;
+          switch (status) {
+            case 200:
+              this.$message({
+                type: "success",
+                message: "敏感信息引擎任务创建成功"
+              });
+              this.$router.push("/taskOverview");
+              break;
+            case 201:
+              this.$message({
+                type: "warning",
+                message: msg
+              });
+              break;
+            default:
+              break;
           }
         } catch (e) {
           this.$message({
@@ -518,6 +531,7 @@ export default {
      */
     async onSensiUploadProgress(event) {
       this.config.engines.engineSensi.isUploading = true;
+      this.config.engines.engineSensi.showProgress = true;
       let percentage = parseInt(event.percent);
       this.config.engines.engineSensi.progress.percentage = percentage;
       if (percentage === 100) {
@@ -545,27 +559,24 @@ export default {
         return false;
       }
       this.config.engines.engineSensi.showProgress = true;
-      this.config.engines.engineSensi.overlay.visible = true;
-      this.config.engines.engineSensi.showUploadText = false;
+      this.config.engines.engineSensi.showUploadHoverShadow = false;
     },
     /**
      * @description 鼠标移入敏感引擎
      */
     onEnterEngineSensi() {
-      console.log("onEnterEngineSensi");
       // 是否正在上传中
       if (!this.config.engines.engineSensi.isUploading) {
-        this.config.engines.engineSensi.showUploadText = true;
+        this.config.engines.engineSensi.showUploadHoverShadow = true;
       }
     },
     /**
      * @description 鼠标移出敏感引擎
      */
     onLeaveEngineSensi() {
-      console.log("onLeaveEngineSensi");
       // 是否正在上传中
       if (!this.config.engines.engineSensi.isUploading) {
-        this.config.engines.engineSensi.showUploadText = false;
+        this.config.engines.engineSensi.showUploadHoverShadow = false;
       }
     },
     /**
@@ -575,8 +586,7 @@ export default {
       this.config.engines.engineSensi.lastDragenter = event.target;
       // 是否正在上传中
       if (!this.config.engines.engineSensi.isUploading) {
-        console.log("进入了   ", event.target);
-        this.config.engines.engineSensi.showUploadText = true;
+        this.config.engines.engineSensi.showUploadHoverShadow = true;
       }
     },
     /**
@@ -587,8 +597,7 @@ export default {
       if (!this.config.engines.engineSensi.isUploading) {
         debugger;
         if (this.config.engines.engineSensi.lastDragenter === event.target) {
-          console.log("dragleave", event.target);
-          this.config.engines.engineSensi.showUploadText = false;
+          this.config.engines.engineSensi.showUploadHoverShadow = false;
         }
       }
     },
@@ -597,7 +606,7 @@ export default {
      */
     onDropEngineSensi() {
       if (!this.config.engines.engineSensi.isUploading) {
-        this.config.engines.engineSensi.showUploadText = false;
+        this.config.engines.engineSensi.showUploadHoverShadow = false;
       }
     },
     /**
@@ -676,6 +685,7 @@ export default {
 }
 .dashboard .el-upload {
   width: 100%;
+  height: 100%;
 }
 .dashboard .el-upload-dragger {
   width: 100%;
@@ -686,14 +696,18 @@ export default {
   background-color: transparent;
   text-align: center;
 }
+.engine-item .upload-sensi {
+  height: 100%;
+}
 .engine-item .el-upload-dragger {
+  height: 100%;
   border: none;
 }
 .engine-item .el-upload-dragger:hover {
   border: #fff;
 }
 .engine-item .el-upload-dragger .upload-text-wrapper {
-  background-color: rgba(0, 0, 0, 0.1);
+  background-color: rgba(0, 0, 0, 0.2);
   height: 180px;
   position: absolute;
   left: 0;
@@ -701,10 +715,12 @@ export default {
   width: 100%;
   height: 100%;
   color: #2a82e4;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 .engine-item .upload-text-wrapper .svg-icon {
-  font-size: 50px;
-  margin-top: 50px;
+  font-size: 70px;
 }
 .engine-item .el-upload-dragger .upload-text {
   color: #2a82e4;
@@ -854,6 +870,7 @@ export default {
           position relative
           flex 0 0 33.33%
           box-sizing border-box
+          height 280px
           border 1px solid #ebeef5
           color #333
 
@@ -892,13 +909,22 @@ export default {
           align-items center
           width 100%
           height 100%
-          background-color rgba(0, 0, 0, 0.2)
 
           .svg-icon
             font-size 50px
             line-height 1
 
 .loading
+  position absolute
+  top 0
+  left 0
+  display flex
+  flex-direction column
+  justify-content center
+  align-items center
+  width 100%
+  height 100%
+
   .loading-text
     padding-top 30px
     color rgb(32, 160, 255)
