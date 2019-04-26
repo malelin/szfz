@@ -3,7 +3,7 @@
  * @LastEditors: 旺苍扛把子
  * @Description: 头部栏,包含搜索,注销,消息
  * @Date: 2019-03-27 10:03:36
- * @LastEditTime: 2019-04-25 11:55:12
+ * @LastEditTime: 2019-04-26 13:33:04
  -->
 <template>
   <div class="navbar">
@@ -111,9 +111,10 @@ export default {
           this.userInfo = Object.assign({}, this.userInfo, userInfo);
         }
       };
-      this.ws.onclose = event => {
-        console.log(event);
+      this.ws.onclose = () => {
         console.log("WebSocketClosed!");
+        // 注销
+        this.handleLogout();
       };
       this.ws.onerror = event => {
         console.log(event);
