@@ -3,7 +3,7 @@
  * @LastEditors: 旺苍扛把子
  * @Description: 控制面板组件
  * @Date: 2019-03-29 10:14:42
- * @LastEditTime: 2019-04-25 12:01:47
+ * @LastEditTime: 2019-04-26 10:16:07
  -->
 <template>
   <div class="dashboard">
@@ -13,7 +13,7 @@
         <div class="chart-header">
           <span class="title">检测结果统计</span>
           <el-tabs
-            v-model="chartRing.detectTimeRange"
+            v-model="chartDetectRing.detectTimeRange"
             @tab-click="handleDetectResTabClick"
           >
             <el-tab-pane label="今日" name="day"></el-tab-pane>
@@ -25,42 +25,42 @@
         <div class="chart-body">
           <el-col :span="6">
             <ve-ring
-              :data="chartRingData.dataFailure"
+              :data="chartDetectRingData.dataFailure"
               :legend-visible="false"
               :tooltip-visible="false"
               :judge-width="true"
               :colors="['rgba(212, 48, 48, 1)', '#F6F6F6']"
-              :settings="chartRing.settings"
+              :settings="chartDetectRing.settings"
             ></ve-ring
           ></el-col>
           <el-col :span="6">
             <ve-ring
-              :data="chartRingData.dataHighRisk"
+              :data="chartDetectRingData.dataHighRisk"
               :legend-visible="false"
               :tooltip-visible="false"
               :judge-width="true"
               :colors="['#fb6d08', '#F6F6F6']"
-              :settings="chartRing.settings"
+              :settings="chartDetectRing.settings"
             ></ve-ring
           ></el-col>
           <el-col :span="6">
             <ve-ring
-              :data="chartRingData.dataMiddleRisk"
+              :data="chartDetectRingData.dataMiddleRisk"
               :legend-visible="false"
               :tooltip-visible="false"
               :judge-width="true"
               :colors="['rgba(255, 195, 0, 1)', '#F6F6F6']"
-              :settings="chartRing.settings"
+              :settings="chartDetectRing.settings"
             ></ve-ring
           ></el-col>
           <el-col :span="6">
             <ve-ring
-              :data="chartRingData.dataSafety"
+              :data="chartDetectRingData.dataSafety"
               :legend-visible="false"
               :tooltip-visible="false"
               :judge-width="true"
               :colors="['#2ae445', '#F6F6F6']"
-              :settings="chartRing.settings"
+              :settings="chartDetectRing.settings"
             ></ve-ring
           ></el-col>
         </div>
@@ -68,7 +68,9 @@
           <div class="res-info">
             <div class="amount-container">
               <span class="title">总计&nbsp;:</span>
-              <span class="amount">{{ chartRingData.total }}&nbsp;个</span>
+              <span class="amount"
+                >{{ chartDetectRingData.total }}&nbsp;个</span
+              >
             </div>
             <div class="res-type">
               <div class="type fail">失败</div>
@@ -94,13 +96,32 @@
           </el-tabs>
         </div>
         <div class="chart-body">
-          <ve-pie
+          <!-- <ve-ring
             :data="chartPieData"
             width="100%"
+            height="240px"
             :judge-width="true"
+            :grid="chartPie.grid"
+            :colors="[
+              '#59A0F8',
+              '#55BFC0',
+              '#76C77D',
+              '#F5D464',
+              '#E46F7D',
+              '#8F65DD'
+            ]"
             :legend="chartPie.legend"
             :settings="chartPie.settings"
-          ></ve-pie>
+          ></ve-ring> -->
+          <ve-ring
+            width="100%"
+            height="240px"
+            :judge-width="true"
+            :tooltip="chartPieData.tooltip"
+            :legend="chartPieData.legend"
+            :series="chartPieData.series"
+            :colors="['#59A0F8', '#76C77D', '#F5D464', '#E46F7D', '#8F65DD']"
+          ></ve-ring>
         </div>
       </div>
     </div>
@@ -200,8 +221,8 @@ export default {
   props: {},
   data() {
     return {
-      //  检测结果统计配置
-      chartRing: {
+      //  检测结果统计换图配置
+      chartDetectRing: {
         // 环形图设置
         settings: {
           label: {
@@ -238,17 +259,111 @@ export default {
         month: {},
         week: {}
       },
-      //威胁类型分布配置
+      //威胁类型分布换图配置
       chartPie: {
-        settings: {
-          radius: 60,
-          offsetY: 130
-        },
-        legend: { orient: "vertical", right: 30, top: 50, bottom: 20 },
+        // settings: {
+        //   radius: [75, 100],
+        //   offsetY: 130,
+        //   label: {
+        //     show: true,
+        //     position: "center",
+        //     formatter({ value, percent }) {
+        //       if (typeof value === "number" && value > 0) {
+        //         return [
+        //           "{a|" + "总计" + "}",
+        //           "{b|" + Math.round((value / percent) * 100) + "}"
+        //         ].join("\n");
+        //       } else {
+        //         return "";
+        //       }
+        //     },
+        //     rich: {
+        //       a: {
+        //         lineHeight: 50,
+        //         fontSize: 14,
+        //         color: "rgba(0,0,0,0.45)"
+        //       },
+        //       b: {
+        //         fontSize: 25,
+        //         lineHeight: 20,
+        //         color: "#333"
+        //       }
+        //     }
+        //   }
+        // },
+        // legend: { orient: "vertical", right: 190, top: 50, bottom: 20 },
+        // grid: {
+        //   show: true,
+        //   left: 0,
+        //   top: 0
+        // },
+        // option: {
+        //   tooltip: {
+        //     trigger: "item",
+        //     formatter: "{a} <br/>{b}: {c} ({d}%)"
+        //   },
+
+        //   legend: {
+        //     orient: "vertical",
+        //     right: 100,
+        //     top: 50,
+        //     bottom: 20,
+        //     data: [
+        //       "涉我信息",
+        //       "开发痕迹",
+        //       "同源信息",
+        //       "仿真分析",
+        //       "IOC风险",
+        //       "其他"
+        //     ]
+        //   },
+        //   series: [
+        //     {
+        //       center: ["120", "110"],
+        //       name: "威胁类型分布",
+        //       type: "pie",
+        //       radius: ["100", "80"],
+        //       label: {
+        //         show: true,
+        //         position: "center",
+        //         formatter({ value, percent }) {
+        //           if (typeof value === "number" && value > 0) {
+        //             return [
+        //               "{a|" + "总计" + "}",
+        //               "{b|" + Math.round((value / percent) * 100) + "}"
+        //             ].join("\n");
+        //           } else {
+        //             return "";
+        //           }
+        //         },
+        //         rich: {
+        //           a: {
+        //             lineHeight: 50,
+        //             fontSize: 14,
+        //             color: "rgba(0,0,0,0.45)"
+        //           },
+        //           b: {
+        //             fontSize: 25,
+        //             lineHeight: 20,
+        //             color: "#333"
+        //           }
+        //         }
+        //       },
+        //       data: [
+        //         { value: 335, name: "开发痕迹" },
+        //         { value: 310, name: "同源信息" },
+        //         { value: 234, name: "仿真分析" },
+        //         { value: 135, name: "IOC风险" },
+        //         { value: 1548, name: "其他" }
+        //       ]
+        //     }
+        //   ]
+        // },
         threatTimeRange: "day"
       },
       threatRes: { day: {}, week: {}, month: {}, year: [] },
       config: {
+        // 引擎配置
         engines: {
           // 敏感引擎
           engineSensi: {
@@ -283,7 +398,7 @@ export default {
   },
   computed: {
     // 检测结果统计数据
-    chartRingData() {
+    chartDetectRingData() {
       return {
         // failure: 34
         // highRisk: 26
@@ -296,13 +411,13 @@ export default {
           rows: [
             {
               类型: "失败",
-              数量: this.detectRes[this.chartRing.detectTimeRange].failure
+              数量: this.detectRes[this.chartDetectRing.detectTimeRange].failure
             },
             {
               类型: "其它",
               数量:
-                this.detectRes[this.chartRing.detectTimeRange].total -
-                this.detectRes[this.chartRing.detectTimeRange].failure
+                this.detectRes[this.chartDetectRing.detectTimeRange].total -
+                this.detectRes[this.chartDetectRing.detectTimeRange].failure
             }
           ]
         },
@@ -312,13 +427,14 @@ export default {
           rows: [
             {
               类型: "高危",
-              数量: this.detectRes[this.chartRing.detectTimeRange].highRisk
+              数量: this.detectRes[this.chartDetectRing.detectTimeRange]
+                .highRisk
             },
             {
               类型: "其它",
               数量:
-                this.detectRes[this.chartRing.detectTimeRange].total -
-                this.detectRes[this.chartRing.detectTimeRange].highRisk
+                this.detectRes[this.chartDetectRing.detectTimeRange].total -
+                this.detectRes[this.chartDetectRing.detectTimeRange].highRisk
             }
           ]
         },
@@ -328,13 +444,14 @@ export default {
           rows: [
             {
               类型: "中危",
-              数量: this.detectRes[this.chartRing.detectTimeRange].middleRisk
+              数量: this.detectRes[this.chartDetectRing.detectTimeRange]
+                .middleRisk
             },
             {
               类型: "其它",
               数量:
-                this.detectRes[this.chartRing.detectTimeRange].total -
-                this.detectRes[this.chartRing.detectTimeRange].middleRisk
+                this.detectRes[this.chartDetectRing.detectTimeRange].total -
+                this.detectRes[this.chartDetectRing.detectTimeRange].middleRisk
             }
           ]
         },
@@ -344,51 +461,179 @@ export default {
           rows: [
             {
               类型: "安全",
-              数量: this.detectRes[this.chartRing.detectTimeRange].safety
+              数量: this.detectRes[this.chartDetectRing.detectTimeRange].safety
             },
             {
               类型: "其它",
               数量:
-                this.detectRes[this.chartRing.detectTimeRange].total -
-                this.detectRes[this.chartRing.detectTimeRange].safety
+                this.detectRes[this.chartDetectRing.detectTimeRange].total -
+                this.detectRes[this.chartDetectRing.detectTimeRange].safety
             }
           ]
         },
-        total: this.detectRes[this.chartRing.detectTimeRange].total
+        total: this.detectRes[this.chartDetectRing.detectTimeRange].total
       };
     },
     // 威胁类型分布数据
     chartPieData() {
+      let _this = this;
       return {
-        columns: ["类型", "数量"],
-        rows: [
-          {
-            类型: "涉我信息",
-            数量: this.threatRes[this.chartPie.threatTimeRange].relateType
+        tooltip: {
+          trigger: "item",
+          formatter: "{a} <br/>{b}: {c} ({d}%)"
+        },
+
+        legend: {
+          orient: "vertical",
+          right: "15%",
+          top: 20,
+          bottom: 20,
+          textStyle: {
+            rich: {
+              a: {
+                lineHeight: 20,
+                color: "rgba(0,0,0,.45)"
+              },
+              b: {
+                fontSize: 13,
+                lineHeight: 20,
+                color: "#333"
+              }
+            }
           },
-          {
-            类型: "开发痕迹",
-            数量: this.threatRes[this.chartPie.threatTimeRange].developType
+          formatter(name) {
+            let typeMap = {
+              涉我信息: "relateType",
+              开发痕迹: "developType",
+              同源信息: "homoType",
+              仿真分析: "antiType",
+              IOC风险: "iocType",
+              其他: "otherType"
+            };
+            let type = typeMap[name];
+            let amount = _this.threatRes[_this.chartPie.threatTimeRange][type];
+            let total = _this.threatRes[_this.chartPie.threatTimeRange].total;
+            let percent = parseInt((amount / total) * 10000) / 100;
+            if (isNaN(percent)) {
+              return [
+                name,
+                "{a|" + "   |   " + 0 + "}",
+                "{b|" + "    " + total + "}"
+              ].join("");
+            } else {
+              return [
+                name,
+                "{a|" +
+                  "   |   " +
+                  parseInt((amount / total) * 10000) / 100 +
+                  "%}",
+                "{b|" + "    " + total + "}"
+              ].join("");
+            }
           },
+          data: [
+            "涉我信息",
+            "开发痕迹",
+            "同源信息",
+            "仿真分析",
+            "IOC风险",
+            "其他"
+          ]
+        },
+        series: [
           {
-            类型: "同源信息",
-            数量: this.threatRes[this.chartPie.threatTimeRange].homoType
-          },
-          {
-            类型: "仿真分析",
-            数量: this.threatRes[this.chartPie.threatTimeRange].antiType
-          },
-          {
-            类型: "IOC风险",
-            数量: this.threatRes[this.chartPie.threatTimeRange].iocType
-          },
-          {
-            类型: "其他",
-            数量: this.threatRes[this.chartPie.threatTimeRange].otherType
+            center: ["26%", "110"],
+            name: "威胁类型分布",
+            type: "pie",
+            radius: ["100", "80"],
+            label: {
+              show: false,
+              position: "center",
+              formatter({ value, percent }) {
+                let total = (total = Math.round((value / percent) * 100));
+                if (!isNaN(total)) {
+                  total = Math.round((value / percent) * 100);
+                  return ["{a|" + "总计" + "}", "{b|" + total + "}"].join("\n");
+                } else {
+                  return ["{a|" + "总计" + "}", "{b|" + 0 + "}"].join("\n");
+                }
+              },
+              rich: {
+                a: {
+                  lineHeight: 50,
+                  fontSize: 14,
+                  color: "rgba(0,0,0,0.45)"
+                },
+                b: {
+                  fontSize: 25,
+                  lineHeight: 20,
+                  color: "#333"
+                }
+              }
+            },
+            data: [
+              {
+                name: "涉我信息",
+                value: this.threatRes[this.chartPie.threatTimeRange].relateType
+              },
+              {
+                name: "开发痕迹",
+                value: this.threatRes[this.chartPie.threatTimeRange].developType
+              },
+              {
+                name: "同源信息",
+                value: this.threatRes[this.chartPie.threatTimeRange].homoType
+              },
+              {
+                name: "仿真分析",
+                value: this.threatRes[this.chartPie.threatTimeRange].antiType
+              },
+              {
+                name: "IOC风险",
+                value: this.threatRes[this.chartPie.threatTimeRange].iocType
+              },
+              {
+                name: "其他",
+                value: this.threatRes[this.chartPie.threatTimeRange].otherType
+              }
+            ]
           }
         ]
       };
     }
+    // // 威胁类型分布数据
+    // chartPieData() {
+    //   return {
+    //     total: this.threatRes[this.chartPie.threatTimeRange].total,
+    //     columns: ["类型", "数量"],
+    //     rows: [
+    //       {
+    //         类型: "涉我信息",
+    //         数量: this.threatRes[this.chartPie.threatTimeRange].relateType
+    //       },
+    //       {
+    //         类型: "开发痕迹",
+    //         数量: this.threatRes[this.chartPie.threatTimeRange].developType
+    //       },
+    //       {
+    //         类型: "同源信息",
+    //         数量: this.threatRes[this.chartPie.threatTimeRange].homoType
+    //       },
+    //       {
+    //         类型: "仿真分析",
+    //         数量: this.threatRes[this.chartPie.threatTimeRange].antiType
+    //       },
+    //       {
+    //         类型: "IOC风险",
+    //         数量: this.threatRes[this.chartPie.threatTimeRange].iocType
+    //       },
+    //       {
+    //         类型: "其他",
+    //         数量: this.threatRes[this.chartPie.threatTimeRange].otherType
+    //       }
+    //     ]
+    //   };
+    // }
   },
   watch: {},
   methods: {
@@ -404,7 +649,7 @@ export default {
      * @param {object} 被选中的标签 tab 实例
      */
     handleDetectResTabClick(tab) {
-      this.chartRing.detectTimeRange = tab.name;
+      this.chartDetectRing.detectTimeRange = tab.name;
     },
     /**
      * @description 敏感信息引擎上传文件成功
@@ -552,7 +797,9 @@ export default {
       };
     }
   },
-  created() {},
+  created() {
+    window.hasSum = false;
+  },
   beforeRouteEnter(to, from, next) {
     next(vm => {
       getDetectRes()
@@ -721,8 +968,8 @@ export default {
       flex 0 0 54%
       overflow hidden
       margin 8px 0
-      background-color #fff
       border-radius 6px
+      background-color #fff
       box-shadow 0 2px 12px 0 rgba(0, 0, 0, 0.1)
 
       &:hover
@@ -730,8 +977,8 @@ export default {
 
     .wxlxfb
       flex 0 0 45%
-      border-radius 6px
       margin 8px 0
+      border-radius 6px
       background-color #fff
       box-shadow 0 2px 12px 0 rgba(0, 0, 0, 0.1)
 
@@ -751,11 +998,11 @@ export default {
     &-header
       display flex
       justify-content space-between
-      height 47px
-      line-height 47px
-      padding-left 20px
       box-sizing border-box
+      padding-left 20px
+      height 47px
       border-bottom 1px solid #ebeef5
+      line-height 47px
 
       .title
         font-weight 700
