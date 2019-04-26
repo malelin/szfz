@@ -3,7 +3,7 @@
  * @LastEditors: 旺苍扛把子
  * @Description: 控制面板组件
  * @Date: 2019-03-29 10:14:42
- * @LastEditTime: 2019-04-26 16:16:34
+ * @LastEditTime: 2019-04-26 18:18:15
  -->
 <template>
   <div class="dashboard">
@@ -500,7 +500,6 @@ export default {
           let { status, msg } = await createTask(taskData);
           // 关闭创建任务中的动画的遮罩
           this.config.engines.engineSensi.isLoading = false;
-          debugger;
           switch (status) {
             case 200:
               this.$message({
@@ -531,6 +530,7 @@ export default {
      */
     async onSensiUploadProgress(event) {
       this.config.engines.engineSensi.isUploading = true;
+      this.config.engines.engineSensi.showUploadHoverShadow = false;
       this.config.engines.engineSensi.showProgress = true;
       let percentage = parseInt(event.percent);
       this.config.engines.engineSensi.progress.percentage = percentage;
@@ -595,7 +595,6 @@ export default {
     onDragleaveSensi(event) {
       // 是否正在上传中
       if (!this.config.engines.engineSensi.isUploading) {
-        debugger;
         if (this.config.engines.engineSensi.lastDragenter === event.target) {
           this.config.engines.engineSensi.showUploadHoverShadow = false;
         }
