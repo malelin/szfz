@@ -3,7 +3,7 @@
  * @LastEditors: 旺苍扛把子
  * @Description: 控制面板组件
  * @Date: 2019-03-29 10:14:42
- * @LastEditTime: 2019-04-26 11:37:52
+ * @LastEditTime: 2019-04-26 14:01:06
  -->
 <template>
   <div class="dashboard">
@@ -417,7 +417,7 @@ export default {
             center: ["26%", "110"], //调整饼图位置
             name: "威胁类型分布",
             type: "pie",
-            radius: ["100", "80"],
+            radius: ["90", "65"],
             label: {
               show: true,
               position: "center",
