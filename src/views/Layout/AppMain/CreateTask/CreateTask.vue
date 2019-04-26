@@ -3,7 +3,7 @@
  * @LastEditors: 旺苍扛把子
  * @Description: 新建任务组件
  * @Date: 2019-04-02 09:23:23
- * @LastEditTime: 2019-04-24 17:35:10
+ * @LastEditTime: 2019-04-26 14:34:16
  -->
 
 <template>
@@ -89,6 +89,7 @@
           tooltip-effect="dark"
           style="width: 100%"
           class="c-el-table"
+          border
           @selection-change="handleSelectionChange"
         >
           <el-table-column type="selection" width="55"> </el-table-column>
@@ -112,7 +113,7 @@
               >
             </template>
           </el-table-column>
-          <el-table-column prop="operate" label="操作">
+          <el-table-column width="100px" prop="operate" label="操作">
             <template slot-scope="{ row, $index }">
               <div class="operate-box">
                 <svg-icon
@@ -146,7 +147,12 @@
             </template>
           </el-table-column>
         </el-table>
-        <el-row type="flex" justify="center" align="middle">
+        <el-row
+          type="flex"
+          style="margin-top:20px;"
+          justify="center"
+          align="middle"
+        >
           <el-col :span="24"
             ><el-upload
               class="c-el-upload"
@@ -182,6 +188,7 @@
 <script>
 import _ from "lodash";
 import { upload } from "@/api/file";
+import { hasSuffix } from "@/utils/file";
 import { createTask } from "@/api/task";
 import { createNamespacedHelpers } from "vuex";
 const { mapMutations } = createNamespacedHelpers("layout");
@@ -301,10 +308,11 @@ export default {
      * @returns 若返回 false 或者返回 Promise 且被 reject，则停止上传。
      */
     fileBeforeUpload(file) {
-      this.$set(this.upload, "showFileList", true);
-      if (file.type === "") {
+      let fileName = file.name;
+      // 判断文件是否有后缀
+      if (!hasSuffix(fileName)) {
         this.$message({
-          type: "warning",
+          type: "error",
           message: "请传入有后缀名的文件"
         });
         return false;
@@ -320,11 +328,13 @@ export default {
      * @description 文件上传成功钩子
      */
     fileOnSuccess({ status, data, msg }) {
+      debugger;
       if (status === 200) {
         this.$message({
           type: "success",
           message: msg
         });
+        // 上传成功后获取到的文件对象
         let {
           uploadId,
           fileSHA1,
@@ -337,18 +347,18 @@ export default {
           suffix,
           fileSize
         } = data;
-        if (
-          this.taskTable.findIndex(item => {
-            return item.fileMD5 === fileMD5;
-          }) !== -1
-        ) {
-          this.$message({
-            type: "warning",
-            message: "重复上传"
-          });
-          return false;
-        }
-        // 单个任务
+        // if (
+        //   this.taskTable.findIndex(item => {
+        //     return item.fileMD5 === fileMD5;
+        //   }) !== -1
+        // ) {
+        //   this.$message({
+        //     type: "warning",
+        //     message: "重复上传"
+        //   });
+        //   return false;
+        // }
+        // 要显示在表格中的单个任务
         let task = {
           uploadId,
           fileSHA1,
@@ -359,9 +369,9 @@ export default {
           saveUrl,
           fileMD5,
           fileType,
-          openSensitivity: 2,
-          modalForm: { taskSensi: { isChecked: false } },
-          fileSize: fileSize
+          fileSize: fileSize,
+          openSensitivity: 2, //打开敏感分析引擎
+          modalForm: { taskSensi: { isChecked: false } }
         };
         this.taskTable.push(task);
       } else {
@@ -450,8 +460,8 @@ export default {
      * @description 设置弹框确定按钮
      */
     handleSure() {
-      // 批量设置
       if (this.currentEditItem === -1) {
+        // 批量设置
         if (this.multipleSelection.length === 0) {
           this.$message({
             type: "warning",
@@ -473,15 +483,14 @@ export default {
         }
       } else {
         //  开启敏感检测，1/开启，2/不开启 ,
-        if (this.modalForm.taskSensi.isChecked === true) {
-          this.$set(this.currentRow, "openSensitivity", 1);
-        } else {
-          this.$set(this.currentRow, "openSensitivity", 2);
-        }
-        this.$set(this.currentRow, "modalForm", this.modalForm);
+        this.currentRow.openSensitivity = this.modalForm.taskSensi.isChecked
+          ? 1
+          : 2;
+        this.currentRow.modalForm = this.modalForm;
       }
 
       this.$modal.hide("taskSetting");
+
       this.modalForm = { taskSensi: { isChecked: false } };
       this.currentEditItem = -1;
     },
@@ -497,15 +506,25 @@ export default {
     handleCreate: _.debounce(async function() {
       try {
         debugger;
-        let { status } = await createTask(this.taskData);
-        if (status === 200) {
-          this.$message({
-            type: "success",
-            message: "任务创建成功"
-          });
+        let { status, msg } = await createTask(this.taskData);
+        switch (status) {
+          case 200:
+            this.$message({
+              type: "success",
+              message: "任务创建成功"
+            });
+            this.setDefaultActive("2-1");
+            this.$router.push({ path: "/taskOverview" });
+            break;
+          case 201:
+            this.$message({
+              type: "warning",
+              message: msg
+            });
+            break;
+          default:
+            break;
         }
-        this.setDefaultActive("2-1");
-        this.$router.push({ path: "/taskOverview" });
       } catch (e) {
         console.log(e);
       }
