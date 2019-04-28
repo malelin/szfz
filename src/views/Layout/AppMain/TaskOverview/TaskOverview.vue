@@ -3,7 +3,7 @@
  * @LastEditors: 旺苍扛把子
  * @Description: 任务概览组件
  * @Date: 2019-04-01 18:17:27
- * @LastEditTime: 2019-04-28 10:04:09
+ * @LastEditTime: 2019-04-28 14:02:58
  -->
 <template>
   <div class="task-overview">
@@ -57,79 +57,103 @@
             </el-form-item>
           </el-col>
         </el-row>
-
-        <el-row :gutter="20">
-          <el-col :span="8">
-            <el-form-item label="起始时间段 :" prop="createTimeRange">
-              <el-date-picker
-                style="width:100%;"
-                v-model="taskOverviewForm.createTimeRange"
-                type="datetimerange"
-                start-placeholder="起始启动时间"
-                end-placeholder="起始完成时间"
-                :default-time="['00:00:00']"
-              >
-              </el-date-picker>
-            </el-form-item>
-          </el-col>
-          <el-col :span="8">
-            <el-form-item prop="finishedTimeRange" label="结束时间段 :">
-              <el-date-picker
-                style="width:100%;"
-                v-model="taskOverviewForm.finishedTimeRange"
-                type="datetimerange"
-                start-placeholder="结束启动时间"
-                end-placeholder="结束完成时间"
-                :default-time="['00:00:00']"
-              >
-              </el-date-picker>
-            </el-form-item> </el-col
-        ></el-row>
-        <el-form-item label-width="20px" prop="checkedEngines">
-          <el-row type="flex" :gutter="20" align="top">
-            <el-col :span="16">
-              <el-checkbox
-                size="medium"
-                :indeterminate="options.isIndeterminate"
-                v-model="options.checkAll"
-                border
-                @change="handleCheckAllChange"
-                >全选</el-checkbox
-              >
-              <el-checkbox-group
-                style="display:inline-block;"
-                size="medium"
-                v-model="taskOverviewForm.checkedEngines"
-              >
-                <el-checkbox
-                  v-for="engine in options.engines"
-                  :key="engine"
-                  border
-                  :label="engine"
-                />
-              </el-checkbox-group>
-            </el-col>
-            <el-col :span="8">
-              <el-button size="medium" type="primary"
-                ><svg-icon
-                  icon-class="add"
-                  style="margin-right:5px;color:#fff;"
-                ></svg-icon
-                >新建</el-button
-              ></el-col
-            >
-          </el-row>
-        </el-form-item>
+        <transition
+          name="custom-classes-transition"
+          enter-active-class="animated  fadeInDown"
+          leave-active-class="animated  fadeOutUp"
+        >
+          <div v-if="!options.isFold">
+            <el-row :gutter="20">
+              <el-col :span="8">
+                <el-form-item label="起始时间段 :" prop="createTimeRange">
+                  <el-date-picker
+                    style="width:100%;"
+                    v-model="taskOverviewForm.createTimeRange"
+                    type="datetimerange"
+                    start-placeholder="起始启动时间"
+                    end-placeholder="起始完成时间"
+                    :default-time="['00:00:00']"
+                  >
+                  </el-date-picker>
+                </el-form-item>
+              </el-col>
+              <el-col :span="8">
+                <el-form-item prop="finishedTimeRange" label="结束时间段 :">
+                  <el-date-picker
+                    style="width:100%;"
+                    v-model="taskOverviewForm.finishedTimeRange"
+                    type="datetimerange"
+                    start-placeholder="结束启动时间"
+                    end-placeholder="结束完成时间"
+                    :default-time="['00:00:00']"
+                  >
+                  </el-date-picker>
+                </el-form-item> </el-col
+            ></el-row>
+            <el-row type="flex" :gutter="20" align="top">
+              <el-form-item label-width="20px" prop="checkedEngines">
+                <el-col>
+                  <el-checkbox
+                    size="medium"
+                    :indeterminate="options.isIndeterminate"
+                    v-model="options.checkAll"
+                    border
+                    @change="handleCheckAllChange"
+                    >全选</el-checkbox
+                  >
+                  <el-checkbox-group
+                    style="display:inline-block;"
+                    size="medium"
+                    v-model="taskOverviewForm.checkedEngines"
+                  >
+                    <el-checkbox
+                      v-for="engine in options.engines"
+                      :key="engine"
+                      border
+                      :label="engine"
+                    />
+                  </el-checkbox-group>
+                </el-col> </el-form-item
+            ></el-row></div
+        ></transition>
       </el-form>
     </div>
     <div class="table-container" ref="tableContainer">
       <!-- 表格 -->
+      <div class="button-wrapper">
+        <el-button @click.native="handleCreateTask" size="medium" type="primary"
+          ><svg-icon
+            icon-class="add"
+            style="margin-right:5px;color:#fff;"
+          ></svg-icon
+          >新建</el-button
+        >
+      </div>
+      <div type="flex" class="table-tip">
+        <el-alert type="info" :closable="false" show-icon>
+          <div class="alert-inner">
+            <span class="text">
+              已选择{{ multipleSelection.length }}项, 任务总计{{
+                tableData.list.length
+              }}项</span
+            >
+            <el-button
+              @click.native="toggleSelection"
+              style="margin-left:50px;"
+              type="text"
+              >清空</el-button
+            >
+          </div>
+        </el-alert>
+      </div>
       <el-table
         ref="taskTable"
         :data="tableData.list"
         tooltip-effect="dark"
         style="width: 100%;"
         class="c-el-table"
+        border
+        @selection-change="handleSelectionChange"
       >
         <el-table-column align="center" type="selection"> </el-table-column>
         <el-table-column align="center" width="100" label="任务编号" prop="tid">
@@ -317,6 +341,8 @@ export default {
       },
       // 组件中所有的配置
       options: {
+        // 是否展开
+        isFold: true,
         // 检测内容配置
         engines: [
           "同源分析",
@@ -334,9 +360,9 @@ export default {
   computed: {
     //  按钮文字, 展开或收起
     buttonState() {
-      return this.activeNames[0] === "1"
-        ? { text: "收起", isActiveRotate: true }
-        : { text: "展开", isActiveRotate: false };
+      return this.options.isFold
+        ? { text: "展开", isActiveRotate: false }
+        : { text: "收起", isActiveRotate: true };
     }
   },
   methods: {
@@ -344,13 +370,20 @@ export default {
      * @description 收起和展开折叠面板,防抖处理
      */
     handleFold: _.debounce(function() {
-      if (this.activeNames.length === 0) {
-        // 展开
-        this.activeNames.push("1");
-      } else {
-        // 收起
-        this.activeNames.pop();
-      }
+      this.options.isFold = !this.options.isFold;
+    }, 300),
+    /**
+     * @description 新建任务
+     */
+    handleCreateTask: _.debounce(function() {
+      this.$router.push("/createTask");
+    }, 300),
+    /**
+     * @description 清空所有选中任务
+     */
+    toggleSelection: _.debounce(function() {
+      debugger;
+      this.$refs.taskTable.clearSelection();
     }, 300),
     /**
      * @description 切换每页显示条数
@@ -386,7 +419,9 @@ export default {
     /**
      * @description 根据表单查询,获取任务列表
      */
-
+    handleSelectionChange(val) {
+      this.multipleSelection = val;
+    },
     handleSearch: _.debounce(async function() {
       let {
         taskname,
@@ -563,11 +598,19 @@ export default {
 .task-overview .el-collapse-item__header {
   display: none;
 }
-/* .el-button--primary:focus, .el-button--primary:hover {
-    background: #66b1ff;
-    border-color: #66b1ff;
-    color: #fff;
-} */
+
+.task-overview .el-checkbox {
+  margin-right: 10px;
+}
+.task-overview .alert-inner .text {
+  font-size: 16px;
+}
+.task-overview .el-button--text {
+  font-size: 16px;
+}
+.task-overview .el-alert {
+  margin: 10px 0;
+}
 </style>
 
 <style lang="stylus" scoped>
@@ -583,9 +626,12 @@ export default {
 
   .table-container
     position relative
-    flex 1
-    overflow hidden
-    background-color greeen
+
+    .button-wrapper
+      position absolute
+      top -61px
+      right 31px
+      z-index 2
 
     .task-item
       margin-top 8px
