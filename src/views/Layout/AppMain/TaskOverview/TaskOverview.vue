@@ -3,7 +3,7 @@
  * @LastEditors: 旺苍扛把子
  * @Description: 任务概览组件
  * @Date: 2019-04-01 18:17:27
- * @LastEditTime: 2019-04-24 17:52:37
+ * @LastEditTime: 2019-04-28 10:04:09
  -->
 <template>
   <div class="task-overview">
@@ -11,14 +11,14 @@
       <el-form
         :model="taskOverviewForm"
         ref="taskOverviewForm"
-        label-position="left"
+        label-position="right"
+        label-width="100px"
         class="task-overview-form"
       >
         <el-row :gutter="20">
           <el-col :span="8">
             <el-form-item label="任务名称 :" prop="taskname">
               <el-input
-                style="width:70%;"
                 placeholder="请输入"
                 v-model.trim="taskOverviewForm.taskname"
               />
@@ -27,6 +27,7 @@
           <el-col :span="8">
             <el-form-item label="状态 :" prop="taskStatus">
               <el-select
+                style="width:100%;"
                 v-model="taskOverviewForm.taskStatus"
                 placeholder="请选择"
               >
@@ -56,74 +57,69 @@
             </el-form-item>
           </el-col>
         </el-row>
-        <el-collapse v-model="activeNames">
-          <el-collapse-item name="1">
-            <el-row>
-              <el-col :span="10">
-                <el-form-item label="起始时间段 :" prop="createTimeRange">
-                  <el-date-picker
-                    v-model="taskOverviewForm.createTimeRange"
-                    type="datetimerange"
-                    style="width:60%;"
-                    start-placeholder="起始启动时间"
-                    end-placeholder="起始完成时间"
-                    :default-time="['00:00:00']"
-                  >
-                  </el-date-picker>
-                </el-form-item>
-              </el-col>
-              <el-col :span="10">
-                <el-form-item prop="finishedTimeRange" label="结束时间段 :">
-                  <el-date-picker
-                    v-model="taskOverviewForm.finishedTimeRange"
-                    type="datetimerange"
-                    style="width:60%;"
-                    start-placeholder="结束启动时间"
-                    end-placeholder="结束完成时间"
-                    :default-time="['00:00:00']"
-                  >
-                  </el-date-picker>
-                </el-form-item> </el-col
-            ></el-row>
-            <el-row type="flex" align="middle">
-              <el-col :span="16">
-                <el-form-item prop="taskContents">
-                  <el-checkbox-group v-model="taskOverviewForm.taskContents">
-                    <el-checkbox label="同源分析" />
-                    <el-checkbox label="敏感信息分析" />
-                    <el-checkbox label="静态仿真分析" />
-                    <el-checkbox label="漏洞工具验证" />
-                    <el-checkbox label="工具变形与验证" />
-                  </el-checkbox-group>
-                </el-form-item>
-              </el-col>
-              <el-col :span="8">
-                <el-form-item
-                  ><!-- <el-select
-                    style="width:110px;margin-right:5px;"
-                    v-model="plczSelect.selected"
-                    placeholder="批量操作"
-                  >
-                    <el-option
-                      v-for="item in plczSelect.selected"
-                      :key="item.value"
-                      :label="item.label"
-                      :value="item.value"
-                    >
-                    </el-option>
-                  </el-select> -->
-                  <el-button type="primary"
-                    ><svg-icon
-                      icon-class="add"
-                      style="margin-right:5px;color:#fff;"
-                    ></svg-icon
-                    >新建</el-button
-                  >
-                </el-form-item>
-              </el-col>
-            </el-row>
-          </el-collapse-item>
-        </el-collapse>
+
+        <el-row :gutter="20">
+          <el-col :span="8">
+            <el-form-item label="起始时间段 :" prop="createTimeRange">
+              <el-date-picker
+                style="width:100%;"
+                v-model="taskOverviewForm.createTimeRange"
+                type="datetimerange"
+                start-placeholder="起始启动时间"
+                end-placeholder="起始完成时间"
+                :default-time="['00:00:00']"
+              >
+              </el-date-picker>
+            </el-form-item>
+          </el-col>
+          <el-col :span="8">
+            <el-form-item prop="finishedTimeRange" label="结束时间段 :">
+              <el-date-picker
+                style="width:100%;"
+                v-model="taskOverviewForm.finishedTimeRange"
+                type="datetimerange"
+                start-placeholder="结束启动时间"
+                end-placeholder="结束完成时间"
+                :default-time="['00:00:00']"
+              >
+              </el-date-picker>
+            </el-form-item> </el-col
+        ></el-row>
+        <el-form-item label-width="20px" prop="checkedEngines">
+          <el-row type="flex" :gutter="20" align="top">
+            <el-col :span="16">
+              <el-checkbox
+                size="medium"
+                :indeterminate="options.isIndeterminate"
+                v-model="options.checkAll"
+                border
+                @change="handleCheckAllChange"
+                >全选</el-checkbox
+              >
+              <el-checkbox-group
+                style="display:inline-block;"
+                size="medium"
+                v-model="taskOverviewForm.checkedEngines"
+              >
+                <el-checkbox
+                  v-for="engine in options.engines"
+                  :key="engine"
+                  border
+                  :label="engine"
+                />
+              </el-checkbox-group>
+            </el-col>
+            <el-col :span="8">
+              <el-button size="medium" type="primary"
+                ><svg-icon
+                  icon-class="add"
+                  style="margin-right:5px;color:#fff;"
+                ></svg-icon
+                >新建</el-button
+              ></el-col
+            >
+          </el-row>
+        </el-form-item>
       </el-form>
     </div>
     <div class="table-container" ref="tableContainer">
@@ -270,21 +266,10 @@
 <script>
 import _ from "lodash";
 // 导入时间处理工具函数
-import { utc2LocalDate, formatChinese } from "@/utils/day";
+import { formatChinese } from "@/utils/day";
 import { getDefaultTask, getTask, deleteTask, executeTask } from "@/api/task";
 export default {
   name: "TaskOverview",
-  components: {
-    /* 按需加载组件 */
-    // demo: () => import('@/pages/')
-  },
-  props: {
-    /*  <WelcomeMessage greeting-text="hi"/> */
-    //   'greetingText': {
-    //     type: [String,Number],
-    //     required: true
-    //  }
-  },
   data() {
     return {
       // 任务概览组件表单数据
@@ -297,7 +282,7 @@ export default {
         // 状态下拉
         taskStatus: "",
         // 多选框
-        taskContents: []
+        checkedEngines: []
       },
       // 批量选中下拉框
       plczSelect: {
@@ -329,6 +314,20 @@ export default {
       pagination: {
         size: 10,
         currentPage: 1
+      },
+      // 组件中所有的配置
+      options: {
+        // 检测内容配置
+        engines: [
+          "同源分析",
+          "敏感信息分析",
+          "静态仿真分析",
+          "漏洞工具验证",
+          "工具变形与验证"
+        ],
+        checkAll: false,
+        checkedEngines: [],
+        isIndeterminate: true
       }
     };
   },
@@ -340,7 +339,6 @@ export default {
         : { text: "展开", isActiveRotate: false };
     }
   },
-  watch: {},
   methods: {
     /**
      * @description 收起和展开折叠面板,防抖处理
@@ -395,7 +393,7 @@ export default {
         createTimeRange: [enableTimeStart, enableTimeEnd],
         finishedTimeRange: [finishTimeStart, finishTimeEnd],
         taskStatus,
-        taskContents: tem
+        checkedEngines: tem
       } = this.taskOverviewForm;
       let taskContents = [];
       // taskContent拼装成数组[1,2,3,4,5]
@@ -521,8 +519,21 @@ export default {
       let tid = row.tid;
       this.$router.push({ path: `/taskDetail/${tid}` });
     }),
-    utc2LocalDate(utcDateString) {
-      return utc2LocalDate(utcDateString);
+    /**
+     * @description 处理检测内容全选按钮改变
+     */
+    handleCheckAllChange(val) {
+      this.taskOverviewForm.checkedEngines = val ? this.options.engines : [];
+      this.options.isIndeterminate = false;
+    },
+    /**
+     * @description 处理检测内容选中项改变
+     */
+    handleCheckedEnginesChange(value) {
+      let checkedCount = value.length;
+      this.options.checkAll = checkedCount === this.options.engines.length;
+      this.options.isIndeterminate =
+        checkedCount > 0 && checkedCount < this.options.engines.length;
     }
   },
   created() {
@@ -552,6 +563,11 @@ export default {
 .task-overview .el-collapse-item__header {
   display: none;
 }
+/* .el-button--primary:focus, .el-button--primary:hover {
+    background: #66b1ff;
+    border-color: #66b1ff;
+    color: #fff;
+} */
 </style>
 
 <style lang="stylus" scoped>
