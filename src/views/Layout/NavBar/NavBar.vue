@@ -3,7 +3,7 @@
  * @LastEditors: 旺苍扛把子
  * @Description: 头部栏,包含搜索,注销,消息
  * @Date: 2019-03-27 10:03:36
- * @LastEditTime: 2019-04-28 10:09:45
+ * @LastEditTime: 2019-04-29 10:47:09
  -->
 <template>
   <div class="navbar">
@@ -136,11 +136,7 @@ export default {
   margin-left: 40px;
   padding-right: 40px;
 }
-/* 强制改变搜索按钮背景颜色 */
-/* .navbar .el-button--primary {
-  background-color: #409eff !important;
-  color: #fff !important;
-} */
+
 .navbar .el-input-group__append {
   background-color: #409eff;
   color: #fff;

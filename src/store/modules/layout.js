@@ -51,7 +51,6 @@ const layout = {
 
     unshiftDefaultOpeneds(state, value) {
       if (state.defaultOpeneds.indexOf(value) === -1) {
-        debugger;
         state.defaultOpeneds.unshift(value);
       }
     },

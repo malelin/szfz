@@ -3,7 +3,7 @@
  * @LastEditors: 旺苍扛把子
  * @Description: 任务概览组件
  * @Date: 2019-04-01 18:17:27
- * @LastEditTime: 2019-04-28 14:02:58
+ * @LastEditTime: 2019-04-30 11:59:57
  -->
 <template>
   <div class="task-overview">
@@ -165,6 +165,7 @@
           sortable
           prop="startTime"
           label="开始时间"
+          width="150"
         >
           <template slot-scope="{ row }">
             <p style="color:#409eff;" v-if="row.startTime !== ''">
@@ -186,6 +187,7 @@
           sortable
           prop="endTime"
           label="结束时间"
+          width="150"
         >
           <template slot-scope="{ row }">
             <p style="color:#409eff;" v-if="row.endTime !== ''">
@@ -217,26 +219,13 @@
             <status :status="row.taskStatus" />
           </template>
         </el-table-column>
-        <el-table-column
-          align="center"
-          prop="taskContent"
-          label="任务内容"
-          width="200"
-        >
+        <el-table-column align="center" prop="taskContent" label="任务内容">
           <template slot-scope="{ row }">
-            <span class="task-item" v-if="row.taskHomo === 1">同源分析</span>
-            <span class="task-item" v-if="row.taskAnti === 1"
-              >静态仿真分析</span
-            >
-            <span class="task-item" v-if="row.taskMorph === 1"
-              >工具变形与验证</span
-            >
-            <span class="task-item" v-if="row.taskSensi === 1"
-              >敏感信息分析</span
-            >
-            <span class="task-item" v-if="row.taskVeri === 1"
-              >漏洞工具验证</span
-            >
+            <el-tag v-if="row.taskHomo === 1">同源分析</el-tag>
+            <el-tag v-if="row.taskAnti === 1">静态仿真分析</el-tag>
+            <el-tag v-if="row.taskMorph === 1">工具变形与验证</el-tag>
+            <el-tag v-if="row.taskSensi === 1">敏感信息分析</el-tag>
+            <el-tag v-if="row.taskVeri === 1">漏洞工具验证</el-tag>
           </template>
         </el-table-column>
         <el-table-column
@@ -244,7 +233,7 @@
           align="center"
           prop="operate"
           label="操作"
-          width="250"
+          width="250px"
         >
           <template slot-scope="{ row, $index }">
             <el-button
@@ -610,6 +599,9 @@ export default {
 }
 .task-overview .el-alert {
   margin: 10px 0;
+}
+.task-overview .el-tag {
+  margin: 5px 8px 0 0;
 }
 </style>
 

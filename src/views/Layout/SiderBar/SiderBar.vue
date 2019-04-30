@@ -3,7 +3,7 @@
  * @LastEditors: 旺苍扛把子
  * @Description: siderbar组件
  * @Date: 2019-03-27 10:01:30
- * @LastEditTime: 2019-04-25 11:48:21
+ * @LastEditTime: 2019-04-28 11:11:17
  -->
 <template>
   <div class="siderbar">
@@ -169,30 +169,26 @@ export default {
 
 <style lang="stylus" scoped>
 .siderbar
-  line-height: 1;
+  line-height 1
 
   .c-scrollbar
-    height: calc(100% - 75px);
-
+    height calc(100% - 75px)
 
   .logo-container
-    text-align: center;
     background-color #20364a
+    text-align center
+
     img
-      width: 180px;
-
-
-
+      width 180px
 
 .svg-icon
-  margin-right: 5px;
-  vertical-align: middle;
-  font-size: 28px;
-
+  margin-right 5px
+  vertical-align middle
+  font-size 28px
 
 .svg-logo
-  padding-bottom: 20px;
-  width: 180px;
-  height: 55px;
-  transition: width height 0.2s;
+  padding-bottom 20px
+  width 180px
+  height 55px
+  transition width height 0.2s
 </style>

@@ -3,7 +3,7 @@
  * @LastEditors: 旺苍扛把子
  * @Description: 任务详情组件
  * @Date: 2019-04-11 14:32:10
- * @LastEditTime: 2019-04-23 16:37:21
+ * @LastEditTime: 2019-04-30 11:47:49
  -->
 <template>
   <div class="task-detail">
@@ -46,45 +46,40 @@
           </el-form-item>
 
           <el-form-item label="任务内容 :">
-            <span
-              class="task-item"
+            <el-tag
               v-if="
                 typeof taskForm.taskHomo !== 'undefined' &&
                   taskForm.taskHomo === 1
               "
-              >同源分析</span
+              >同源分析</el-tag
             >
-            <span
-              class="task-item"
+            <el-tag
               v-if="
                 typeof taskForm.taskAnti !== 'undefined' &&
                   taskForm.taskAnti === 1
               "
-              >静态仿真分析</span
+              >静态仿真分析</el-tag
             >
-            <span
-              class="task-item"
+            <el-tag
               v-if="
                 typeof taskForm.taskMorph !== 'undefined' &&
                   taskForm.taskMorph === 1
               "
-              >工具变形与验证</span
+              >工具变形与验证</el-tag
             >
-            <span
-              class="task-item"
+            <el-tag
               v-if="
                 typeof taskForm.taskSensi !== 'undefined' &&
                   taskForm.taskSensi === 1
               "
-              >敏感信息分析</span
+              >敏感信息分析</el-tag
             >
-            <span
-              class="task-item"
+            <el-tag
               v-if="
                 typeof taskForm.taskVeri !== 'undefined' &&
                   taskForm.taskVeri === 1
               "
-              >漏洞工具验证</span
+              >漏洞工具验证</el-tag
             >
           </el-form-item>
           <el-form-item label="任务作者 :">
@@ -235,6 +230,11 @@ export default {
   }
 };
 </script>
+<style>
+.task-detail .el-tag {
+  margin-right: 8px;
+}
+</style>
 
 <style lang="stylus" scoped>
 .task-detail

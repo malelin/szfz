@@ -3,7 +3,7 @@
  * @LastEditors: 旺苍扛把子
  * @Description: 任务api
  * @Date: 2019-04-03 14:45:44
- * @LastEditTime: 2019-04-19 16:05:36
+ * @LastEditTime: 2019-04-29 11:32:09
  */
 import request from "@/utils/request";
 /**
@@ -44,8 +44,8 @@ export const getTask = data => {
  * @returns {Promise<*>} Promise
  */
 export const createTask = data => {
+  debugger;
   let token = sessionStorage.getItem("token");
-  console.log(data);
   return request({
     url: "/v1/sysmanage/task",
     method: "post",
@@ -122,3 +122,15 @@ export const getTaskDetailList = tid => {
     headers: { "Digark-Access-Header": token }
   });
 };
+// 创建安全仿真分析任务
+// export function createTaskAnti(){
+// "anti": {
+//         "aids": [ //杀毒软件id
+//           0
+//         ],
+//         "model": 0,//检测模式 1  静态 2 动态
+//         "network": 0,//是否 开启网络   1 开启 2关闭
+//         "param": "string",//命令行参数
+//         "time": 0//检测时长 1 45s 2 60s 3 90s 4 120s
+//       },
+// }
