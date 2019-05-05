@@ -3,13 +3,13 @@
  * @LastEditors: 旺苍扛把子
  * @Description: 控制面板组件
  * @Date: 2019-03-29 10:14:42
- * @LastEditTime: 2019-05-05 14:56:40
+ * @LastEditTime: 2019-05-05 15:28:43
  -->
 <template>
   <div class="dashboard">
     <div class="charts-container">
       <!-- 检测结果统计 -->
-      <div class="jcjgtj">
+      <div class="jcjgtj animated bounceInUp">
         <div class="chart-header">
           <span class="title">检测结果统计</span>
           <el-tabs
@@ -22,9 +22,10 @@
             <el-tab-pane label="全年" name="year"></el-tab-pane>
           </el-tabs>
         </div>
-        <div class="chart-body">
+        <div class="chart-body animated bounceInUp">
           <el-col :span="6">
             <ve-ring
+              class="c-ve-ring animated rollIn"
               :data="chartDetectRingData.dataFailure"
               :legend-visible="false"
               :tooltip-visible="false"
@@ -35,6 +36,7 @@
           ></el-col>
           <el-col :span="6">
             <ve-ring
+              class="c-ve-ring animated rollIn"
               :data="chartDetectRingData.dataHighRisk"
               :legend-visible="false"
               :tooltip-visible="false"
@@ -45,6 +47,7 @@
           ></el-col>
           <el-col :span="6">
             <ve-ring
+              class="c-ve-ring animated rollIn"
               :data="chartDetectRingData.dataMiddleRisk"
               :legend-visible="false"
               :tooltip-visible="false"
@@ -55,6 +58,7 @@
           ></el-col>
           <el-col :span="6">
             <ve-ring
+              class="c-ve-ring animated rollIn"
               :data="chartDetectRingData.dataSafety"
               :legend-visible="false"
               :tooltip-visible="false"
@@ -82,7 +86,7 @@
         </div>
       </div>
       <!-- 威胁类型分布 -->
-      <div class="wxlxfb">
+      <div class="wxlxfb animated bounceInUp">
         <div class="chart-header">
           <span class="title">威胁类型分布</span
           ><el-tabs
@@ -97,6 +101,7 @@
         </div>
         <div class="chart-body">
           <ve-ring
+            class="c-ve-ring animated rollIn"
             width="100%"
             height="240px"
             :judge-width="true"
@@ -108,7 +113,7 @@
         </div>
       </div>
     </div>
-    <div class="engine-container">
+    <div class="engine-container animated bounceInUp">
       <div class="engine-container-header">
         <span class="title">应用列表</span>
       </div>
@@ -591,6 +596,18 @@ export default {
         display flex
         flex-wrap wrap
         height 100%
+
+  .jcjgtj
+    animation-delay 0.1s
+
+  .wxlxfb
+    animation-delay 0.3s
+
+  .engine-container
+    animation-delay 0.5s
+
+  .c-ve-ring
+    animation-delay 0.7s
 
 .loading
   position absolute

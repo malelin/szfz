@@ -3,7 +3,7 @@
  * @LastEditors: 旺苍扛把子
  * @Description: 引擎组件
  * @Date: 2019-04-22 16:51:22
- * @LastEditTime: 2019-05-05 15:01:20
+ * @LastEditTime: 2019-05-05 15:07:45
  -->
 <template>
   <li class="engine-item">
@@ -120,7 +120,6 @@ export default {
         this.engine.isUploading = false;
         // 打开创建任务中的动画的遮罩
         this.engine.overlay = true;
-
         try {
           let obj = await this._generateTaskParam(this.engineId, object);
           let taskData = {
