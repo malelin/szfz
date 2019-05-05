@@ -3,7 +3,7 @@
  * @LastEditors: 旺苍扛把子
  * @Description: 引擎组件
  * @Date: 2019-04-22 16:51:22
- * @LastEditTime: 2019-05-05 15:07:45
+ * @LastEditTime: 2019-05-05 17:36:27
  -->
 <template>
   <li class="engine-item">
@@ -59,6 +59,7 @@
 
 <script>
 import { getAntiList } from "@/api/anti";
+import { hasSuffix } from "@/utils/file";
 import { createTask } from "@/api/task";
 export default {
   name: "Engine",
@@ -181,7 +182,21 @@ export default {
      * @description 引擎上传文件之前
      */
     FileBeforeUpload(file) {
+      debugger;
+      let fileName = file.name;
+      let type = file.type;
+      // 判断文件是否有后缀
+      debugger;
+      if (hasSuffix(fileName) || type === "") {
+        this.$notify({
+          type: "warning",
+          title: "创建任务错误",
+          message: "请传入有后缀名的文件"
+        });
+        return false;
+      }
       let fileSize = file.size / 1024 / 1024;
+      // 文件尺寸是否大于30
       if (fileSize > 30) {
         this.$message({
           type: "error",
