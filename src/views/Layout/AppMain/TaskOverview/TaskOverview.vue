@@ -3,7 +3,7 @@
  * @LastEditors: 旺苍扛把子
  * @Description: 任务概览组件
  * @Date: 2019-04-01 18:17:27
- * @LastEditTime: 2019-04-30 11:59:57
+ * @LastEditTime: 2019-05-05 14:53:45
  -->
 <template>
   <div class="task-overview">
@@ -222,7 +222,7 @@
         <el-table-column align="center" prop="taskContent" label="任务内容">
           <template slot-scope="{ row }">
             <el-tag v-if="row.taskHomo === 1">同源分析</el-tag>
-            <el-tag v-if="row.taskAnti === 1">静态仿真分析</el-tag>
+            <el-tag v-if="row.taskAnti === 1">安全仿真分析</el-tag>
             <el-tag v-if="row.taskMorph === 1">工具变形与验证</el-tag>
             <el-tag v-if="row.taskSensi === 1">敏感信息分析</el-tag>
             <el-tag v-if="row.taskVeri === 1">漏洞工具验证</el-tag>
@@ -336,7 +336,7 @@ export default {
         engines: [
           "同源分析",
           "敏感信息分析",
-          "静态仿真分析",
+          "安全仿真分析",
           "漏洞工具验证",
           "工具变形与验证"
         ],
@@ -429,7 +429,7 @@ export default {
           case "敏感信息分析":
             taskContents.push(2);
             break;
-          case "静态仿真分析":
+          case "安全仿真分析":
             taskContents.push(3);
             break;
           case "漏洞工具验证":

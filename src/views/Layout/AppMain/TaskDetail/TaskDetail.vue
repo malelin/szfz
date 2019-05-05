@@ -3,7 +3,7 @@
  * @LastEditors: 旺苍扛把子
  * @Description: 任务详情组件
  * @Date: 2019-04-11 14:32:10
- * @LastEditTime: 2019-04-30 11:47:49
+ * @LastEditTime: 2019-05-05 14:53:14
  -->
 <template>
   <div class="task-detail">
@@ -58,7 +58,7 @@
                 typeof taskForm.taskAnti !== 'undefined' &&
                   taskForm.taskAnti === 1
               "
-              >静态仿真分析</el-tag
+              >安全仿真分析</el-tag
             >
             <el-tag
               v-if="
