@@ -1,9 +1,9 @@
 <!--
  * @Author: 旺苍扛把子
- * @LastEditors: 旺苍扛把子
+ * @LastEditors: Please set LastEditors
  * @Description: 任务详情组件
  * @Date: 2019-04-11 14:32:10
- * @LastEditTime: 2019-05-05 14:53:14
+ * @LastEditTime: 2019-05-07 15:33:09
  -->
 <template>
   <div class="task-detail">
@@ -34,7 +34,9 @@
               v-model="taskForm.remarks"
             ></el-input
           ></el-form-item>
-
+          <ul>
+            <li><a href=""></a></li>
+          </ul>
           <el-form-item label="创建时间 :">
             <span>{{ taskForm.createTime }}</span>
           </el-form-item>
@@ -92,13 +94,9 @@
       </div>
     </div>
     <div class="detail-body">
-      <div class="detail-top">
-        <h1 class="title">任务详情</h1>
-      </div>
-      <div class="detail-main">
-        <BaseTable :tid="tid" :task-status="taskForm.taskStatus" />
-      </div>
+      <BaseTable :tid="tid" :task-status="taskForm.taskStatus" />
     </div>
+    <div class="detail-footer"></div>
   </div>
 </template>
 
@@ -208,26 +206,9 @@ export default {
     this.getTaskDetail().catch(err => {
       console.log(err);
     });
-    // this.timer = setInterval(() => {
-    //   console.log(this);
-    //   this.getTaskDetail()
-    //     .then(res => {
-    //       if (res.taskStatus === 3) {
-    //         clearInterval(this.timer);
-    //       }
-    //     })
-    //     .catch(err => {
-    //       console.log(err);
-    //     });
-    // }, 5000);
   },
   mounted() {},
-  beforeDestroy() {
-    // if (this.timer) {
-    //   //如果定时器还在运行 或者直接关闭，不用判断
-    //   window.clearInterval(this.timer); //关闭
-    // }
-  }
+  beforeDestroy() {}
 };
 </script>
 <style>
@@ -242,7 +223,6 @@ export default {
     display flex
     justify-content space-between
     margin 0 12px 20px 6px
-    margin-top 43px
     padding 15px 10px 10px 40px
     background-color #fff
     box-shadow 1px 0 10px #ccc
@@ -284,9 +264,7 @@ export default {
 
   .detail-body
     margin 0 12px 20px 6px
-    padding 10px
     background-color #fff
-    box-shadow 1px 0 10px #ccc
 
     .detail-top
       display flex

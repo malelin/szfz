@@ -1,9 +1,9 @@
 <!--
  * @Author: 旺苍扛把子
- * @LastEditors: 旺苍扛把子
+ * @LastEditors: Please set LastEditors
  * @Description: 返回组件
  * @Date: 2019-04-15 11:20:25
- * @LastEditTime: 2019-04-23 15:47:50
+ * @LastEditTime: 2019-05-07 15:34:01
  -->
 
 <template>
@@ -50,15 +50,7 @@ export default {
 
 <style lang="stylus" scoped>
 .back
-  position absolute
-  top 0
-  left 3px
-  z-index 99
-  padding-right 3px
-  border-bottom 1px solid #efefef
-  border-radius 5px
-  background-color #fff
-  box-shadow 1px 0 10px #ccc
+  padding 10px 0
   line-height 25px
 
   .c-el-button

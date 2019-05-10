@@ -3,17 +3,17 @@
  * @LastEditors: 旺苍扛把子
  * @Description: 布局组件,包含SiderBar,NavBar,TagsView,AppMain
  * @Date: 2019-03-27 09:45:34
- * @LastEditTime: 2019-05-05 15:30:53
+ * @LastEditTime: 2019-05-07 10:38:54
  -->
 <template>
   <div class="layout">
     <!-- 侧边栏 -->
     <div class="siderbar-container">
-      <SiderBar class="c-siderbar animated bounceInLeft" />
+      <SiderBar class="c-siderbar" />
     </div>
     <!-- 右侧内容 -->
     <div class="main-container">
-      <NavBar class="c-nav-bar animated bounceInRight" />
+      <NavBar class="c-nav-bar" />
       <app-main />
     </div>
   </div>

@@ -1,9 +1,9 @@
 <!--
  * @Author: 旺苍扛把子
- * @LastEditors: 旺苍扛把子
+ * @LastEditors: Please set LastEditors
  * @Description: 任务概览组件
  * @Date: 2019-04-01 18:17:27
- * @LastEditTime: 2019-05-05 14:53:45
+ * @LastEditTime: 2019-05-08 09:02:49
  -->
 <template>
   <div class="task-overview">
@@ -152,11 +152,10 @@
         tooltip-effect="dark"
         style="width: 100%;"
         class="c-el-table"
-        border
         @selection-change="handleSelectionChange"
       >
-        <el-table-column align="center" type="selection"> </el-table-column>
-        <el-table-column align="center" width="100" label="任务编号" prop="tid">
+        <el-table-column align="right" type="selection"> </el-table-column>
+        <el-table-column align="left" width="100" label="任务编号" prop="tid">
         </el-table-column>
         <el-table-column align="center" prop="taskName" label="任务名称">
         </el-table-column>
@@ -269,7 +268,7 @@
         :page-size="pagination.size"
         layout="sizes, prev, pager, next"
         :total="tableData.total"
-        class="c-el-pagination"
+        class="c-el-pagination fr"
       >
       </el-pagination>
     </div>
@@ -593,6 +592,7 @@ export default {
 }
 .task-overview .alert-inner .text {
   font-size: 16px;
+  color: rgba(0, 0, 0, 0.65);
 }
 .task-overview .el-button--text {
   font-size: 16px;
@@ -602,6 +602,12 @@ export default {
 }
 .task-overview .el-tag {
   margin: 5px 8px 0 0;
+}
+.task-overview .el-alert--info {
+  background-color: #e6f7ff;
+}
+.task-overview .el-alert__icon {
+  color: rgba(24, 144, 255, 1);
 }
 </style>
 
@@ -639,10 +645,10 @@ export default {
         color #fff
 
     .c-el-pagination
-      padding 15px 0
+      padding 22px 30px
 
   .svg-icon
-    transition all 0.1s
+       transition all 0.1s
 
     &.rotate
       transition all 0.1s

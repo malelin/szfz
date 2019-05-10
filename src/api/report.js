@@ -1,9 +1,9 @@
 /*
  * @Author: 旺苍扛把子
- * @LastEditors: 旺苍扛把子
+ * @LastEditors: Please set LastEditors
  * @Description: 报告管理模块相关接口
  * @Date: 2019-04-16 10:08:49
- * @LastEditTime: 2019-04-18 10:06:49
+ * @LastEditTime: 2019-05-08 14:24:18
  */
 import request from "@/utils/request";
 
@@ -68,6 +68,23 @@ export function getReportSensi(rid) {
   let token = sessionStorage.getItem("token");
   return request({
     url: "/v1/report/sensi",
+    method: "get",
+    params: { rid },
+    headers: {
+      "Digark-Access-Header": token
+    }
+  });
+}
+/**
+ * @description 通过报告id获得安全仿真信息
+ * @export
+ * @param {string} rid
+ * @returns
+ */
+export function getReportAnti(rid) {
+  let token = sessionStorage.getItem("token");
+  return request({
+    url: "/v1/report/anti",
     method: "get",
     params: { rid },
     headers: {

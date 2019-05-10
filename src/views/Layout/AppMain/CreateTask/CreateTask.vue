@@ -1,9 +1,9 @@
 <!--
  * @Author: 旺苍扛把子
- * @LastEditors: 旺苍扛把子
+ * @LastEditors: Please set LastEditors
  * @Description: 新建任务组件
  * @Date: 2019-04-02 09:23:23
- * @LastEditTime: 2019-04-30 17:10:56
+ * @LastEditTime: 2019-05-10 16:56:44
  -->
 
 <template>
@@ -142,8 +142,9 @@
                       :label="option.label"
                       :value="option.value"
                     >
-                    </el-option> </el-select></el-form-item
-              ></el-collapse-item>
+                    </el-option> </el-select
+                ></el-form-item>
+              </el-collapse-item>
             </el-collapse>
           </el-form></div
       ></el-card>
@@ -206,7 +207,6 @@
           tooltip-effect="dark"
           style="width: 100%"
           class="c-el-table"
-          border
           @selection-change="handleSelectionChange"
         >
           <el-table-column type="selection" width="55"> </el-table-column>
@@ -225,7 +225,7 @@
             </template>
           </el-table-column>
 
-          <el-table-column prop="fileType" width="100" label="文件类型">
+          <el-table-column width="100" label="文件类型">
             <template slot-scope="{ row }"
               >{{ row.response && row.response.data.fileType }}
             </template></el-table-column
@@ -235,7 +235,7 @@
               {{ Math.ceil(row.size / 1024) }}kb
             </template>
           </el-table-column>
-          <el-table-column prop="fileMD5" label="MD5">
+          <el-table-column label="MD5">
             <template slot-scope="{ row }"
               >{{ row.response && row.response.data.fileMD5 }}
             </template>
@@ -278,18 +278,8 @@
             </template>
           </el-table-column>
           <el-table-column type="expand">
-            <template slot-scope="props">
-              <el-form label-position="left" inline class="demo-table-expand">
-                <el-form-item label="日期">
-                  <span>{{ props.row.date }}</span>
-                </el-form-item>
-                <el-form-item label="姓名">
-                  <span>{{ props.row.name }}</span>
-                </el-form-item>
-                <el-form-item label="地址">
-                  <span>{{ props.row.address }}</span>
-                </el-form-item>
-              </el-form>
+            <template slot-scope="{ row }">
+              <object-setting :row="row" />
             </template>
           </el-table-column>
         </el-table>
@@ -304,6 +294,7 @@
               class="c-el-upload"
               ref="r_el_upload"
               drag
+              :limit="20"
               multiple
               :show-file-list="false"
               :action="upload.action"
@@ -349,7 +340,7 @@ export default {
   name: "CreateTask",
   components: {
     /* 按需加载组件 */
-    // demo: () => import('@/pages/')
+    ObjectSetting: () => import("../ObjectSetting/ObjectSetting")
   },
   props: {
     /*  <WelcomeMessage greeting-text="hi"/> */
@@ -443,7 +434,7 @@ export default {
           param: "",
           // 检测时长
           checkDurationOptions: [
-            { label: "40s", value: 1 },
+            { label: "45s", value: 1 },
             { label: "60s", value: 2 },
             { label: "90s", value: 3 },
             { label: "120s", value: 4 }
@@ -501,58 +492,20 @@ export default {
     /**
      * @description 文件上传成功钩子
      */
-    fileOnSuccess({ status, data, msg }, file, fileList) {
+    fileOnSuccess({ status, msg }, file, fileList) {
       // 更新上传列表
       this.uploadFileList = fileList;
       if (status === 200) {
         // this.$message({
         //   type: "success",
-        //   message: file.name + "上传成功"
+        //   message: "上传成功"
         // });
-        // 上传成功后获取到的文件对象
-        let {
-          uploadId,
-          fileSHA1,
-          fileSHA256,
-          fileSSDEEP,
-          fileName,
-          saveUrl,
-          fileMD5,
-          fileType,
-          suffix,
-          fileSize
-        } = data;
-        // if (
-        //   this.taskTable.findIndex(item => {
-        //     return item.fileMD5 === fileMD5;
-        //   }) !== -1
-        // ) {
-        //   this.$message({
-        //     type: "warning",
-        //     message: "重复上传"
-        //   });
-        //   return false;
-        // }
-        // 要显示在表格中的单个任务
-        let task = {
-          uploadId,
-          fileSHA1,
-          fileSHA256,
-          fileSSDEEP,
-          suffix,
-          fileName,
-          saveUrl,
-          fileMD5,
-          fileType,
-          fileSize: fileSize,
-          openSensitivity: 2, //打开敏感分析引擎
-          modalTaskSetting: { taskSensi: { isChecked: false } }
-        };
-        this.taskTable.push(task);
       } else {
-        this.$message({
+        this.$notify({
+          title: "上传失败",
           type: "warning",
-          message: msg
+          message: msg,
+          offset: 61
         });
       }
     },
@@ -773,6 +726,7 @@ export default {
       let openSensitivity = isChecked ? 1 : 2;
       // 创建任务时安全仿真引擎的参数
       let anti = {
+        selected: [], //选中的杀软
         aids,
         model,
         network,
@@ -875,9 +829,7 @@ export default {
     }, 300)
   },
   created() {},
-  mounted() {
-    // this.$modal.show("taskSetting");
-  }
+  mounted() {}
 };
 </script>
 
@@ -913,7 +865,7 @@ export default {
       justify-content space-between
       align-items center
       padding-bottom 10px
-      border-bottom 1px solid #ccc
+      border-bottom 1px solid #EBEEF5
 
     .settings-body
       .operate-box
