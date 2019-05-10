@@ -16,17 +16,17 @@
   </head>
 
   <body>
-    <div id="detectReport" class="detect-report">
+    <div class="detect-report" id="detectReport">
       <div class="report-inner">
         <div class="report-steps-wrapper">
           <!-- 步骤条 -->
-          <el-steps direction="vertical" :active="steps.active">
+          <el-steps direction="vertical" :active="config.steps.active">
             <el-step :title="step.title" v-for="(step, index) in steps.list" :key="step.title" href="#basic"
               @click.native="handleStepClick(index, step)"></el-step>
           </el-steps>
         </div>
         <div class="report-content">
-          <!-- 报告元数据 -->
+          <!-- 元数据 -->
           <div class="report-meta clearfix">
             <div class="meta-info fl">
               <div class="meta-obj-name">
@@ -43,8 +43,8 @@
               </div>
               <div class="meta-detect-content">
                 <span class="meta-title">• 检测内容</span>
-                <el-tag style="margin-right:5px;" v-for="item in report.meta.detectContent" :key="item.id">
-                  {{ item.detectContent }}</el-tag>
+                <el-tag style="margin-right:5px;" v-for="item in report.meta.detectContent" :key="item.id"
+                  :type="getTagType(item.levelContent)">{{ item.detectContent }}</el-tag>
               </div>
               <div class="meta-level">
                 <span class="meta-title">• 危险等级</span>
@@ -52,26 +52,29 @@
               </div>
               <div class="meta-tags" v-if="report.meta.tags.length">
                 <span class="meta-title">• 标签</span>
-                <el-tag style="margin-right:5px;" type="warning" v-for="tag in report.meta.tags" :key="tag.id">{{ tag }}
+                <el-tag style="margin-right:5px;" type="info" v-for="tag in report.meta.tags" :key="tag.id">{{ tag }}
                 </el-tag>
               </div>
             </div>
             <div class="meta-manipulate-wrapper fr">
               <svg-icon icon-class="manipulate" class="manipulate-icon"></svg-icon>
               <div class="manipulate" v-show="config.manipulate.visible">
-                <svg-icon icon-class="download" class="manipulate-item"></svg-icon>
+                <a :href="report.meta.downloadLink" download="report.meta.downloadName">
+                  <svg-icon icon-class="download" class="manipulate-item">
+                  </svg-icon>
+                </a>
                 <svg-icon icon-class="save" class="manipulate-item"></svg-icon>
                 <svg-icon icon-class="refresh" class="manipulate-item"></svg-icon>
               </div>
             </div>
           </div>
-          <!-- 报告基本信息 -->
-          <div class="report-basic" ref="basic">
-            <div class="basic-header">
+          <!-- 基本信息 -->
+          <div class="report-item report-basic" ref="basic">
+            <div class="report-header">
               <svg-icon icon-class="basic"></svg-icon>
-              <span class="basic-title">基本信息</span>
+              <span class="report-title">基本信息</span>
             </div>
-            <div class="basic-body">
+            <div class="report-body basic-body">
               <ul class="basic-list">
                 <li>
                   <span class="field">• 文件名称</span>
@@ -108,125 +111,188 @@
               </ul>
             </div>
           </div>
-          <!-- 报告敏感信息 -->
-          <div class="report-sensi" ref="sensi">
-            <div class="sensi-header">
+          <!-- 敏感信息 -->
+          <div class="report-item report-sensi" ref="sensi" v-if="visible.reportSensi">
+            <div class="report-header" :class="style.reportSensi">
               <svg-icon icon-class="sensi"></svg-icon>
-              <span class="sensi-title">敏感信息</span>
+              <span class="report-title">敏感信息</span>
             </div>
-            <div class="sensi-body">
-              <!-- 语言信息 -->
-              <div class="sensi-type language-info">
-                <p class="title">语言信息</p>
-                <el-collapse v-model="config.chineseStringConfig.activeCollapseItems">
-                  <el-collapse-item title="• 中文字符串" name="1">
-                    <el-table :data="report.sensi.languageInfo.chineseStrings" border>
-                      <el-table-column prop="offset" label="偏移">
-                      </el-table-column>
-                      <el-table-column prop="value" label="内容">
-                      </el-table-column>
-                    </el-table>
-                  </el-collapse-item>
-                  <el-collapse-item title="• 资源特性信息" name="2">
-                    <el-table :data="report.sensi.languageInfo.sensitiveLanguage" border>
-                      <el-table-column prop="offset" label="偏移">
-                      </el-table-column>
-                      <el-table-column prop="language" label="语言">
-                      </el-table-column>
-                      <el-table-column prop="sublanguage" label="子语言">
-                      </el-table-column>
-                    </el-table>
-                  </el-collapse-item>
-                  <el-collapse-item title="• 敏感特征信息" name="3">
-                    <el-card class="box-card" style="margin-top:20px;" shadow="hover">
-                      <div slot="header" class="clearfix">
-                        <span class="sensi-feature-title">• 清单文件</span>
-                      </div>
-                      <el-table :data="report.sensi.languageInfo.sensiFeatures.mainfest" border>
-                        <el-table-column prop="filename" label="文件名">
-                        </el-table-column>
-                        <el-table-column prop="offset" label="偏移">
-                        </el-table-column>
-                        <el-table-column prop="size" label="大小">
-                        </el-table-column>
-                      </el-table>
-                    </el-card>
-                    <el-card class="box-card" style="margin-top:20px;" shadow="hover">
-                      <div slot="header" class="clearfix">
-                        <span class="sensi-feature-title">• 敏感字符</span>
-                      </div>
-                      <el-table :data="
-                            report.sensi.languageInfo.sensiFeatures.sensitiveChars
-                          " border>
-                        <el-table-column prop="filename" label="文件名">
-                        </el-table-column>
+            <div class="report-body sensi-body">
+              <template>
+                <!-- 语言信息 -->
+                <div class="sensi-type language-info">
+                  <p class="title">语言信息</p>
+                  <el-collapse v-model="config.activeCollapseItems">
+                    <el-collapse-item title="• 中文字符串" name="1">
+                      <el-table :data="report.sensi.languageInfo.chineseStrings" border>
                         <el-table-column prop="offset" label="偏移">
                         </el-table-column>
                         <el-table-column prop="value" label="内容">
                         </el-table-column>
                       </el-table>
-                    </el-card>
-                    <el-card class="box-card" style="margin-top:20px;" shadow="hover">
-                      <div slot="header" class="clearfix">
-                        <span class="sensi-feature-title">• 拼音</span>
-                      </div>
-                      <el-table :data="report.sensi.languageInfo.sensiFeatures.pinyins" border>
-                        <el-table-column prop="filename" label="文件名">
-                        </el-table-column>
+                    </el-collapse-item>
+                    <el-collapse-item title="• 资源特性信息" name="2">
+                      <el-table :data="report.sensi.languageInfo.sensitiveLanguage" border>
                         <el-table-column prop="offset" label="偏移">
                         </el-table-column>
-                        <el-table-column prop="value" label="内容">
+                        <el-table-column prop="language" label="语言">
+                        </el-table-column>
+                        <el-table-column prop="sublanguage" label="子语言">
                         </el-table-column>
                       </el-table>
-                    </el-card>
-                    <el-card class="box-card" style="margin-top:20px;" shadow="hover">
-                      <div slot="header" class="clearfix">
-                        <span class="sensi-feature-title">• version资源中存在中文</span>
-                      </div>
-                      <el-table :data="
-                            report.sensi.languageInfo.sensiFeatures.versionChineses
-                          " border>
-                        <el-table-column prop="filename" label="文件名">
-                        </el-table-column>
-                        <el-table-column prop="offset" label="偏移">
-                        </el-table-column>
-                        <el-table-column prop="value" label="内容">
-                        </el-table-column>
-                      </el-table>
-                    </el-card>
-                  </el-collapse-item>
-                </el-collapse>
-              </div>
-              <!-- kf痕迹 -->
-              <div class="sensi-type develop-trace">
-                <p class="title">
-                  开发痕迹
-                </p>
-                <el-card shadow="hover">
-                  <div class="development-trace-item">
-                    <span class="title">• PDB调试符号路径</span><span class="content">
-                      {{ report.sensi.developmentTrace.pdb || "---------" }}</span>
-                  </div>
-                  <div class="development-trace-item">
-                    <span class="title">• 编译时间</span><span class="content">{{
-                        report.sensi.developmentTrace.compileTime || "---------"
-                      }}</span>
-                  </div>
-                  <div class="development-trace-item">
-                    <span class="title">• CodePage</span><span class="content">{{
-                        report.sensi.developmentTrace.codePage || "---------"
-                      }}</span>
-                  </div>
-                  <div class="development-trace-item">
-                    <span class="title">• 作者</span><span class="content">{{
-                        report.sensi.developmentTrace.author || "---------"
-                      }}</span>
-                  </div>
-                </el-card>
-              </div>
+                    </el-collapse-item>
+                    <el-collapse-item title="• 敏感特征信息" name="3">
+                      <el-card class="box-card" style="margin-top:20px;" shadow="hover">
+                        <div slot="header" class="clearfix">
+                          <span class="sensi-feature-title">• 清单文件</span>
+                        </div>
+                        <el-table :data="report.sensi.languageInfo.sensiFeatures.mainfest" border>
+                          <el-table-column prop="filename" label="文件名">
+                          </el-table-column>
+                          <el-table-column prop="offset" label="偏移">
+                          </el-table-column>
+                          <el-table-column prop="size" label="大小">
+                          </el-table-column>
+                        </el-table>
+                      </el-card>
+                      <el-card class="box-card" style="margin-top:20px;" shadow="hover">
+                        <div slot="header" class="clearfix">
+                          <span class="sensi-feature-title">• 敏感字符</span>
+                        </div>
+                        <el-table :data="
+                              report.sensi.languageInfo.sensiFeatures.sensitiveChars
+                            " border>
+                          <el-table-column prop="filename" label="文件名">
+                          </el-table-column>
+                          <el-table-column prop="offset" label="偏移">
+                          </el-table-column>
+                          <el-table-column prop="value" label="内容">
+                          </el-table-column>
+                        </el-table>
+                      </el-card>
+                      <el-card class="box-card" style="margin-top:20px;" shadow="hover">
+                        <div slot="header" class="clearfix">
+                          <span class="sensi-feature-title">• 拼音</span>
+                        </div>
+                        <el-table :data="report.sensi.languageInfo.sensiFeatures.pinyins" border>
+                          <el-table-column prop="filename" label="文件名">
+                          </el-table-column>
+                          <el-table-column prop="offset" label="偏移">
+                          </el-table-column>
+                          <el-table-column prop="value" label="内容">
+                          </el-table-column>
+                        </el-table>
+                      </el-card>
+                      <el-card class="box-card" style="margin-top:20px;" shadow="hover">
+                        <div slot="header" class="clearfix">
+                          <span class="sensi-feature-title">• version资源中存在中文</span>
+                        </div>
+                        <el-table :data="
+                              report.sensi.languageInfo.sensiFeatures
+                                .versionChineses
+                            " border>
+                          <el-table-column prop="filename" label="文件名">
+                          </el-table-column>
+                          <el-table-column prop="offset" label="偏移">
+                          </el-table-column>
+                          <el-table-column prop="value" label="内容">
+                          </el-table-column>
+                        </el-table>
+                      </el-card>
+                    </el-collapse-item>
+                  </el-collapse>
+                </div>
+                <!-- kf痕迹 -->
+                <div class="sensi-type develop-trace">
+                  <p class="title">
+                    开发痕迹
+                  </p>
+                  <el-card shadow="hover">
+                    <div class="development-trace-item">
+                      <span class="title">• PDB调试符号路径</span><span class="content">
+                        {{
+                            report.sensi.developmentTrace.pdb || "---------"
+                          }}</span>
+                    </div>
+                    <div class="development-trace-item">
+                      <span class="title">• 编译时间</span><span class="content">{{
+                          report.sensi.developmentTrace.compileTime || "---------"
+                        }}</span>
+                    </div>
+                    <div class="development-trace-item">
+                      <span class="title">• CodePage</span><span class="content">{{
+                          report.sensi.developmentTrace.codePage || "---------"
+                        }}</span>
+                    </div>
+                    <div class="development-trace-item">
+                      <span class="title">• 作者</span><span class="content">{{
+                          report.sensi.developmentTrace.author || "---------"
+                        }}</span>
+                    </div>
+                  </el-card>
+                </div>
+              </template>
+            </div>
+          </div>
+          <!-- 安全仿真分析 -->
+          <div class="report-item report-anti" ref="anti" v-if="visible.reportAnti">
+            <div class="report-header" :class="style.reportAnti">
+              <svg-icon icon-class="anti"></svg-icon>
+              <span class="report-title">安全仿真分析</span>
+            </div>
+            <div class="report-body anti-body">
+              <el-table :data="report.anti.av_result">
+                <el-table-column type="expand">
+                  <template slot-scope="{ row }">
+                    <el-tabs type="border-card">
+                      <el-tab-pane>
+                        <span slot="label"><i class="el-icon-date"></i> 杀软截图</span>
+                        <el-carousel height="450px" style="width:600px;margin:0 auto;" trigger="click">
+                          <el-carousel-item v-for="url in row.urls" :key="url"
+                            >{{url}}
+                            <img :src="url" alt="">
+                          </el-carousel-item>
+                       \
+                        </el-carousel>
+                      </el-tab-pane>
+                      <el-tab-pane>
+                        <span slot="label"><i class="el-icon-date"></i> 动态行为</span>
+                        <el-table ref="dynamicInfo" class="dynamicInfo" :data="row.dynamic_info" tooltip-effect="dark"
+                          style="width: 100%;" height="600">
+                          <el-table-column align="left" label="行为" prop="action">
+                          </el-table-column>
+                          <el-table-column align="center" label="描述">
+                            <template slot-scope="{ row }">
+                              <p class="description-item" v-for="(value, key) in row" :key="key">
+                                {{ key }}&nbsp;&nbsp;:&nbsp;&nbsp;{{ value }}
+                              </p>
+                            </template>
+                          </el-table-column>
+                        </el-table>
+                      </el-tab-pane>
+                      <el-tab-pane>
+                        <span slot="label"><i class="el-icon-date"></i> 释放文件</span>
+                        <el-table ref="dynamicInfo" :data="row.dynamic_info" tooltip-effect="dark" style="width: 100%;">
+                        </el-table>
+                      </el-tab-pane>
+                    </el-tabs>
+                  </template>
+                </el-table-column>
+                <el-table-column label="杀软名称" prop="antiName">
+                </el-table-column>
+                <el-table-column label="操作系统" prop="antiSystem">
+                </el-table-column>
+                <el-table-column label="更新时间" prop="antiUpdateTime">
+                </el-table-column>
+                <el-table-column label="版本" prop="antiVersion">
+                </el-table-column>
+                <el-table-column label="检测结果" prop="result">
+                </el-table-column>
+              </el-table>
             </div>
           </div>
         </div>
+
       </div>
     </div>
     <script src="./libs/element-ui@2.7.2.js"></script>
@@ -242,18 +308,6 @@
         props: ["rid", "tid"],
         data() {
           return {
-            // 步骤条
-            steps: {
-              list: [
-                { title: "基本信息", ref: "basic" },
-                { title: "敏感信息分析结果", ref: "sensi" },
-                { title: "同源分析结果", ref: "sensi" },
-                { title: "网络仿真检测结果", ref: "sensi" },
-                { title: "工具变形结果", ref: "sensi" },
-                { title: "漏洞工具验证结果", ref: "sensi" }
-              ],
-              active: 0
-            },
             // 报告信息
             report: {
               // 元数据
@@ -263,7 +317,8 @@
                 finishTime: "",
                 md5: "",
                 objName: "",
-                tags: []
+                tags: [],
+                downloadLink: ""
               },
               // 基本信息
               basic: {
@@ -285,19 +340,33 @@
                   sensiFeatures: {},
                   sensitiveLanguage: []
                 }
-              }
+              },
+              // 安全仿真信息
+              anti: {}
             },
             // 页面上的所有返回数据
             res: { signatures: [] },
             // 页面所有的配置
             config: {
-              chineseStringConfig: {
-                activeCollapseItems: ["1", "2", "3"]
-              },
               // 元数据右侧的操作盒子
               manipulate: {
                 visible: true
-              }
+              },
+              steps: {
+                active: 0
+              },
+              activeCollapseItems: []
+            },
+            style: {
+              reportSensi: {},
+              reportAnti: {}
+            },
+            visible: {
+              reportSensi: false,
+              reportAnti: false
+            },
+            steps: {
+              list: [{ title: "基本信息", ref: "basic" }]
             }
           };
         },
@@ -310,16 +379,32 @@
            * @description 步骤条点击,设置当前激活的步骤条
            */
           handleStepClick(index, step) {
-            this.steps.active = index;
+            this.config.steps.active = index;
             this.goAnchor(step.ref);
           },
-
-          // 锚点跳转
+          /**
+           * @description 锚点跳转
+           */
           goAnchor(ref) {
+            let scrollbar = document.documentElement;
             let target = this.$refs[ref];
             let offsetTop = target.offsetTop;
-            document.documentElement.scrollTop = offsetTop;
+            scrollbar.scrollTop = offsetTop;
           },
+          /**
+           * @description 元数据右侧的操作按钮进入事件
+           */
+          handleManipulateEnter: _.debounce(function () {
+            this.config.manipulate.visible = true;
+          }, 300),
+          /**
+           * @description 元数据右侧的操作按钮离开事件
+           */
+          handleManipulateLeave: _.debounce(function () {
+            setTimeout(() => {
+              this.config.manipulate.visible = false;
+            }, 800);
+          }, 300),
           // 资源特征信息
           _getSensitiveLanguage(signatures) {
             let res = signatures.find(signature => {
@@ -358,14 +443,18 @@
             let pdb = pdbTemp === undefined ? "---------" : pdbTemp.marks[0].pdb_path;
             return { author, compileTime, codePage, pdb };
           },
-          //中文字符串
+          /**
+           * @description 中文字符串
+           */
           _getChineseStrings(signatures) {
             let chineseStringTemp = signatures.find(signature => {
               return signature.name === "has_chinese";
             });
             return chineseStringTemp === undefined ? [] : chineseStringTemp.marks;
           },
-          // 敏感特征信息
+          /**
+           * @description 敏感特征信息
+           */
           _getSensiFeature(signatures) {
             // 清单文件
             let mainfestTemp = signatures.find(signature => {
@@ -397,11 +486,13 @@
               versionChineses
             };
           },
-          // 敏感信息
+          /**
+           * @description 敏感信息总对象
+           */
           getSensi(signatures) {
             // 敏感信息为空
             if (signatures.length === 0) {
-              return {};
+              return null;
             } else {
               let sensitiveLanguage = this._getSensitiveLanguage(signatures);
               let chineseStrings = this._getChineseStrings(signatures);
@@ -410,40 +501,68 @@
               let developmentTrace = this._getDevelopmentTrace(signatures);
               return { languageInfo, developmentTrace };
             }
+          },
+          /**
+           * @description 下载报告
+           */
+          handleReportDownload(downloadLink) {
+            let aTag = document.createElement("a");
+            let blob = new Blob(downloadLink); // 这个content是下载的文件内容，自己修改
+            aTag.download = "报告"; // 下载的文件名
+            aTag.href = URL.createObjectURL(blob);
+            aTag.click();
+            URL.revokeObjectURL(blob);
+          },
+          /**
+           * @description 根据元数据检测内容生成步骤条,各个报告的可见性,各个报告header样式
+           */
+          _generateSteps(detectContent) {
+            detectContent.forEach(({ detectContent, levelContent }) => {
+              switch (detectContent) {
+                case "敏感信息分析":
+                  this.steps.list.push({ title: "敏感信息分析结果", ref: "sensi" });
+                  this.visible.reportSensi = true;
+                  this.style.reportSensi =
+                    levelContent === "安全" ? "success" : "warning";
+                  break;
+                case "安全仿真分析":
+                  this.steps.list.push({ title: "安全仿真分析结果", ref: "anti" });
+                  this.visible.reportAnti = true;
+                  this.style.reportAnti =
+                    levelContent === "安全" ? "success" : "warning";
+                  break;
+                default:
+                  break;
+              }
+            });
+          },
+          /**
+           * @description 设置元数据检测内容tag样式
+           */
+          getTagType(levelContent) {
+            return levelContent === "安全" ? "success" : "warning";
+          },
+          /**
+           * @description 初始化报告数据
+           */
+          initReport() {
+            let data = Object.assign({}, reportData);
+            this.report.sensi = this.getSensi(data.sensi.signatures);
+            // 设置元数据
+            this.report.meta = data.meta;
+            this.report.basic = data.basic;
+            this.report.anti = data.anti;
+            let { detectContent } = data.meta;
+            // 生成步骤条
+            this._generateSteps(detectContent);
+            console.log(this.report)
           }
         },
         created() {
-          let a = Object.assign({}, reportData);
-          this.report.meta = reportData.meta
-          this.report.basic = reportData.basic
-          this.report.sensi = this.getSensi(reportData.sensi.signatures);
+          this.initReport();
         },
         mounted() { },
-        // beforeRouteEnter(to, from, next) {
-        //   // 并发请求报告信息
-        //   let rid = parseInt(to.params.rid);
-        //   axios
-        //     .all([getReportMeta(rid), getReportBasic(rid), getReportSensi(rid)])
-        //     .then(
-        //       axios.spread(function (resReportMeta, resReportBasic, resReportSensi) {
-        //         let { data: reportMeta } = resReportMeta;
-        //         let { data: reportBasic } = resReportBasic;
-        //         let { data: reportSensi } = resReportSensi;
-        //         // 两个请求现在都执行完成
-        //         next(vm => {
-        //           vm.report.meta = reportMeta;
-        //           vm.report.basic = reportBasic;
-        //           if (reportSensi !== null) {
-        //             vm.signatures = reportSensi.signatures;
-        //             let obj = vm.getSensi(reportSensi.signatures);
-        //             vm.report.sensi = Object.assign({}, vm.report.sensi, obj);
-        //           } else {
-        //             vm.report.sensi = Object.assign({}, vm.report.sensi);
-        //           }
-        //         });
-        //       })
-        //     );
-        // }
+
       })
     </script>
   </body>
