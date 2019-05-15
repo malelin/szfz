@@ -1,9 +1,9 @@
 <!--
  * @Author: 旺苍扛把子
- * @LastEditors: 旺苍扛把子
+ * @LastEditors: Please set LastEditors
  * @Description: 控制面板组件
  * @Date: 2019-03-29 10:14:42
- * @LastEditTime: 2019-05-07 10:40:25
+ * @LastEditTime: 2019-05-14 13:54:36
  -->
 <template>
   <div class="dashboard">

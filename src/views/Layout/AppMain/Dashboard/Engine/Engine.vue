@@ -3,10 +3,16 @@
  * @LastEditors: Please set LastEditors
  * @Description: 引擎组件
  * @Date: 2019-04-22 16:51:22
- * @LastEditTime: 2019-05-10 10:45:19
+ * @LastEditTime: 2019-05-15 17:12:13
  -->
 <template>
   <li class="engine-item">
+    <modal-anti-setting
+      v-if="engineId === 'anti'"
+      :anti="taskSetting.anti"
+      :object="taskFile"
+      :engine="engine"
+    />
     <el-upload
       class="c-el-upload"
       drag
@@ -58,14 +64,14 @@
 </template>
 
 <script>
-import { getAntiList } from "@/api/anti";
-import { hasSuffix } from "@/utils/file";
 import { createTask } from "@/api/task";
 export default {
   name: "Engine",
   components: {
     /* 按需加载组件 */
     // demo: () => import('@/pages/')
+    ModalAntiSetting: () =>
+      import("../../ModalAntiSetting/ModalAntiSetting.vue")
   },
   props: {
     // 引擎名称
@@ -106,7 +112,33 @@ export default {
         progress: {
           percentage: 0
         }
-      }
+      },
+      activatedCollapse: [],
+      taskSetting: {
+        // 敏感信息分析
+        sensi: { isChecked: false },
+        // 安全仿真分析
+        anti: {
+          isChecked: true,
+          // 选中的杀软
+          aids: [],
+          // 检测模式
+          model: 1,
+          // 网络状态
+          network: 2,
+          // 命令行参数
+          param: "",
+          // 选中的检测时长
+          time: 1
+        }
+      },
+      // 当前组件所有接口返回
+      res: {
+        // 杀软列表
+        antiList: {}
+      },
+      // 任务文件
+      taskFile: {}
     };
   },
   computed: {},
@@ -115,46 +147,80 @@ export default {
     /**
      * @description 引擎上传文件成功
      */
-    async onUploadSuccess({ status, data: object }) {
+    async onUploadSuccess({ status, data: file }) {
       if (status === 200) {
         // 完成上传,切换上传状态
         this.engine.isUploading = false;
         // 打开创建任务中的动画的遮罩
         this.engine.overlay = true;
-        try {
-          let obj = await this._generateTaskParam(this.engineId, object);
-          let taskData = {
-            model: 2,
-            objects: [obj]
-          };
-          let { status, msg } = await createTask(taskData);
-          // 关闭创建任务中的动画的遮罩
-          this.engine.isLoading = false;
-          switch (status) {
-            case 200:
-              this.$message({
-                type: "success",
-                message: this.engineName + "引擎任务创建成功"
+        this.taskFile = file;
+        switch (this.engineId) {
+          case "sensi":
+            this.createTask(file, 2)
+              .then(({ status, msg }) => {
+                this.engine.isLoading = false;
+                if (status == 200) {
+                  this.$message({
+                    type: "success",
+                    message: "敏感信息分析引擎任务创建成功"
+                  });
+                  this.$router.push("/taskOverview");
+                } else if (status == 201) {
+                  this.$message({
+                    type: "warning",
+                    message: msg
+                  });
+                }
+              })
+              .catch(err => {
+                console.log(err);
               });
-              this.$router.push("/taskOverview");
-              break;
-            case 201:
-              this.$notify({
-                type: "warning",
-                title: this.engineName + "引擎任务创建失败",
-                offset: 61,
-                message: msg
-              });
-              break;
-            default:
-              break;
-          }
-        } catch (e) {
-          this.$message({
-            type: "error",
-            message: e.toString()
-          });
+            break;
+          case "anti":
+            this.$modal.show("modalAntiSetting");
+            break;
+          default:
+            break;
         }
+      }
+    },
+    _generateTaskParam(file) {
+      let {
+        uploadId,
+        fileSHA1,
+        fileSHA256,
+        fileSSDEEP,
+        suffix,
+        saveUrl,
+        fileMD5,
+        fileType,
+        fileSize,
+        fileName
+      } = file;
+      return {
+        md5: fileMD5,
+        objectName: fileName,
+        sha1: fileSHA1,
+        sha256: fileSHA256,
+        size: fileSize,
+        ssdeep: fileSSDEEP,
+        suffix: suffix,
+        type: fileType,
+        uploadId: uploadId,
+        url: saveUrl,
+        setting: { sensi: { isChecked: true } }
+      };
+    },
+    async createTask(file, model) {
+      try {
+        let obj = this._generateTaskParam(file);
+        let taskData = {
+          model,
+          objects: [obj]
+        };
+        return await createTask(taskData);
+      } catch (e) {
+        throw e;
       }
     },
     /**
@@ -182,23 +248,12 @@ export default {
      * @description 引擎上传文件之前
      */
     FileBeforeUpload(file) {
-      // let fileName = file.name;
-      // let type = file.type;
+      let maxSize = 31457280;
       // 判断文件是否有后缀
-      // if (!hasSuffix(fileName) || type === "") {
-      //   this.$notify({
-      //     type: "warning",
-      //     title: "创建任务错误",
-      //     message: "请传入有后缀名的文件"
-      //   });
-      //   return false;
-      // }
-      let fileSize = file.size / 1024 / 1024;
-      // 文件尺寸是否大于30
-      if (fileSize > 30) {
+      if (file.size > maxSize) {
         this.$message({
-          type: "error",
-          message: "文件大小不能大于30MB"
+          type: "warning",
+          message: "传入的文件不能大于30mb"
         });
         return false;
       }
@@ -281,42 +336,9 @@ export default {
         openSensitivity: 2,
         openMorph: 2
       };
-    },
-    /**
-     * @description 根据引擎名称生成创建任务需要的参数
-     */
-    async _generateTaskParam(engineId, object) {
-      let anti = {
-        aids: [],
-        model: 1,
-        network: 2,
-        param: "",
-        time: 1
-      };
-      try {
-        let {
-          data: { list }
-        } = await getAntiList();
-        let aids = list.map(item => item.aid);
-        // 安全仿真默认配置
-        anti.aids = aids;
-      } catch (e) {
-        throw e;
-      }
-
-      let obj = this._formatFile2Object(object);
-      switch (engineId) {
-        case "sensi":
-          obj.openSensitivity = 1;
-          return obj;
-        case "anti":
-          obj.anti = anti;
-          return obj;
-        default:
-          break;
-      }
     }
-  }
+  },
+  mounted() {}
 };
 </script>
 <style>
@@ -474,4 +496,9 @@ export default {
 
     30%
       transform scale(2.5)
+.c-modal
+   .modal-footer
+    display: flex;
+    justify-content: flex-end;
+    padding: 20px 20px 20px 0;
 </style>

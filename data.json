@@ -1,0 +1,281 @@
+{
+  "status": 200,
+  "msg": "操作成功",
+  "data": {
+    "info": {
+      "category": "file",
+      "score": 1.2,
+      "started": "2019-05-10 10:36:45",
+      "ended": "2019-05-10 10:36:45",
+      "version": "1.0.1",
+      "id": 844
+    },
+    "documents": {
+      "manager": null,
+      "create_time": "2000-11-22 12:17:43",
+      "last_saved_by": "dell",
+      "language": null,
+      "author": "lg",
+      "codepage": "936",
+      "last_printed": null,
+      "company": "bupt",
+      "last_saved_time": "2012-02-15 18:22:55"
+    },
+    "target": {
+      "category": "file",
+      "file": {
+        "sha1": "f23e8bc0da6ac5705f2f76c85fd4b0a8c9b3fc4b",
+        "name": "wKgCcFzU46qAWVoEAA0oAAZxsZM353.ppt",
+        "type": "Composite Document File V2 Document, Little Endian, Os: Windows, Version 6.1, Code page: 936, Author: lg, Template: C:\\WINDOWS\\Application Data\\Microsoft\\Templates\\format.pot, Last Saved By: dell, Revision Number: 537, Name of Creating Application: Microsoft PowerPoint, Total Editing Time: 5d+08:20:15, Create Time/Date: Wed Nov 22 12:17:43 2000, Last Saved Time/Date: Wed Feb 15 18:22:55 2012, Number of Words: 2068",
+        "sha256": "aa0686fb2a6bd322f101ede207b2e2ff7063eb08444ba5c4e2a3f66db34244fd",
+        "urls": [
+          "http://schemas.openxmlformats.org/drawingml/2006/main"
+        ],
+        "crc32": "145865BA",
+        "path": "/opt/signatures/storage/binaries/aa0686fb2a6bd322f101ede207b2e2ff7063eb08444ba5c4e2a3f66db34244fd",
+        "ssdeep": "12288:rKUdhXgFvJM7H9/Z3MbU2gXmemHT9XkS/5Pa/j6Wv4hesltIUM9FnuU:vTwM7HRZ3M1gXmeeE/rcFcU",
+        "size": 862208,
+        "sha512": "b42910a9a8cb56d46b38427ebcbbde342c16e06957a06d78772d2b287c68439b29590b61bfc2446fc9d2781b89b8533ac68433e7e5a9e17f4ef658765d4eda04",
+        "md5": "1d9c6f0af992a45dc2523673a816d4c9"
+      }
+    },
+    "signatures": [
+      {
+        "severity": "1",
+        "name": "has_author",
+        "categories": "Author Information",
+        "description": "存在作者",
+        "marks": [
+          {
+            "size": null,
+            "offset": null,
+            "filename": null,
+            "sublanguage": null,
+            "language": null,
+            "value": null,
+            "author": "lg",
+            "create_time": null,
+            "codepage": null,
+            "pdb_path": null,
+            "attribute": null
+          }
+        ]
+      },
+      {
+        "severity": "1",
+        "name": "has_beijingTime",
+        "categories": "BeijingTime Information",
+        "description": "存在北京时区",
+        "marks": [
+          {
+            "size": null,
+            "offset": null,
+            "filename": null,
+            "sublanguage": null,
+            "language": null,
+            "value": null,
+            "author": null,
+            "create_time": "2000-11-22 12:17:43",
+            "codepage": null,
+            "pdb_path": null,
+            "attribute": null
+          }
+        ]
+      },
+      {
+        "severity": "1",
+        "name": "has_chinese",
+        "categories": "Chinese Information",
+        "description": "存在中文字符",
+        "marks": [
+          {
+            "size": null,
+            "offset": "c04b0H",
+            "filename": "wKgCcFzU46qAWVoEAA0oAAZxsZM353.ppt",
+            "sublanguage": null,
+            "language": null,
+            "value": "通用语音控制技术开发项目",
+            "author": null,
+            "create_time": null,
+            "codepage": null,
+            "pdb_path": null,
+            "attribute": null
+          },
+          {
+            "size": null,
+            "offset": "cea14H",
+            "filename": "wKgCcFzU46qAWVoEAA0oAAZxsZM353.ppt",
+            "sublanguage": null,
+            "language": null,
+            "value": "第七章  OSI网络管理功能",
+            "author": null,
+            "create_time": null,
+            "codepage": null,
+            "pdb_path": null,
+            "attribute": null
+          },
+          {
+            "size": null,
+            "offset": "cea30H",
+            "filename": "wKgCcFzU46qAWVoEAA0oAAZxsZM353.ppt",
+            "sublanguage": null,
+            "language": null,
+            "value": "网络管理模型",
+            "author": null,
+            "create_time": null,
+            "codepage": null,
+            "pdb_path": null,
+            "attribute": null
+          },
+          {
+            "size": null,
+            "offset": "cea41H",
+            "filename": "wKgCcFzU46qAWVoEAA0oAAZxsZM353.ppt",
+            "sublanguage": null,
+            "language": null,
+            "value": "功能模型",
+            "author": null,
+            "create_time": null,
+            "codepage": null,
+            "pdb_path": null,
+            "attribute": null
+          },
+          {
+            "size": null,
+            "offset": "ceaaeH",
+            "filename": "wKgCcFzU46qAWVoEAA0oAAZxsZM353.ppt",
+            "sublanguage": null,
+            "language": null,
+            "value": "7.2.1 资源清单管理功能",
+            "author": null,
+            "create_time": null,
+            "codepage": null,
+            "pdb_path": null,
+            "attribute": null
+          },
+          {
+            "size": null,
+            "offset": "ceac9H",
+            "filename": "wKgCcFzU46qAWVoEAA0oAAZxsZM353.ppt",
+            "sublanguage": null,
+            "language": null,
+            "value": "7.2.1 资源清单管理功能（续）",
+            "author": null,
+            "create_time": null,
+            "codepage": null,
+            "pdb_path": null,
+            "attribute": null
+          },
+          {
+            "size": null,
+            "offset": "cebb3H",
+            "filename": "wKgCcFzU46qAWVoEAA0oAAZxsZM353.ppt",
+            "sublanguage": null,
+            "language": null,
+            "value": "7.3 性能管理",
+            "author": null,
+            "create_time": null,
+            "codepage": null,
+            "pdb_path": null,
+            "attribute": null
+          },
+          {
+            "size": null,
+            "offset": "cebc4H",
+            "filename": "wKgCcFzU46qAWVoEAA0oAAZxsZM353.ppt",
+            "sublanguage": null,
+            "language": null,
+            "value": "7.3.1  网络性能指标",
+            "author": null,
+            "create_time": null,
+            "codepage": null,
+            "pdb_path": null,
+            "attribute": null
+          },
+          {
+            "size": null,
+            "offset": "ced05H",
+            "filename": "wKgCcFzU46qAWVoEAA0oAAZxsZM353.ppt",
+            "sublanguage": null,
+            "language": null,
+            "value": "已用的字体",
+            "author": null,
+            "create_time": null,
+            "codepage": null,
+            "pdb_path": null,
+            "attribute": null
+          }
+        ]
+      },
+      {
+        "severity": "1",
+        "name": "has_codepage",
+        "categories": "CodePage Information",
+        "description": "存在CodePage",
+        "marks": [
+          {
+            "size": null,
+            "offset": null,
+            "filename": null,
+            "sublanguage": null,
+            "language": null,
+            "value": null,
+            "author": null,
+            "create_time": null,
+            "codepage": "936",
+            "pdb_path": null,
+            "attribute": null
+          }
+        ]
+      },
+      {
+        "severity": "1",
+        "name": "has_pinyin",
+        "categories": "Chinese Information",
+        "description": "存在拼音字符",
+        "marks": [
+          {
+            "size": null,
+            "offset": "7f373H",
+            "filename": "wKgCcFzU46qAWVoEAA0oAAZxsZM353.ppt",
+            "sublanguage": null,
+            "language": null,
+            "value": " Security",
+            "author": null,
+            "create_time": null,
+            "codepage": null,
+            "pdb_path": null,
+            "attribute": null
+          }
+        ]
+      },
+      {
+        "severity": "1",
+        "name": "has_sensitiveChar",
+        "categories": "Chinese Information",
+        "description": "存在敏感字符",
+        "marks": [
+          {
+            "size": null,
+            "offset": "c04e0HH",
+            "filename": "wKgCcFzU46qAWVoEAA0oAAZxsZM353.ppt",
+            "sublanguage": null,
+            "language": null,
+            "value": "C:\\WINDOWS\\Application Data\\Microsoft\\Templates\\format.pot",
+            "author": null,
+            "create_time": null,
+            "codepage": null,
+            "pdb_path": null,
+            "attribute": null
+          }
+        ]
+      }
+    ],
+    "static_": null,
+    "debug": {
+      "errors": [],
+      "log": ""
+    },
+    "strings": null
+  }
+}

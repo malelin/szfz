@@ -308,6 +308,7 @@
         props: ["rid", "tid"],
         data() {
           return {
+            data:{},
             // 报告信息
             report: {
               // 元数据
@@ -521,6 +522,7 @@
               switch (detectContent) {
                 case "敏感信息分析":
                   this.steps.list.push({ title: "敏感信息分析结果", ref: "sensi" });
+                  this.report.sensi = this.getSensi(this.data.sensi.signatures);
                   this.visible.reportSensi = true;
                   this.style.reportSensi =
                     levelContent === "安全" ? "success" : "warning";
@@ -546,15 +548,15 @@
            * @description 初始化报告数据
            */
           initReport() {
-            let data = Object.assign({}, reportData);
-            this.report.sensi = this.getSensi(data.sensi.signatures);
-            // 设置元数据
-            this.report.meta = data.meta;
-            this.report.basic = data.basic;
-            this.report.anti = data.anti;
-            let { detectContent } = data.meta;
+            this.data = Object.assign({}, reportData);
+            this.report.meta = this.data.meta;
+            let { detectContent } = this.data.meta;
             // 生成步骤条
             this._generateSteps(detectContent);
+            // this.report.sensi = this.getSensi(this.data.sensi.signatures);
+            // 设置元数据
+            this.report.basic = this.data.basic;
+            this.report.anti = this.data.anti;
             console.log(this.report)
           }
         },

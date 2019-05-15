@@ -3,7 +3,7 @@
  * @LastEditors: Please set LastEditors
  * @Description: 封装任务详情和新建任务中的表格
  * @Date: 2019-04-12 09:46:16
- * @LastEditTime: 2019-05-08 11:21:50
+ * @LastEditTime: 2019-05-15 17:11:39
  -->
 <template>
   <div class="base-table task-settings box-shadow-6">
@@ -27,7 +27,7 @@
     <div class="settings-body">
       <el-table
         ref="multipleTable"
-        :data="uploadFileList"
+        :data="newList"
         tooltip-effect="dark"
         style="width: 100%"
         class="c-el-table"
@@ -75,15 +75,14 @@
           <template slot-scope="{ row }">
             <el-tag
               v-if="
-                typeof row.openSensitivity !== 'undefined' &&
-                  row.openSensitivity === 1
+                typeof row.setting !== 'undefined' &&
+                  row.setting.sensi.isChecked
               "
               >敏感信息分析</el-tag
             >
             <el-tag
               v-if="
-                typeof row.anti !== 'undefined' ||
-                  (row.anaAnti !== null && row.anaAnti !== undefined)
+                typeof row.setting !== 'undefined' && row.setting.anti.isChecked
               "
               >安全仿真分析
             </el-tag>
@@ -149,18 +148,11 @@
           </template>
         </el-table-column>
         <el-table-column type="expand">
-          <template slot-scope="props">
-            <el-form label-position="left" inline class="demo-table-expand">
-              <el-form-item label="日期">
-                <span>{{ props.row.date }}</span>
-              </el-form-item>
-              <el-form-item label="姓名">
-                <span>{{ props.row.name }}</span>
-              </el-form-item>
-              <el-form-item label="地址">
-                <span>{{ props.row.address }}</span>
-              </el-form-item>
-            </el-form>
+          <template slot-scope="{ row }">
+            <setting-overview
+              v-if="typeof row.setting !== 'undefined'"
+              :row="row"
+            />
           </template>
         </el-table-column>
       </el-table>
@@ -214,151 +206,7 @@
         >
       </el-row>
     </div>
-    <modal
-      name="taskSetting"
-      :draggable="false"
-      :clickToClose="false"
-      class="c-modal"
-      @before-open="beforeModalOpen"
-      transition="fade"
-      height="auto"
-      width="40%"
-      @before-close="beforeModalClosed"
-    >
-      <el-card>
-        <div slot="header" class="clearfix">
-          <span>任务设置</span>
-          <el-button style="float: right; padding: 3px 0" type="text">
-            <svg-icon
-              icon-class="close"
-              @click.native="handleModalClose"
-            ></svg-icon
-          ></el-button>
-        </div>
-        <div class="modal-body">
-          <el-form
-            ref="modalTaskSetting"
-            :inline="true"
-            :model="modalTaskSetting"
-            :rules="modalTaskSetting.rules"
-          >
-            <el-collapse v-model="modalTaskSetting.activatedCollapse" accordion>
-              <el-collapse-item title="敏感信息分析" name="1"
-                ><el-form-item prop="sensi.isChecked">
-                  <el-checkbox
-                    border
-                    size="medium"
-                    v-model="modalTaskSetting.sensi.isChecked"
-                    label="敏感信息分析"
-                  ></el-checkbox>
-                </el-form-item>
-              </el-collapse-item>
-              <el-collapse-item title="安全仿真分析" name="2">
-                <el-row :gutter="20">
-                  <el-col :span="12">
-                    <el-form-item
-                      label-width="100px"
-                      label="杀毒软件 :"
-                      prop="anti.aids"
-                    >
-                      <el-select
-                        v-model="modalTaskSetting.anti.aids"
-                        multiple
-                        placeholder="请选择杀毒软件"
-                        @change="onAntiActivated"
-                      >
-                        <el-option
-                          v-for="option in modalTaskSetting.anti.antisOptions"
-                          :key="option.aid"
-                          :label="option.antiName"
-                          :value="option.aid"
-                        >
-                          <span style="float: left">{{ option.antiName }}</span>
-                          <span
-                            style="float: right; color: #8492a6; font-size: 13px"
-                            >{{ option.antiCountry }}</span
-                          >
-                        </el-option>
-                      </el-select></el-form-item
-                    ></el-col
-                  >
-                  <el-col :span="12">
-                    <el-form-item
-                      label-width="100px"
-                      label="检测模式 :"
-                      prop="anti.model"
-                      required
-                    >
-                      <el-switch
-                        v-model="modalTaskSetting.anti.model"
-                        active-text="动态检测"
-                        :active-value="2"
-                        inactive-text="静态检测"
-                        :inactive-value="1"
-                      >
-                      </el-switch> </el-form-item
-                  ></el-col>
-                </el-row>
-                <el-row :gutter="20">
-                  <el-col :span="12"
-                    ><el-form-item
-                      label-width="100px"
-                      label="网络状态 :"
-                      prop="anti.network"
-                      required
-                    >
-                      <el-switch
-                        v-model="modalTaskSetting.anti.network"
-                        active-text="开启"
-                        inactive-text="关闭"
-                        :active-value="1"
-                        :inactive-value="2"
-                      >
-                      </el-switch> </el-form-item
-                  ></el-col>
-                  <el-col :span="12">
-                    <el-form-item
-                      label-width="100px"
-                      label="命令行参数 :"
-                      prop="anti.param"
-                    >
-                      <el-input
-                        v-model.trim="modalTaskSetting.anti.param"
-                      ></el-input> </el-form-item
-                  ></el-col>
-                </el-row>
-                <el-row :gutter="20">
-                  <el-col :span="12"></el-col>
-                  <el-col :span="12"></el-col>
-                </el-row>
-                <el-form-item
-                  label-width="100px"
-                  label="检测时长 :"
-                  prop="anti.time"
-                >
-                  <el-select
-                    v-model="modalTaskSetting.anti.time"
-                    placeholder="请选择检测时长"
-                  >
-                    <el-option
-                      v-for="option in modalTaskSetting.anti
-                        .checkDurationOptions"
-                      :key="option.value"
-                      :label="option.label"
-                      :value="option.value"
-                    >
-                    </el-option> </el-select></el-form-item
-              ></el-collapse-item>
-            </el-collapse>
-          </el-form></div
-      ></el-card>
-      <div class="modal-footer">
-        <el-button size="mini" @click.native="handleSure" type="primary"
-          >确定</el-button
-        >
-        <el-button @click.native="handleModalClose" size="mini">取消</el-button>
-      </div>
-    </modal>
+    <task-setting :taskSetting="modalTaskSetting" @get-data="getData" />
   </div>
 </template>
 
@@ -369,12 +217,12 @@ import _ from "lodash";
 import { getTaskDetailList, createTask, modifyTask } from "@/api/task";
 import { getAntiList } from "@/api/anti";
 import { getReportList } from "@/api/report";
-import { hasSuffix } from "@/utils/file";
 export default {
   name: "BaseTable",
   components: {
     /* 按需加载组件 */
-    // demo: () => import('@/pages/')
+    SettingOverview: () => import("../../SettingOverview/SettingOverview"),
+    TaskSetting: () => import("../../TaskSetting/TaskSetting")
   },
   props: {
     // 任务tid
@@ -403,6 +251,8 @@ export default {
       },
       // 文件上传列表
       uploadFileList: [],
+      // 任务详情请求到的列表
+      detailList: [],
       // 多选选中项
       multipleSelection: [],
       //任务可选信息
@@ -431,39 +281,11 @@ export default {
       },
       // 任务设置模态框
       modalTaskSetting: {
-        // 表单验证
-        rules: {
-          anti: {
-            // aids: [
-            //   {
-            //     type: "array",
-            //     required: true,
-            //     message: "请选择杀毒软件",
-            //     trigger: ["change", "blur"]
-            //   }
-            // ],
-            // time: [
-            //   {
-            //     type: "number",
-            //     required: true,
-            //     message: "请选择检测时长",
-            //     trigger: ["change", "blur"]
-            //   }
-            // ]
-          }
-        },
-
-        // 任务设置框 批量设置||单个设置
-        typeOpen: "",
-        activatedCollapse: [],
         // 敏感信息分析
         sensi: { isChecked: false },
         // 安全仿真分析
         anti: {
-          // 是否在设置安全仿真引擎
-          activated: false,
-          // 杀软列表
-          antisOptions: [],
+          isChecked: false,
           // 选中的杀软
           aids: [],
           // 检测模式
@@ -472,17 +294,11 @@ export default {
           network: 2,
           // 命令行参数
           param: "",
-          // 检测时长
-          checkDurationOptions: [
-            { label: "45s", value: 1 },
-            { label: "60s", value: 2 },
-            { label: "90s", value: 3 },
-            { label: "120s", value: 4 }
-          ],
           // 选中的检测时长
           time: 1
         }
       },
+      typeOpen: "",
       // 当前组件所有接口返回
       res: {
         // 杀软列表
@@ -496,7 +312,10 @@ export default {
   computed: {
     // 当前是否可以控制创建任务按钮,创建并执行任务按钮,批量删除按钮,批量设置按钮
     controllable() {
-      return this.uploadFileList.length === 0;
+      return this.newList.length === 0;
+    },
+    newList() {
+      return this.detailList.concat(this.uploadFileList);
     }
   },
   watch: {
@@ -519,11 +338,12 @@ export default {
      * @returns 若返回 false 或者返回 Promise 且被 reject，则停止上传。
      */
     fileBeforeUpload(file) {
+      let maxSize = 31457280;
       // 判断文件是否有后缀
-      if (!hasSuffix(file.name)) {
+      if (file.size > maxSize) {
         this.$message({
-          type: "error",
-          message: "请传入有后缀名的文件"
+          type: "warning",
+          message: "传入的文件不能大于30mb"
         });
         return false;
       }
@@ -531,26 +351,47 @@ export default {
     /**
      * @description 文件上传时的钩子
      */
-    fileOnProgress(event, file) {
+    fileOnProgress(event, file, fileList) {
       // 更新上传列表
-      let fileUid = file.uid;
-      // 判断上传列表中是否存在该文件正在上传
-      let isUploading = this.uploadFileList.some(({ uid }) => uid === fileUid);
-      //上传列表中如果没有此uid的文件就push该文件
-      if (!isUploading) {
-        this.uploadFileList.push(file);
-      }
+      this.uploadFileList = fileList;
     },
     /**
      * @description 文件上传成功钩子
      */
-    fileOnSuccess({ status, data, msg }) {
+    fileOnSuccess({ msg, status }, file, fileList) {
+      // 更新上传列表
+      this.uploadFileList = fileList;
       if (status === 200) {
-        console.log(data);
+        // let fileMD5 = data.fileMD5;
+        // let inUploadFileList = this.uploadFileList.findIndex(
+        //   ({ response: { data } }) =>
+        //     JSON.stringify(data) === JSON.stringify(file.response.data)
+        // );
+        // if (inUploadFileList !== -1) {
+        //   this.$message({
+        //     type: "warning",
+        //     message: "该文件已上传"
+        //   });
+        //   this.uploadFileList.splice(inUploadFileList, 1);
+        //   return;
+        // }
+        // let inDetailList = this.detailList.findIndex(({ fileMD5: MD5 }) => {
+        //   return MD5 === fileMD5;
+        // });
+        // if (inDetailList !== -1) {
+        //   this.$message({
+        //     type: "warning",
+        //     message: "该文件已上传"
+        //   });
+        //   this.uploadFileList.splice(inDetailList, 1);
+        //   return;
+        // }
       } else {
-        this.$message({
+        this.$notify({
+          title: "上传失败",
           type: "warning",
-          message: msg
+          message: msg,
+          offset: 61
         });
       }
     },
@@ -566,8 +407,26 @@ export default {
     /**
      * @description 任务表格删除某一项
      */
-    handleRemove: _.debounce(function(index) {
-      this.uploadFileList.splice(index, 1);
+    handleRemove: _.debounce(function(index, row) {
+      let uploadFileListIndex = this.uploadFileList.findIndex(item => {
+        // console.log("detailList=====" + JSON.stringify(this.detailList));
+        // console.log(
+        //   "uploadFileList=====" + JSON.stringify(this.uploadFileList)
+        // );
+        // console.log("row=====" + JSON.stringify(row));
+        // console.log("item====" + JSON.stringify(item));
+        return JSON.stringify(row) === JSON.stringify(item);
+      });
+      if (uploadFileListIndex !== -1) {
+        this.uploadFileList.splice(uploadFileListIndex, 1);
+        return;
+      }
+      let detailListIndex = this.detailList.findIndex(item => {
+        return JSON.stringify(row) === JSON.stringify(item);
+      });
+      if (detailListIndex !== -1) {
+        this.detailList.splice(detailListIndex, 1);
+      }
     }, 300),
     /**
      * @description 批量删除
@@ -577,13 +436,22 @@ export default {
       if (length === 0) {
         this.$message({
           type: "warning",
-          message: "请选择任务"
+          message: "请选择对象"
         });
       } else {
-        this.multipleSelection.forEach(item => {
-          let { uid } = item;
-          let index = this.uploadFileList.findIndex(item => item.uid === uid);
-          this.uploadFileList.splice(index, 1);
+        this.multipleSelection.forEach(selectedItem => {
+          let uploadFileListIndex = this.uploadFileList.findIndex(item => {
+            return JSON.stringify(selectedItem) === JSON.stringify(item);
+          });
+          if (uploadFileListIndex !== -1) {
+            this.uploadFileList.splice(uploadFileListIndex, 1);
+          }
+          let detailListIndex = this.detailList.findIndex(item => {
+            return JSON.stringify(selectedItem) === JSON.stringify(item);
+          });
+          if (detailListIndex !== -1) {
+            this.detailList.splice(detailListIndex, 1);
+          }
         });
       }
     },
@@ -591,10 +459,14 @@ export default {
      * @description 单个任务设置
      */
     handleSettingSingle: _.debounce(function(index, row) {
-      this.modalTaskSetting.typeOpen = "single";
+      this.typeOpen = "single";
       // 保存正在编辑的row
       this.currentRow = row;
-      this.$modal.show("taskSetting");
+      let setting = this.currentRow.setting;
+      if (typeof setting !== "undefined") {
+        this.modalTaskSetting = JSON.parse(JSON.stringify(setting));
+      }
+      this.$modal.show("modalTaskSetting");
     }, 300),
     /**
      * @description 查看报告鼠标移入
@@ -628,14 +500,14 @@ export default {
      * @description 批量设置
      */
     handleSettingsBatch: _.debounce(async function() {
-      this.modalTaskSetting.typeOpen = "batch";
-      if (this.uploadFileList.length === 0) {
+      this.typeOpen = "batch";
+      if (this.multipleSelection.length === 0) {
         this.$message({
           type: "warning",
-          message: "请先添加文件"
+          message: "请先选择对象"
         });
       } else {
-        this.$modal.show("taskSetting");
+        this.$modal.show("modalTaskSetting");
       }
     }, 300),
     /**
@@ -654,7 +526,7 @@ export default {
         console.log(e);
       }
       // modal打开的类型
-      let typeOpen = this.modalTaskSetting.typeOpen;
+      let typeOpen = this.typeOpen;
       // 单个任务的设置
       if (typeOpen === "single") {
         // 设置表单内容
@@ -673,42 +545,26 @@ export default {
      */
     async beforeModalClosed() {
       // 生成任务内容
-      let typeOpen = this.modalTaskSetting.typeOpen;
+      let typeOpen = this.typeOpen;
       typeOpen === "single"
         ? this._generateTaskContent([this.currentRow])
         : this._generateTaskContent(this.uploadFileList);
       this.$refs["modalTaskSetting"].resetFields();
     },
     /**
-     * @description 设置弹框确定按钮
-     */
-    async handleSure() {
-      this.$modal.hide("taskSetting");
-    },
-    /**
-     * @description 任务设置中的安全仿真引擎设置项的值发生改变,说明用户在设置安全仿真引擎
-     */
-    onAntiActivated(newValue, oldValue) {
-      console.log("用户正在设置安全仿真引擎");
-      if (!this.modalTaskSetting.anti.activated && newValue !== oldValue) {
-        this.modalTaskSetting.anti.activated = true;
-      }
-    },
-
-    /**
-     * @description 任务设置取消操作
-     */
-    handleCancel() {
-      this.$modal.hide("taskSetting");
-    },
-    /**
      * @description 保存||保存并执行
      */
     handleSave: _.debounce(async function(model) {
-      debugger;
+      let hasTaskContent = this._hasTaskContent();
+      if (!hasTaskContent) {
+        this.$message({
+          type: "warning",
+          message: "请先给对象添加任务内容"
+        });
+        return;
+      }
       try {
         let config = { req: this._generateTaskParam(model), tid: this.tid };
-        debugger;
         let { status } = await modifyTask(config);
         if (status === 200) {
           this.$message({
@@ -725,11 +581,9 @@ export default {
       // 任务名称,任务描述
       let { remarks, taskname } = this.taskOptinalInfo;
       let objects = this.uploadFileList.map(item => {
-        debugger;
         let {
           response: { data: file },
-          openSensitivity,
-          anti
+          setting
         } = item;
         let {
           uploadId,
@@ -746,8 +600,6 @@ export default {
         let res = {
           md5: fileMD5,
           objectName: fileName,
-          openMorph: 2,
-          openSensitivity,
           sha1: fileSHA1,
           sha256: fileSHA256,
           size: fileSize,
@@ -755,16 +607,44 @@ export default {
           suffix: suffix,
           type: fileType,
           uploadId: uploadId,
-          url: saveUrl
+          url: saveUrl,
+          setting
         };
-        if (anti !== undefined) {
-          res.anti = anti;
-        }
         return res;
       });
+      let objects2 = this.detailList.map(item => {
+        let {
+          fileMD5,
+          fileSHA1,
+          fileSHA256,
+          fileSSDEEP,
+          fileType,
+          name,
+          oid,
+          size,
+          suffix,
+          url,
+          setting
+        } = item;
+        let res = {
+          md5: fileMD5,
+          objectName: name,
+          sha1: fileSHA1,
+          sha256: fileSHA256,
+          size,
+          ssdeep: fileSSDEEP,
+          suffix: suffix,
+          type: fileType,
+          url,
+          oid,
+          setting
+        };
+        return res;
+      });
+      objects.concat(objects2);
       return {
         model, //1 创建 2 创建并执行
-        objects,
+        objects: objects.concat(objects2),
         remarks,
         taskname
       };
@@ -773,68 +653,27 @@ export default {
      * @description 根据任务表单生成任务对象的任务内容
      */
     _generateTaskContent(rows) {
-      let {
-        sensi: { isChecked },
-        anti: { aids, model, network, param, time }
-      } = this.modalTaskSetting;
-      // 创建任务时对象敏感信息分析引擎的参数
-      let openSensitivity = isChecked ? 1 : 2;
-      // 创建任务时安全仿真引擎的参数
-      let anti = {
-        aids,
-        model,
-        network,
-        param,
-        time
-      };
       rows.forEach(row => {
-        if (aids.length !== 0) {
-          this.$set(row, "anti", anti);
-        } else {
-          this.$delete(row, "anti");
-        }
-        this.$set(row, "openSensitivity", openSensitivity);
+        row.setting = this.taskSetting;
       });
-    },
-    /**
-     * @description 根据任务对象设置任务表单
-     */
-    _setTaskSetting() {
-      let { openSensitivity, anti, anaAnti } = this.currentRow;
-      if (openSensitivity !== undefined && openSensitivity === 1) {
-        this.modalTaskSetting.sensi.isChecked = true;
-      }
-      // 没有anti属性就读取anaAnti属性
-      if (anti === undefined) {
-        if (anaAnti !== null) {
-          debugger;
-          let { antiDynamicStr, antiModel, antiNetwork, antiTime } = anaAnti;
-          this.modalTaskSetting.anti["model"] = antiModel;
-          this.modalTaskSetting.anti["network"] = antiNetwork;
-          this.modalTaskSetting.anti["param"] =
-            antiDynamicStr === null ? "" : antiDynamicStr;
-          this.modalTaskSetting.anti["time"] = antiTime;
-        }
-      } else {
-        // 不设置杀毒软件列表,因为要动态获取
-        let { aids, model, network, param, time } = anti;
-        this.modalTaskSetting.anti["model"] = model;
-        this.modalTaskSetting.anti["network"] = network;
-        this.modalTaskSetting.anti["aids"] = aids;
-        this.modalTaskSetting.anti["param"] = param;
-        this.modalTaskSetting.anti["time"] = time;
-      }
     },
     /**
      * @description 检测所有对象是否有任务内容
      */
     _hasTaskContent() {
-      return this.uploadFileList.every(file => {
-        let { openSensitivity, anti } = file;
-        return (
-          (openSensitivity !== undefined && openSensitivity === 1) ||
-          anti !== undefined
-        );
+      return this.newList.every(element => {
+        let setting = element.setting;
+        console.log(setting);
+        if (typeof setting === "undefined") {
+          return false;
+        } else {
+          for (const key in setting) {
+            if (setting.hasOwnProperty(key)) {
+              const engine = setting[key];
+              return engine;
+            }
+          }
+        }
       });
     },
     /**
@@ -906,13 +745,10 @@ export default {
           objectSize: size,
           objectType: fileType,
           objectResult,
-          analysis,
-          anaAnti,
-          anaHomo,
-          anaVeri,
           oid,
           objectUrl: url,
-          objectSuffix: suffix
+          objectSuffix: suffix,
+          setting
         } = item;
         let file = {
           fileMD5,
@@ -923,20 +759,30 @@ export default {
           size,
           fileType,
           objectResult,
-          analysis,
-          anaAnti,
-          anaHomo,
-          anaVeri,
-          openSensitivity: analysis.sensitivity === 10 ? 2 : 1, //根据 analysis.sensitivity是否等于10判断是否启动了敏感分析引擎
           percentage: 100, //已经创建的任务的单个文件,上传进度设置成100%
           status: "success", //已经创建的任务的单个文件,上传进度设置成success
           oid,
           url,
-          suffix
+          suffix,
+          setting
         };
         res.push(file);
       });
       return res;
+    },
+    /**
+     * @description 获取任务设置模态框里的数据
+     */
+    getData(data) {
+      if (data !== null) {
+        this.taskSetting = data;
+        this.$set(this.currentRow, "setting", data);
+        // 生成任务内容
+        let typeOpen = this.typeOpen;
+        typeOpen === "single"
+          ? this._generateTaskContent([this.currentRow])
+          : this._generateTaskContent(this.multipleSelection);
+      }
     }
   },
   created() {
@@ -944,7 +790,7 @@ export default {
       .then(({ data, status }) => {
         if (status === 200) {
           this.res.taskDetailList = data;
-          this.uploadFileList = this._Object2File(data);
+          this.detailList = this._Object2File(data);
         }
       })
       .catch(err => {
@@ -977,6 +823,9 @@ export default {
 }
 .el-card-wrapper .el-scrollbar__wrap {
   overflow-x: hidden;
+}
+.base-table .el-tag {
+  margin-top: 8px;
 }
 </style>
 

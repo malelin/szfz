@@ -1,17 +1,36 @@
-let a={"model": 2
-"objects": [{"md5": "3fb42cd646add8453f86c667c8f973ac"
-"objectName": "AB.bundle~CB.bundle.bdcfc084.js"
-"oid": 326
-"openMorph": 2
-"openSensitivity": 1
-"sha1": "9c19aff835e6534ae61295ddbb79d2cdea344457"
-"sha256": "50c515d4b03bab731b62c47dce5598b6e1128ddd44356863a96739e46c621d2e"
-"size": 19200
-"ssdeep": "384:LAaOmPk7AgtKeMIkdVQ1cW+YIs99mHPhEv/Ti9V:0aOmPkkgwgkschYL99mvGv/Ti9V"
-"suffix": "js"
-"type": "未识别"
-"url": "/group1/M00/00/0F/wKgCcFywTpiAEmSrAABLAI0l_LM1683.js"
-}
-]
-"remarks": ""
-"taskname": ""}
+let json = {
+  model: 2,
+  objects: [
+    {
+      md5: "7a06be5b7a8b43ba68942386d2afca8b",
+      objectName: "1487318839.exe",
+      setting: {
+        anti: {
+          isChecked: true,
+          aids: [5, 14, 16],
+          model: 2,
+          network: 1,
+          param: "fdsf",
+          time: 1
+        }
+      },
+      anti: {
+        isChecked: true,
+        aids: [5, 14, 16],
+        model: 2,
+        network: 1,
+        param: "fdsf",
+        time: 1
+      },
+      sha1: "ff6e6b474c46611ae6d761870543a9fb0068c568",
+      sha256:
+        "5d7c6fbc120396742535c4f3941fff1c71e2701eeb798a0943ac87eae5b120fd",
+      size: 359936,
+      ssdeep: "12288:D8+Gp6JLcq9AHN0iqNM3/YAsAexeaOEcXQP8jo:vGeLcq9qN0iGD",
+      suffix: "exe",
+      type: "exe",
+      uploadId: 6763,
+      url: "/group1/M00/00/45/wKgCcFzbx1GAYCsaAAV-AKjhi1c502.exe"
+    }
+  ]
+};

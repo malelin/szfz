@@ -1,9 +1,9 @@
 <!--
  * @Author: 旺苍扛把子
- * @LastEditors: 旺苍扛把子
+ * @LastEditors: Please set LastEditors
  * @Description: 注册组件
  * @Date: 2019-04-01 09:24:10
- * @LastEditTime: 2019-04-25 11:02:26
+ * @LastEditTime: 2019-05-15 17:36:14
  -->
 <template>
   <div class="register">
@@ -51,7 +51,7 @@
           <svg-icon icon-class="password" slot="prefix"></svg-icon
         ></el-input>
       </el-form-item>
-      <el-form-item prop="remarks"
+      <!-- <el-form-item prop="remarks"
         ><el-input
           type="textarea"
           :rows="2"
@@ -59,7 +59,7 @@
           v-model="registerForm.remarks"
         >
         </el-input
-      ></el-form-item>
+      ></el-form-item> -->
       <el-form-item>
         <el-button
           type="primary"
