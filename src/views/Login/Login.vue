@@ -3,7 +3,7 @@
  * @LastEditors: 旺苍扛把子
  * @Description: 登录组件
  * @Date: 2019-03-25 15:26:28
- * @LastEditTime: 2019-04-18 11:17:49
+ * @LastEditTime: 2019-04-25 11:09:13
  -->
 <template>
   <div class="login">
@@ -131,7 +131,7 @@ export default {
   computed: {},
   watch: {},
   methods: {
-    ...mapMutations(["setDefaultActive"]),
+    ...mapMutations(["setDefaultActive", "clearDefaultOpeneds"]),
     /**
      * @description 点击登录,防抖处理,不要使用箭头函数
      */
@@ -139,13 +139,15 @@ export default {
       try {
         // 对整个表单进行校验
         let isSuccess = await this.$refs.loginForm.validate();
-        debugger;
         let { account, password } = this.loginForm;
         if (isSuccess) {
           let { status, msg } = await login(account, password);
           if (status === 200) {
             this.$router.replace("/layout");
-            this.setDefaultActive("1-1");
+            //设置默认激活的子菜单为空
+            this.setDefaultActive("");
+            // 清空激活的侧边栏子菜单
+            this.clearDefaultOpeneds();
           } else {
             this.$message({
               type: "warning",

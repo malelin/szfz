@@ -23,11 +23,14 @@ import directives from "@/directives";
 // 引入全局组件
 import components from "@/components";
 
+//引入axios
+import axios from "axios";
 export default {
   install(Vue) {
     // 全局实例属性
     Vue.prototype.$eventbus = eventbus;
     Vue.prototype.$echarts = echarts;
+    Vue.prototype.$axios = axios;
 
     // 全局注册组件
     Object.keys(components).forEach(key => {

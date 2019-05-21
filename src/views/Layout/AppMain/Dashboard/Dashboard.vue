@@ -1,9 +1,9 @@
 <!--
  * @Author: 旺苍扛把子
- * @LastEditors: 旺苍扛把子
+ * @LastEditors: Please set LastEditors
  * @Description: 控制面板组件
  * @Date: 2019-03-29 10:14:42
- * @LastEditTime: 2019-04-19 16:09:40
+ * @LastEditTime: 2019-05-16 17:27:55
  -->
 <template>
   <div class="dashboard">
@@ -13,7 +13,7 @@
         <div class="chart-header">
           <span class="title">检测结果统计</span>
           <el-tabs
-            v-model="chartRing.detectTimeRange"
+            v-model="chartDetectRing.detectTimeRange"
             @tab-click="handleDetectResTabClick"
           >
             <el-tab-pane label="今日" name="day"></el-tab-pane>
@@ -25,42 +25,46 @@
         <div class="chart-body">
           <el-col :span="6">
             <ve-ring
-              :data="chartRingData.dataFailure"
+              class="c-ve-ring"
+              :data="chartDetectRingData.dataFailure"
               :legend-visible="false"
               :tooltip-visible="false"
               :judge-width="true"
               :colors="['rgba(212, 48, 48, 1)', '#F6F6F6']"
-              :settings="chartRing.settings"
+              :settings="chartDetectRing.settings"
             ></ve-ring
           ></el-col>
           <el-col :span="6">
             <ve-ring
-              :data="chartRingData.dataHighRisk"
+              class="c-ve-ring"
+              :data="chartDetectRingData.dataHighRisk"
               :legend-visible="false"
               :tooltip-visible="false"
               :judge-width="true"
               :colors="['#fb6d08', '#F6F6F6']"
-              :settings="chartRing.settings"
+              :settings="chartDetectRing.settings"
             ></ve-ring
           ></el-col>
           <el-col :span="6">
             <ve-ring
-              :data="chartRingData.dataMiddleRisk"
+              class="c-ve-ring"
+              :data="chartDetectRingData.dataMiddleRisk"
               :legend-visible="false"
               :tooltip-visible="false"
               :judge-width="true"
               :colors="['rgba(255, 195, 0, 1)', '#F6F6F6']"
-              :settings="chartRing.settings"
+              :settings="chartDetectRing.settings"
             ></ve-ring
           ></el-col>
           <el-col :span="6">
             <ve-ring
-              :data="chartRingData.dataSafety"
+              class="c-ve-ring"
+              :data="chartDetectRingData.dataSafety"
               :legend-visible="false"
               :tooltip-visible="false"
               :judge-width="true"
               :colors="['#2ae445', '#F6F6F6']"
-              :settings="chartRing.settings"
+              :settings="chartDetectRing.settings"
             ></ve-ring
           ></el-col>
         </div>
@@ -68,7 +72,9 @@
           <div class="res-info">
             <div class="amount-container">
               <span class="title">总计&nbsp;:</span>
-              <span class="amount">{{ chartRingData.total }}&nbsp;个</span>
+              <span class="amount"
+                >{{ chartDetectRingData.total }}&nbsp;个</span
+              >
             </div>
             <div class="res-type">
               <div class="type fail">失败</div>
@@ -84,7 +90,7 @@
         <div class="chart-header">
           <span class="title">威胁类型分布</span
           ><el-tabs
-            v-model="chartPie.threatTimeRange"
+            v-model="chartThreatRing.threatTimeRange"
             @tab-click="handleThreatTabClick"
           >
             <el-tab-pane label="今日" name="day"></el-tab-pane>
@@ -94,13 +100,16 @@
           </el-tabs>
         </div>
         <div class="chart-body">
-          <ve-pie
-            :data="chartPieData"
+          <ve-ring
+            class="c-ve-ring"
             width="100%"
+            height="240px"
             :judge-width="true"
-            :legend="chartPie.legend"
-            :settings="chartPie.settings"
-          ></ve-pie>
+            :tooltip="chartThreatRingData.tooltip"
+            :legend="chartThreatRingData.legend"
+            :series="chartThreatRingData.series"
+            :colors="['#59A0F8', '#76C77D', '#F5D464', '#E46F7D', '#8F65DD']"
+          ></ve-ring>
         </div>
       </div>
     </div>
@@ -110,91 +119,8 @@
       </div>
       <div class="engine-container-body">
         <ul class="engine-list">
-          <li class="engine-item">
-            <el-upload
-              class="upload-sensi"
-              drag
-              :show-file-list="false"
-              :name="config.engines.engineSensi.name"
-              :action="config.engines.engineSensi.action"
-              :headers="config.engines.engineSensi.headers"
-              :on-error="onSensiUploadErr"
-              :on-success="onSensiUploadSuccess"
-              :before-upload="SensiFileBeforeUpload"
-            >
-              <div class="engine-item-header">
-                <svg-icon icon-class="mgxxfx"></svg-icon>
-                <span class="engine-name">敏感信息分析</span>
-              </div>
-              <div class="engine-item-body">
-                <p class="engine-desc">
-                  我们这个引擎可牛逼了,我们这个引擎可牛逼了,我们这个引擎可牛逼了,
-                </p>
-              </div>
-              <!-- <i class="el-icon-upload"></i>
-              <div class="el-upload__text">
-                将文件拖到此处，或<em>点击上传</em>
-              </div>
-              <div class="el-upload__tip" slot="tip">
-                只能上传jpg/png文件，且不超过500kb
-              </div> -->
-            </el-upload>
-          </li>
-          <li class="engine-item">
-            <div class="engine-item-header">
-              <svg-icon icon-class="mgxxfx"></svg-icon>
-              <span class="engine-name">敏感信息分析</span>
-            </div>
-            <div class="engine-item-body">
-              <p class="engine-desc">
-                我们这个引擎可牛逼了,我们这个引擎可牛逼了,我们这个引擎可牛逼了,
-              </p>
-            </div>
-          </li>
-          <li class="engine-item">
-            <div class="engine-item-header">
-              <svg-icon icon-class="mgxxfx"></svg-icon>
-              <span class="engine-name">敏感信息分析</span>
-            </div>
-            <div class="engine-item-body">
-              <p class="engine-desc">
-                我们这个引擎可牛逼了,我们这个引擎可牛逼了,我们这个引擎可牛逼了,
-              </p>
-            </div>
-          </li>
-          <li class="engine-item">
-            <div class="engine-item-header">
-              <svg-icon icon-class="mgxxfx"></svg-icon>
-              <span class="engine-name">敏感信息分析</span>
-            </div>
-            <div class="engine-item-body">
-              <p class="engine-desc">
-                我们这个引擎可牛逼了,我们这个引擎可牛逼了,我们这个引擎可牛逼了,
-              </p>
-            </div>
-          </li>
-          <li class="engine-item">
-            <div class="engine-item-header">
-              <svg-icon icon-class="mgxxfx"></svg-icon>
-              <span class="engine-name">敏感信息分析</span>
-            </div>
-            <div class="engine-item-body">
-              <p class="engine-desc">
-                我们这个引擎可牛逼了,我们这个引擎可牛逼了,我们这个引擎可牛逼了,
-              </p>
-            </div>
-          </li>
-          <li class="engine-item">
-            <div class="engine-item-header">
-              <svg-icon icon-class="mgxxfx"></svg-icon>
-              <span class="engine-name">敏感信息分析</span>
-            </div>
-            <div class="engine-item-body">
-              <p class="engine-desc">
-                我们这个引擎可牛逼了,我们这个引擎可牛逼了,我们这个引擎可牛逼了,
-              </p>
-            </div>
-          </li>
+          <Engine v-bind="engines.sensi" />
+          <Engine v-bind="engines.anti" />
         </ul>
       </div>
     </div>
@@ -202,16 +128,19 @@
 </template>
 
 <script>
-import { createTask } from "@/api/task";
 import { getDetectRes, getThreatRes } from "@/api/indexManage";
 export default {
   name: "Dashboard",
-  components: {},
+  components: {
+    /* 引擎组件 */
+    // Engine
+    Engine: () => import("./Engine/Engine.vue")
+  },
   props: {},
   data() {
     return {
-      //  检测结果统计配置
-      chartRing: {
+      //  检测结果统计换图配置
+      chartDetectRing: {
         // 环形图设置
         settings: {
           label: {
@@ -226,12 +155,13 @@ export default {
             rich: {
               a: {
                 lineHeight: 30,
-                color: "#666"
+                color: "#999",
+                fontSize: 12
               },
               b: {
-                fontSize: 13,
+                fontSize: 18,
                 lineHeight: 20,
-                color: "#111"
+                color: "#333"
               }
             }
           },
@@ -242,39 +172,52 @@ export default {
         //默认tab激活
         detectTimeRange: "day"
       },
-      detectRes: {
-        day: {},
-        year: {},
-        month: {},
-        week: {}
-      },
-      //威胁类型分布配置
-      chartPie: {
-        settings: {
-          radius: 60,
-          offsetY: 130
-        },
-        legend: { orient: "vertical", right: 30, top: 50, bottom: 20 },
+      //威胁类型分布换图配置
+      chartThreatRing: {
         threatTimeRange: "day"
       },
-      threatRes: { day: {}, week: {}, month: {}, year: [] },
-      config: {
-        engines: {
-          // 敏感引擎
-          engineSensi: {
-            name: "object",
-            action: process.env.VUE_APP_BASE_API + "/v1/filemanage/object",
-            headers: {
-              "Digark-Access-Header": sessionStorage.getItem("token")
-            }
-          }
+      // 所有接口返回值
+      res: {
+        detectRes: {
+          day: {},
+          year: {},
+          month: {},
+          week: {}
+        },
+        threatRes: { day: {}, week: {}, month: {}, year: [] }
+      },
+      engines: {
+        sensi: {
+          engineName: "敏感信息分析引擎",
+          engineId: "sensi",
+          engineIcon: "mgxxfx",
+          engineDescription: "这是引擎描述",
+          engineAction: window.g.ApiUrl + "/v1/filemanage/object",
+          engineHeaders: {
+            "Digark-Access-Header": sessionStorage.getItem("token")
+          },
+          engineUploadName: "object"
+        },
+        anti: {
+          engineDescription: "这是引擎描述",
+          engineName: "安全仿真",
+          engineIcon: "aqfz",
+          engineId: "anti",
+          engineAction: window.g.ApiUrl + "/v1/filemanage/object",
+          engineHeaders: {
+            "Digark-Access-Header": sessionStorage.getItem("token")
+          },
+          engineUploadName: "object"
         }
       }
     };
   },
   computed: {
     // 检测结果统计数据
-    chartRingData() {
+    chartDetectRingData() {
+      let dataTimeRange = this.res.detectRes[
+        this.chartDetectRing.detectTimeRange
+      ];
       return {
         // failure: 34
         // highRisk: 26
@@ -287,13 +230,11 @@ export default {
           rows: [
             {
               类型: "失败",
-              数量: this.detectRes[this.chartRing.detectTimeRange].failure
+              数量: dataTimeRange.failure
             },
             {
               类型: "其它",
-              数量:
-                this.detectRes[this.chartRing.detectTimeRange].total -
-                this.detectRes[this.chartRing.detectTimeRange].failure
+              数量: dataTimeRange.total - dataTimeRange.failure
             }
           ]
         },
@@ -303,13 +244,11 @@ export default {
           rows: [
             {
               类型: "高危",
-              数量: this.detectRes[this.chartRing.detectTimeRange].highRisk
+              数量: dataTimeRange.highRisk
             },
             {
               类型: "其它",
-              数量:
-                this.detectRes[this.chartRing.detectTimeRange].total -
-                this.detectRes[this.chartRing.detectTimeRange].highRisk
+              数量: dataTimeRange.total - dataTimeRange.highRisk
             }
           ]
         },
@@ -319,13 +258,11 @@ export default {
           rows: [
             {
               类型: "中危",
-              数量: this.detectRes[this.chartRing.detectTimeRange].middleRisk
+              数量: dataTimeRange.middleRisk
             },
             {
               类型: "其它",
-              数量:
-                this.detectRes[this.chartRing.detectTimeRange].total -
-                this.detectRes[this.chartRing.detectTimeRange].middleRisk
+              数量: dataTimeRange.total - dataTimeRange.middleRisk
             }
           ]
         },
@@ -335,47 +272,138 @@ export default {
           rows: [
             {
               类型: "安全",
-              数量: this.detectRes[this.chartRing.detectTimeRange].safety
+              数量: dataTimeRange.safety
             },
             {
               类型: "其它",
-              数量:
-                this.detectRes[this.chartRing.detectTimeRange].total -
-                this.detectRes[this.chartRing.detectTimeRange].safety
+              数量: dataTimeRange.total - dataTimeRange.safety
             }
           ]
         },
-        total: this.detectRes[this.chartRing.detectTimeRange].total
+        total: dataTimeRange.total
       };
     },
     // 威胁类型分布数据
-    chartPieData() {
+    chartThreatRingData() {
+      //  今日||本周||本月||全年的总计
+      let total = this.res.threatRes[this.chartThreatRing.threatTimeRange]
+        .total;
+      //  今日||本周||本月||全年的数据
+      let dataTimeRange = this.res.threatRes[
+        this.chartThreatRing.threatTimeRange
+      ];
       return {
-        columns: ["类型", "数量"],
-        rows: [
-          {
-            类型: "涉我信息",
-            数量: this.threatRes[this.chartPie.threatTimeRange].relateType
+        tooltip: {
+          trigger: "item",
+          formatter: "{a} <br/>{b}: {c} ({d}%)"
+        },
+
+        legend: {
+          orient: "vertical",
+          right: "15%",
+          top: 20,
+          bottom: 20,
+          textStyle: {
+            rich: {
+              a: {
+                lineHeight: 20,
+                color: "rgba(0,0,0,.45)"
+              },
+              b: {
+                fontSize: 13,
+                lineHeight: 20,
+                color: "#333"
+              }
+            }
           },
-          {
-            类型: "开发痕迹",
-            数量: this.threatRes[this.chartPie.threatTimeRange].developType
+          formatter(name) {
+            let typeMap = {
+              涉我信息: "relateType",
+              开发痕迹: "developType",
+              同源信息: "homoType",
+              仿真分析: "antiType",
+              IOC风险: "iocType",
+              其他: "otherType"
+            };
+            let type = typeMap[name];
+            let value = dataTimeRange[type];
+            let percent = parseInt((value / total) * 10000) / 100;
+            return isNaN(percent)
+              ? [
+                  name,
+                  "{a|" + "   |   " + 0 + "}",
+                  "{b|" + "    " + total + "}"
+                ].join("")
+              : [
+                  name,
+                  "{a|" +
+                    "   |   " +
+                    parseInt((value / total) * 10000) / 100 +
+                    "%}",
+                  "{b|" + "    " + value + "}"
+                ].join("");
           },
+          data: [
+            "涉我信息",
+            "开发痕迹",
+            "同源信息",
+            "仿真分析",
+            "IOC风险",
+            "其他"
+          ]
+        },
+        series: [
           {
-            类型: "同源信息",
-            数量: this.threatRes[this.chartPie.threatTimeRange].homoType
-          },
-          {
-            类型: "仿真分析",
-            数量: this.threatRes[this.chartPie.threatTimeRange].antiType
-          },
-          {
-            类型: "IOC风险",
-            数量: this.threatRes[this.chartPie.threatTimeRange].iocType
-          },
-          {
-            类型: "其他",
-            数量: this.threatRes[this.chartPie.threatTimeRange].otherType
+            center: ["26%", "110"], //调整饼图位置
+            name: "威胁类型分布",
+            type: "pie",
+            radius: ["90", "65"],
+            label: {
+              show: true,
+              position: "center",
+              formatter() {
+                return ["{a|" + "总计" + "}", "{b|" + total + "}"].join("\n");
+              },
+              rich: {
+                a: {
+                  lineHeight: 50,
+                  fontSize: 14,
+                  fontWeight: "normal",
+                  color: "#999"
+                },
+                b: {
+                  fontSize: 25,
+                  lineHeight: 20,
+                  color: "#333"
+                }
+              }
+            },
+            data: [
+              {
+                name: "涉我信息",
+                value: dataTimeRange.relateType
+              },
+              {
+                name: "开发痕迹",
+                value: dataTimeRange.developType
+              },
+              {
+                name: "同源信息",
+                value: dataTimeRange.homoType
+              },
+              {
+                name: "仿真分析",
+                value: dataTimeRange.antiType
+              },
+              {
+                name: "IOC风险",
+                value: dataTimeRange.iocType
+              },
+              {
+                name: "其他",
+                value: dataTimeRange.otherType
+              }
+            ]
           }
         ]
       };
@@ -388,102 +416,38 @@ export default {
      * @param {object} 被选中的标签 tab 实例
      */
     handleThreatTabClick(tab) {
-      this.chartPie.threatTimeRange = tab.name;
+      this.chartThreatRing.threatTimeRange = tab.name;
     },
     /**
      * @description 检测结果统计tab点击
      * @param {object} 被选中的标签 tab 实例
      */
     handleDetectResTabClick(tab) {
-      this.chartRing.detectTimeRange = tab.name;
-    },
-    /**
-     * @description 敏感信息引擎上传文件成功
-     */
-    async onSensiUploadSuccess({ status, data: object }) {
-      if (status === 200) {
-        let obj = this._formatFile2SensiObject(object);
-        let taskData = {
-          model: 2,
-          objects: [obj]
-        };
-        try {
-          let { status } = await createTask(taskData);
-          if (status === 200) {
-            this.$message({
-              type: "success",
-              message: "敏感信息风行引擎任务创建成功"
-            });
-            this.$router.push("/taskOverview");
-          }
-        } catch (e) {
-          this.$message({
-            type: "error",
-            message: e.toString()
-          });
-        }
-      }
-    },
-    /**
-     * @description 敏感信息引擎上传文件出错
-     */
-    onSensiUploadErr(err, file, fileList) {
-      console.log(fileList);
-    },
-    /**
-     * @description 敏感信息引擎上传文件之前
-     */
-    SensiFileBeforeUpload() {},
-    /**
-     * @description 把上传接受到的file类型格式的数据转化成object类型的敏感信息引擎创建任务的格式
-     */
-    _formatFile2SensiObject({
-      uploadId,
-      fileSHA1: sha1,
-      fileSHA256: sha256,
-      fileSSDEEP: ssdeep,
-      suffix,
-      saveUrl: url,
-      fileMD5: md5,
-      fileType: type,
-      fileSize: size,
-      fileName: objectName
-    }) {
-      return {
-        uploadId,
-        sha1,
-        sha256,
-        ssdeep,
-        suffix,
-        url,
-        md5,
-        type,
-        size,
-        objectName,
-        openSensitivity: 1,
-        openMorph: 2
-      };
+      this.chartDetectRing.detectTimeRange = tab.name;
     }
   },
-  created() {
-    getDetectRes()
-      .then(({ status, data }) => {
-        if (status === 200) {
-          this.detectRes = data;
-        }
-      })
-      .catch(err => {
-        console.log(err);
-      });
-    getThreatRes()
-      .then(({ status, data }) => {
-        if (status === 200) {
-          this.threatRes = data;
-        }
-      })
-      .catch(err => {
-        console.log(err);
-      });
+  created() {},
+  beforeRouteEnter(to, from, next) {
+    next(vm => {
+      getDetectRes()
+        .then(({ status, data }) => {
+          if (status === 200) {
+            vm.res.detectRes = data;
+          }
+        })
+        .catch(err => {
+          console.log(err);
+        });
+      getThreatRes()
+        .then(({ status, data }) => {
+          if (status === 200) {
+            vm.res.threatRes = data;
+          }
+        })
+        .catch(err => {
+          console.log(err);
+        });
+    });
   },
   mounted() {}
 };
@@ -503,13 +467,6 @@ export default {
   color: #409eff;
   font-size: 18px;
 }
-.dashboard .el-upload {
-  width: 100%;
-}
-.dashboard .el-upload-dragger {
-  width: 100%;
-  border-color: #fff;
-}
 </style>
 
 <style lang="stylus" scoped>
@@ -525,7 +482,7 @@ export default {
       align-items center
       padding 0 15px 0 20px
       border-bottom 1px solid #ebeef5
-      line-height 40px
+      line-height 46px
 
       .title
         color rgba(56, 56, 56, 1)
@@ -591,7 +548,8 @@ export default {
     .jcjgtj
       flex 0 0 54%
       overflow hidden
-      margin 12px 0
+      margin 8px 0
+      border-radius 6px
       background-color #fff
       box-shadow 0 2px 12px 0 rgba(0, 0, 0, 0.1)
 
@@ -600,7 +558,8 @@ export default {
 
     .wxlxfb
       flex 0 0 45%
-      margin 12px 0
+      margin 8px 0
+      border-radius 6px
       background-color #fff
       box-shadow 0 2px 12px 0 rgba(0, 0, 0, 0.1)
 
@@ -609,8 +568,8 @@ export default {
 
   .engine-container
     box-sizing border-box
-    margin 0 12px
-    margin-bottom 20px
+    margin 8px 12px
+    border-radius 6px
     background-color #fff
     box-shadow 0 2px 12px 3px rgba(0, 0, 0, 0.1)
 
@@ -620,8 +579,11 @@ export default {
     &-header
       display flex
       justify-content space-between
-      padding 20px
+      box-sizing border-box
+      padding-left 20px
+      height 47px
       border-bottom 1px solid #ebeef5
+      line-height 47px
 
       .title
         font-weight 700
@@ -635,27 +597,58 @@ export default {
         flex-wrap wrap
         height 100%
 
-        .engine-item
-          flex 0 0 33.33%
-          box-sizing border-box
-          padding 20px
-          border 1px solid #ebeef5
+.loading
+  position absolute
+  top 0
+  left 0
+  display flex
+  flex-direction column
+  justify-content center
+  align-items center
+  width 100%
+  height 100%
 
-          &-header
-            display flex
-            align-items center
-            padding 0 0 10px 10px
+  .loading-text
+    padding-top 30px
+    color rgb(32, 160, 255)
+    text-align center
 
-            >>>.svg-icon
-              font-size 40px
+  .loading-item
+    float left
+    margin 0 8px
+    width 8px
+    height 8px
+    border-radius 50%
+    background rgb(32, 160, 255)
+    animation loading-item linear 1s infinite
+    -webkit-animation loading-item linear 1s infinite
 
-            .engine-name
-              padding-left 20px
-              color #333
-              font-weight 700
-              font-size 20px
+  .loading-item:nth-child(1)
+    animation-delay 0s
 
-          &-body
-            .engine-desc
-              color #999
+  .loading-item:nth-child(2)
+    animation-delay 0.15s
+
+  .loading-item:nth-child(3)
+    animation-delay 0.3s
+
+  .loading-item:nth-child(4)
+    animation-delay 0.45s
+
+  .loading-item:nth-child(5)
+    animation-delay 0.6s
+
+  @keyframes loading-item
+    0%, 60%, 100%
+      transform scale(1)
+
+    30%
+      transform scale(2.5)
+
+  @keyframes loading-item
+    0%, 60%, 100%
+      transform scale(1)
+
+    30%
+      transform scale(2.5)
 </style>

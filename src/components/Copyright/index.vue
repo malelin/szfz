@@ -3,7 +3,7 @@
  * @LastEditors: 旺苍扛把子
  * @Description: Copyright组件
  * @Date: 2019-03-26 16:50:07
- * @LastEditTime: 2019-03-29 10:10:10
+ * @LastEditTime: 2019-04-25 10:43:43
  -->
 <template>
   <div class="copyright">
@@ -46,7 +46,6 @@ export default {
 
 <style lang="stylus" scoped>
 .copyright
-  padding-bottom 50px
   width 500px
   color rgba(0, 0, 0, 0.45)
 

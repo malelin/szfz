@@ -1,9 +1,9 @@
 <!--
  * @Author: 旺苍扛把子
- * @LastEditors: 旺苍扛把子
+ * @LastEditors: Please set LastEditors
  * @Description: 任务概览组件
  * @Date: 2019-04-01 18:17:27
- * @LastEditTime: 2019-04-19 10:54:16
+ * @LastEditTime: 2019-05-21 11:35:47
  -->
 <template>
   <div class="task-overview">
@@ -11,14 +11,14 @@
       <el-form
         :model="taskOverviewForm"
         ref="taskOverviewForm"
-        label-position="left"
+        label-position="right"
+        label-width="100px"
         class="task-overview-form"
       >
         <el-row :gutter="20">
           <el-col :span="8">
             <el-form-item label="任务名称 :" prop="taskname">
               <el-input
-                style="width:70%;"
                 placeholder="请输入"
                 v-model.trim="taskOverviewForm.taskname"
               />
@@ -27,6 +27,7 @@
           <el-col :span="8">
             <el-form-item label="状态 :" prop="taskStatus">
               <el-select
+                style="width:100%;"
                 v-model="taskOverviewForm.taskStatus"
                 placeholder="请选择"
               >
@@ -56,15 +57,19 @@
             </el-form-item>
           </el-col>
         </el-row>
-        <el-collapse v-model="activeNames">
-          <el-collapse-item name="1">
-            <el-row>
-              <el-col :span="10">
+        <transition
+          name="custom-classes-transition"
+          enter-active-class="animated  fadeInDown"
+          leave-active-class="animated  fadeOutUp"
+        >
+          <div v-if="!options.isFold">
+            <el-row :gutter="20">
+              <el-col :span="8">
                 <el-form-item label="起始时间段 :" prop="createTimeRange">
                   <el-date-picker
+                    style="width:100%;"
                     v-model="taskOverviewForm.createTimeRange"
                     type="datetimerange"
-                    style="width:60%;"
                     start-placeholder="起始启动时间"
                     end-placeholder="起始完成时间"
                     :default-time="['00:00:00']"
@@ -72,12 +77,12 @@
                   </el-date-picker>
                 </el-form-item>
               </el-col>
-              <el-col :span="10">
+              <el-col :span="8">
                 <el-form-item prop="finishedTimeRange" label="结束时间段 :">
                   <el-date-picker
+                    style="width:100%;"
                     v-model="taskOverviewForm.finishedTimeRange"
                     type="datetimerange"
-                    style="width:60%;"
                     start-placeholder="结束启动时间"
                     end-placeholder="结束完成时间"
                     :default-time="['00:00:00']"
@@ -85,58 +90,74 @@
                   </el-date-picker>
                 </el-form-item> </el-col
             ></el-row>
-            <el-row type="flex" align="middle">
-              <el-col :span="16">
-                <el-form-item prop="taskContents">
-                  <el-checkbox-group v-model="taskOverviewForm.taskContents">
-                    <el-checkbox label="同源分析" />
-                    <el-checkbox label="敏感信息分析" />
-                    <el-checkbox label="静态仿真分析" />
-                    <el-checkbox label="漏洞工具验证" />
-                    <el-checkbox label="工具变形与验证" />
+            <el-row type="flex" :gutter="20" align="top">
+              <el-form-item label-width="20px" prop="checkedEngines">
+                <el-col>
+                  <el-checkbox
+                    size="medium"
+                    :indeterminate="options.isIndeterminate"
+                    v-model="options.checkAll"
+                    border
+                    @change="handleCheckAllChange"
+                    >全选</el-checkbox
+                  >
+                  <el-checkbox-group
+                    style="display:inline-block;"
+                    size="medium"
+                    v-model="taskOverviewForm.checkedEngines"
+                  >
+                    <el-checkbox
+                      v-for="engine in options.engines"
+                      :key="engine"
+                      border
+                      :label="engine"
+                    />
                   </el-checkbox-group>
-                </el-form-item>
-              </el-col>
-              <el-col :span="8">
-                <el-form-item
-                  ><!-- <el-select
-                    style="width:110px;margin-right:5px;"
-                    v-model="plczSelect.selected"
-                    placeholder="批量操作"
-                  >
-                    <el-option
-                      v-for="item in plczSelect.selected"
-                      :key="item.value"
-                      :label="item.label"
-                      :value="item.value"
-                    >
-                    </el-option>
-                  </el-select> -->
-                  <el-button type="primary"
-                    ><svg-icon
-                      icon-class="add"
-                      style="margin-right:5px;color:#fff;"
-                    ></svg-icon
-                    >新建</el-button
-                  >
-                </el-form-item>
-              </el-col>
-            </el-row>
-          </el-collapse-item>
-        </el-collapse>
+                </el-col> </el-form-item
+            ></el-row></div
+        ></transition>
       </el-form>
     </div>
     <div class="table-container" ref="tableContainer">
       <!-- 表格 -->
+      <div class="button-wrapper">
+        <el-button @click.native="handleCreateTask" size="medium" type="primary"
+          ><svg-icon
+            icon-class="add"
+            style="margin-right:5px;color:#fff;"
+          ></svg-icon
+          >新建</el-button
+        >
+      </div>
+      <div type="flex" class="table-tip">
+        <el-alert type="info" :closable="false" show-icon>
+          <div class="alert-inner">
+            <span class="text">
+              已选择{{ multipleSelection.length }}项, 任务总计{{
+                tableData.total
+              }}项</span
+            >
+            <el-button
+              @click.native="toggleSelection"
+              style="margin-left:50px;"
+              type="text"
+              >清空</el-button
+            >
+          </div>
+        </el-alert>
+      </div>
       <el-table
         ref="taskTable"
         :data="tableData.list"
         tooltip-effect="dark"
         style="width: 100%;"
         class="c-el-table"
+        @selection-change="handleSelectionChange"
       >
-        <el-table-column align="center" type="selection"> </el-table-column>
-        <el-table-column align="center" label="任务编号" prop="tid">
+        <el-table-column align="center" type="selection" width="55">
+        </el-table-column>
+        <!-- <el-table-column type="selection" width="55"></el-table-column> -->
+        <el-table-column align="center" width="100" label="任务编号" prop="tid">
         </el-table-column>
         <el-table-column align="center" prop="taskName" label="任务名称">
         </el-table-column>
@@ -145,6 +166,7 @@
           sortable
           prop="startTime"
           label="开始时间"
+          width="150"
         >
           <template slot-scope="{ row }">
             <p style="color:#409eff;" v-if="row.startTime !== ''">
@@ -166,6 +188,7 @@
           sortable
           prop="endTime"
           label="结束时间"
+          width="150"
         >
           <template slot-scope="{ row }">
             <p style="color:#409eff;" v-if="row.endTime !== ''">
@@ -186,40 +209,32 @@
           align="center"
           prop="taskStatus"
           label="状态"
-          :filters="[
-            { text: '完成', value: 1 },
-            { text: '进行中', value: 2 },
-            { text: '待启动', value: 3 }
-          ]"
-          :filter-method="filterHandler"
+          width="100"
         >
           <!-- 1 带启动
           2 进行中
           3 完成
           4 失败 -->
-
           <template slot-scope="{ row }">
             <status :status="row.taskStatus" />
           </template>
         </el-table-column>
         <el-table-column align="center" prop="taskContent" label="任务内容">
           <template slot-scope="{ row }">
-            <span class="task-item" v-if="row.taskHomo === 1">同源分析</span>
-            <span class="task-item" v-if="row.taskAnti === 1"
-              >静态仿真分析</span
-            >
-            <span class="task-item" v-if="row.taskMorph === 1"
-              >工具变形与验证</span
-            >
-            <span class="task-item" v-if="row.taskSensi === 1"
-              >敏感信息分析</span
-            >
-            <span class="task-item" v-if="row.taskVeri === 1"
-              >漏洞工具验证</span
-            >
+            <el-tag v-if="row.taskHomo === 1">同源分析</el-tag>
+            <el-tag v-if="row.taskAnti === 1">安全仿真分析</el-tag>
+            <el-tag v-if="row.taskMorph === 1">工具变形与验证</el-tag>
+            <el-tag v-if="row.taskSensi === 1">敏感信息分析</el-tag>
+            <el-tag v-if="row.taskVeri === 1">漏洞工具验证</el-tag>
           </template>
         </el-table-column>
-        <el-table-column align="center" prop="operate" label="操作">
+        <el-table-column
+          fixed="right"
+          align="center"
+          prop="operate"
+          label="操作"
+          width="250px"
+        >
           <template slot-scope="{ row, $index }">
             <el-button
               @click.native="handleTaskView(row, $index)"
@@ -249,12 +264,12 @@
       <el-pagination
         @size-change="handleSizeChange"
         @current-change="handleCurrentChange"
-        :current-page.sync="pagination.currentPage"
+        :current-page.sync="currentPage"
         :page-sizes="[10, 20, 30, 50]"
-        :page-size="pagination.size"
+        :page-size="pageSize"
         layout="sizes, prev, pager, next"
         :total="tableData.total"
-        class="c-el-pagination"
+        class="c-el-pagination fr"
       >
       </el-pagination>
     </div>
@@ -264,23 +279,15 @@
 <script>
 import _ from "lodash";
 // 导入时间处理工具函数
-import { utc2LocalDate, formatChinese } from "@/utils/day";
+import { formatChinese } from "@/utils/day";
 import { getDefaultTask, getTask, deleteTask, executeTask } from "@/api/task";
+import { createNamespacedHelpers } from "vuex";
+const { mapMutations } = createNamespacedHelpers("layout");
 export default {
   name: "TaskOverview",
-  components: {
-    /* 按需加载组件 */
-    // demo: () => import('@/pages/')
-  },
-  props: {
-    /*  <WelcomeMessage greeting-text="hi"/> */
-    //   'greetingText': {
-    //     type: [String,Number],
-    //     required: true
-    //  }
-  },
   data() {
     return {
+      ws: null,
       // 任务概览组件表单数据
       taskOverviewForm: {
         taskname: "",
@@ -291,7 +298,7 @@ export default {
         // 状态下拉
         taskStatus: "",
         // 多选框
-        taskContents: []
+        checkedEngines: []
       },
       // 批量选中下拉框
       plczSelect: {
@@ -320,76 +327,115 @@ export default {
       tableHeight: 300,
       multipleSelection: [],
       // 分页组件
-      pagination: {
-        size: 10,
-        currentPage: 1
+      size: 10, //每页数量
+      // 组件中所有的配置
+      options: {
+        // 是否展开
+        isFold: true,
+        // 检测内容配置
+        engines: [
+          "同源分析",
+          "敏感信息分析",
+          "安全仿真分析",
+          "漏洞工具验证",
+          "工具变形与验证"
+        ],
+        checkAll: false,
+        checkedEngines: [],
+        isIndeterminate: true
       }
     };
   },
   computed: {
+    currentPage: {
+      get() {
+        return this.$store.state.layout.pagination.currentPage;
+      },
+      set(value) {
+        this.setCurrentPage(value);
+      }
+    },
+    pageSize: {
+      get() {
+        return this.$store.state.layout.pagination.pageSize;
+      },
+      set(value) {
+        this.setPageSize(value);
+      }
+    },
     //  按钮文字, 展开或收起
     buttonState() {
-      return this.activeNames[0] === "1"
-        ? { text: "收起", isActiveRotate: true }
-        : { text: "展开", isActiveRotate: false };
+      return this.options.isFold
+        ? { text: "展开", isActiveRotate: false }
+        : { text: "收起", isActiveRotate: true };
     }
   },
   watch: {},
   methods: {
+    ...mapMutations(["setCurrentPage", "setPageSize"]),
     /**
      * @description 收起和展开折叠面板,防抖处理
      */
     handleFold: _.debounce(function() {
-      if (this.activeNames.length === 0) {
-        // 展开
-        this.activeNames.push("1");
-      } else {
-        // 收起
-        this.activeNames.pop();
-      }
+      this.options.isFold = !this.options.isFold;
+    }, 300),
+    /**
+     * @description 新建任务
+     */
+    handleCreateTask: _.debounce(function() {
+      this.$router.push("/createTask");
+    }, 300),
+    /**
+     * @description 清空所有选中任务
+     */
+    toggleSelection: _.debounce(function() {
+      debugger;
+      this.$refs.taskTable.clearSelection();
     }, 300),
     /**
      * @description 切换每页显示条数
      */
     async handleSizeChange(size) {
-      this.pagination.size = size;
+      this.setPageSize(size);
       try {
         let res = await getDefaultTask({
-          page: this.pagination.currentPage,
+          page: this.currentPage,
           rows: size
         });
-        console.log(res);
         this.tableData = res.data;
       } catch (e) {
         console.log(e);
       }
     },
+
     /**
      * @description 当前页改变
      */
-    async handleCurrentChange(pageIndex) {
+    handleCurrentChange: _.debounce(async function(pageIndex) {
+      this.setCurrentPage(pageIndex);
       try {
         let res = await getDefaultTask({
           page: pageIndex,
-          rows: this.pagination.size
+          rows: this.pageSize
         });
-        console.log(res);
         this.tableData = res.data;
       } catch (e) {
         console.log(e);
       }
-    },
+    }, 300),
     /**
      * @description 根据表单查询,获取任务列表
      */
-
+    handleSelectionChange(val) {
+      this.multipleSelection = val;
+    },
     handleSearch: _.debounce(async function() {
       let {
         taskname,
         createTimeRange: [enableTimeStart, enableTimeEnd],
         finishedTimeRange: [finishTimeStart, finishTimeEnd],
         taskStatus,
-        taskContents: tem
+        checkedEngines: tem
       } = this.taskOverviewForm;
       let taskContents = [];
       // taskContent拼装成数组[1,2,3,4,5]
@@ -401,7 +447,7 @@ export default {
           case "敏感信息分析":
             taskContents.push(2);
             break;
-          case "静态仿真分析":
+          case "安全仿真分析":
             taskContents.push(3);
             break;
           case "漏洞工具验证":
@@ -479,8 +525,8 @@ export default {
         let { status } = await executeTask(tids);
         if (status === 200) {
           let { data } = await getDefaultTask({
-            page: this.pagination.currentPage,
-            rows: this.pagination.size
+            page: this.currentPage,
+            rows: this.pageSize
           });
           this.tableData = data;
           this.$message({ type: "success", message: "任务启动成功" });
@@ -513,28 +559,81 @@ export default {
      */
     handleTaskView: _.debounce(async function(row) {
       let tid = row.tid;
-      this.$router.push({ name: "taskDetail", params: { tid } });
+      this.$router.push({ path: `/taskDetail/${tid}` });
     }),
     /**
-     * @description 过滤处理器
+     * @description 处理检测内容全选按钮改变
      */
-    filterHandler(value, row, column) {
-      const property = column["property"];
-      return row[property] === value;
+    handleCheckAllChange(val) {
+      this.taskOverviewForm.checkedEngines = val ? this.options.engines : [];
+      this.options.isIndeterminate = false;
     },
-    utc2LocalDate(utcDateString) {
-      return utc2LocalDate(utcDateString);
+    /**
+     * @description 处理检测内容选中项改变
+     */
+    handleCheckedEnginesChange(value) {
+      let checkedCount = value.length;
+      this.options.checkAll = checkedCount === this.options.engines.length;
+      this.options.isIndeterminate =
+        checkedCount > 0 && checkedCount < this.options.engines.length;
+    },
+    /**
+     * @description 创建websocket
+     */
+    createWs() {
+      let token = sessionStorage.getItem("token");
+      this.ws = new WebSocket(window.g.WsUrl + "/v1/ws/task_state/" + token);
+      this.ws.onopen = () => {
+        console.log("open task_state");
+      };
+      this.ws.onmessage = event => {
+        let { status, data } = JSON.parse(event.data);
+        debugger;
+        if (status === 200) {
+          let index = this.tableData.list.findIndex(item => {
+            return data.tid === item.tid;
+          });
+          this.tableData.list.splice(index, 1, data);
+        }
+      };
+      this.ws.onclose = () => {
+        console.log("close task_state!");
+      };
+      this.ws.onerror = event => {
+        console.log(event);
+        console.log("WebSocketError!");
+      };
     }
   },
   created() {
     // 请求默认任务;
-    getDefaultTask()
-      .then(res => {
-        this.tableData = res.data;
+    this.createWs();
+    console.log(this.currentPage);
+    if (this.currentPage !== 1 && this.pageSize !== 10) {
+      getDefaultTask({
+        page: this.currentPage,
+        rows: this.pageSize
       })
-      .catch(err => console.log(err));
+        .then(({ data }) => {
+          this.tableData = data;
+        })
+        .catch(err => {
+          console.log(err);
+        });
+    } else {
+      getDefaultTask({})
+        .then(({ data }) => {
+          this.tableData = data;
+        })
+        .catch(err => {
+          console.log(err);
+        });
+    }
   },
   mounted() {},
+  beforeDestroy() {
+    this.ws.close();
+  },
   updated() {}
 };
 </script>
@@ -553,6 +652,29 @@ export default {
 .task-overview .el-collapse-item__header {
   display: none;
 }
+
+.task-overview .el-checkbox {
+  margin-right: 10px;
+}
+.task-overview .alert-inner .text {
+  font-size: 16px;
+  color: rgba(0, 0, 0, 0.65);
+}
+.task-overview .el-button--text {
+  font-size: 16px;
+}
+.task-overview .el-alert {
+  margin: 10px 0;
+}
+.task-overview .el-tag {
+  margin: 5px 8px 0 0;
+}
+.task-overview .el-alert--info {
+  background-color: #e6f7ff;
+}
+.task-overview .el-alert__icon {
+  color: rgba(24, 144, 255, 1);
+}
 </style>
 
 <style lang="stylus" scoped>
@@ -568,9 +690,12 @@ export default {
 
   .table-container
     position relative
-    flex 1
-    overflow hidden
-    background-color greeen
+
+    .button-wrapper
+      position absolute
+      top -61px
+      right 31px
+      z-index 2
 
     .task-item
       margin-top 8px
@@ -586,10 +711,10 @@ export default {
         color #fff
 
     .c-el-pagination
-      padding 15px 0
+      padding 22px 30px
 
   .svg-icon
-    transition all 0.1s
+       transition all 0.1s
 
     &.rotate
       transition all 0.1s

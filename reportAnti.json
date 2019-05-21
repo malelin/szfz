@@ -1,0 +1,56 @@
+{
+  "status": 200,
+  "msg": "操作成功",
+  "data": {
+    "av_result": [
+      {
+        "msg": "",//杀软检测状态 错误
+        "status": 0,// 0 成功 1错误
+        // 安全仿真检测结果
+        "result":'',
+        "free_result_array": [
+          {
+            "file": "wKgCcFzRMjaAI867AAL6AGXBUhE933.doc",
+            "result": "Safe"
+          }
+        ],
+        "vm_id": 5,//虚拟机id
+        "vm_name": "win7_avg_x64",//杀软名称
+        // 杀软屏幕截图
+        "urls": [
+          "http://192.168.2.112:8099/group1/M00/00/2A/wKgCcFzRPyWAShrgAABf8U1Jq7Y548.jpg"
+        ]
+      },
+      {
+        "msg": "",
+        "status": 0,
+        "result_array": [
+          {
+            "file": "C:\\Windows\\System32\\YmI2Nz.sys",
+            "result": "HEUR:Trojan.Win32.Generic"
+          }
+        ],
+        "vm_id": 10,
+        "vm_name": "win7_Kaspersky",
+        "urls": [
+          "http://192.168.2.112:8099/group1/M00/00/2A/wKgCcFzRPyWAei9bAABb7UjZnR4071.jpg"
+        ]
+      },
+      {
+        "msg": "",
+        "status": 0,
+        "result_array": [
+          {
+            "file": "wKgCcFzRMjaAI867AAL6AGXBUhE933.doc",
+            "result": "Safe"
+          }
+        ],
+        "vm_id": 1,
+        "vm_name": "win7_avira",
+        "urls": [
+          "http://192.168.2.112:8099/group1/M00/00/2A/wKgCcFzRPyWANj7_AABcb_c2_dA125.jpg"
+        ]
+      }
+    ]
+  }
+}

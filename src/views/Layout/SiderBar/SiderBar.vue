@@ -1,9 +1,9 @@
 <!--
  * @Author: 旺苍扛把子
- * @LastEditors: 旺苍扛把子
+ * @LastEditors: Please set LastEditors
  * @Description: siderbar组件
  * @Date: 2019-03-27 10:01:30
- * @LastEditTime: 2019-04-19 12:25:37
+ * @LastEditTime: 2019-05-21 11:27:43
  -->
 <template>
   <div class="siderbar">
@@ -53,9 +53,11 @@
           </template>
           <el-menu-item-group>
             <el-menu-item index="3-3">个人设置</el-menu-item>
-            <el-menu-item index="3-1">用户管理</el-menu-item>
-            <el-menu-item index="3-4">系统管理</el-menu-item>
-            <el-menu-item index="3-2">审计日志</el-menu-item>
+            <el-menu-item index="3-1" v-if="userInfo.role === 1"
+              >用户管理</el-menu-item
+            >
+            <!-- <el-menu-item index="3-4">系统管理</el-menu-item>
+            <el-menu-item index="3-2">审计日志</el-menu-item> -->
           </el-menu-item-group>
         </el-submenu>
       </el-menu>
@@ -95,7 +97,8 @@ export default {
     ...mapState([
       "isCollapse",
       "defaultActive", // 默认激活的菜单
-      "defaultOpeneds" //默认打开的子菜单
+      "defaultOpeneds", //默认打开的子菜单
+      "userInfo"
     ])
   },
   watch: {},
@@ -103,7 +106,9 @@ export default {
     ...mapMutations([
       "setDefaultActive",
       "spliceDefaultOpeneds",
-      "unshiftDefaultOpeneds"
+      "unshiftDefaultOpeneds",
+      "setCurrentPage",
+      "setPageSize"
     ]),
     /**
      * @description 菜单激活回调
@@ -111,6 +116,10 @@ export default {
      * @param {any} indexPath 选中菜单项的 index path
      */
     onSelect(index) {
+      if (index !== "2-1") {
+        this.setCurrentPage(1);
+        this.setPageSize(10);
+      }
       let { path } = this.routerMap[index];
       this.setDefaultActive(index);
       this.$router.push({ path });
@@ -154,6 +163,7 @@ export default {
 }
 /* 子菜单的背景颜色 */
 .el-submenu .el-menu-item {
+  padding-left: 50px !important;
   background-color: rgba(47, 51, 58, 0.53) !important;
 }
 /* 管理侧边栏横向滚动条 */
@@ -167,32 +177,27 @@ export default {
 </style>
 
 <style lang="stylus" scoped>
-.siderbar {
-  line-height: 1;
+.siderbar
+  line-height 1
 
-  .c-scrollbar {
-    height: calc(100% - 75px);
-  }
+  .c-scrollbar
+    height calc(100% - 75px)
 
-  .logo-container {
-    text-align: center;
+  .logo-container
+    background-color #20364a
+    text-align center
 
-    img {
-      width: 180px;
-    }
-  }
-}
+    img
+      width 180px
 
-.svg-icon {
-  margin-right: 10px;
-  vertical-align: middle;
-  font-size: 28px;
-}
+.svg-icon
+  margin-right 5px
+  vertical-align middle
+  font-size 28px
 
-.svg-logo {
-  padding-bottom: 20px;
-  width: 180px;
-  height: 55px;
-  transition: width height 0.2s;
-}
+.svg-logo
+  padding-bottom 20px
+  width 180px
+  height 55px
+  transition width height 0.2s
 </style>

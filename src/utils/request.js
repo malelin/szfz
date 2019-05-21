@@ -4,9 +4,11 @@ import { Message } from "element-ui";
 // import store from "@/store";
 // import { getToken } from "@/utils/auth";
 // create an axios instance
+let baseURL = window.g.ApiUrl;
+let timeout = window.g.AXIOS_TIMEOUT;
 const service = axios.create({
-  baseURL: process.env.VUE_APP_BASE_API, //获取环境变量里的BASE_API
-  timeout: 5000 // request timeout
+  baseURL,
+  timeout // request timeout
 });
 
 // request interceptor
@@ -36,11 +38,11 @@ service.interceptors.response.use(
       }
     } else {
       //没有成功就显示每次返回的状态码
-      Message({
-        message: data.status + "   :   " + data.msg,
-        type: "info",
-        duration: 5 * 1000
-      });
+      // Message({
+      //   message: data.status + "   :   " + data.msg,
+      //   type: "info",
+      //   duration: 5 * 1000
+      // });
       if (data.msg.trim() === "认证过期，请重新登入") {
         console.log(this);
         setTimeout(() => {

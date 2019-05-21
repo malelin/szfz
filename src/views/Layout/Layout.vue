@@ -1,9 +1,9 @@
 <!--
  * @Author: 旺苍扛把子
- * @LastEditors: 旺苍扛把子
+ * @LastEditors: Please set LastEditors
  * @Description: 布局组件,包含SiderBar,NavBar,TagsView,AppMain
  * @Date: 2019-03-27 09:45:34
- * @LastEditTime: 2019-04-02 12:01:42
+ * @LastEditTime: 2019-05-16 16:12:12
  -->
 <template>
   <div class="layout">
@@ -14,7 +14,6 @@
     <!-- 右侧内容 -->
     <div class="main-container">
       <NavBar class="c-nav-bar" />
-      <TagsView class="c-tags-view" />
       <app-main />
     </div>
   </div>
@@ -24,7 +23,6 @@
 export default {
   name: "Layout",
   components: {
-    TagsView: () => import("./TagsView/TagsView"),
     NavBar: () => import("./NavBar/NavBar"),
     AppMain: () => import("./AppMain/AppMain"),
     SiderBar: () => import("./SiderBar/SiderBar")

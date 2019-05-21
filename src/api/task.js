@@ -1,9 +1,9 @@
 /*
  * @Author: 旺苍扛把子
- * @LastEditors: 旺苍扛把子
+ * @LastEditors: Please set LastEditors
  * @Description: 任务api
  * @Date: 2019-04-03 14:45:44
- * @LastEditTime: 2019-04-19 16:05:36
+ * @LastEditTime: 2019-05-15 11:16:33
  */
 import request from "@/utils/request";
 /**
@@ -39,13 +39,12 @@ export const getTask = data => {
   });
 };
 /**
- * @description 创建任务,创建并执行
+ * @description 创建任务
  * @param {object} data
  * @returns {Promise<*>} Promise
  */
 export const createTask = data => {
   let token = sessionStorage.getItem("token");
-  console.log(data);
   return request({
     url: "/v1/sysmanage/task",
     method: "post",
@@ -54,11 +53,11 @@ export const createTask = data => {
   });
 };
 /**
- * @description 创建并执行
+ * @description 修改任务
  * @param {object} data
  * @returns {Promise<*>} Promise
  */
-export const createAndExecuteTask = config => {
+export const modifyTask = config => {
   let token = sessionStorage.getItem("token");
   return request({
     url: "/v1/sysmanage/task",

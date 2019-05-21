@@ -1,12 +1,13 @@
 <!--
  * @Author: 旺苍扛把子
- * @LastEditors: 旺苍扛把子
+ * @LastEditors: Please set LastEditors
  * @Description: 任务详情组件
  * @Date: 2019-04-11 14:32:10
- * @LastEditTime: 2019-04-18 10:20:52
+ * @LastEditTime: 2019-05-16 17:31:29
  -->
 <template>
   <div class="task-detail">
+    <back :target="{ path: '/taskOverview' }" />
     <div class="detail-header">
       <div class="header-left">
         <el-form
@@ -33,7 +34,9 @@
               v-model="taskForm.remarks"
             ></el-input
           ></el-form-item>
-
+          <ul>
+            <li><a href=""></a></li>
+          </ul>
           <el-form-item label="创建时间 :">
             <span>{{ taskForm.createTime }}</span>
           </el-form-item>
@@ -45,45 +48,40 @@
           </el-form-item>
 
           <el-form-item label="任务内容 :">
-            <span
-              class="task-item"
+            <el-tag
               v-if="
                 typeof taskForm.taskHomo !== 'undefined' &&
                   taskForm.taskHomo === 1
               "
-              >同源分析</span
+              >同源分析</el-tag
             >
-            <span
-              class="task-item"
+            <el-tag
               v-if="
                 typeof taskForm.taskAnti !== 'undefined' &&
                   taskForm.taskAnti === 1
               "
-              >静态仿真分析</span
+              >安全仿真分析</el-tag
             >
-            <span
-              class="task-item"
+            <el-tag
               v-if="
                 typeof taskForm.taskMorph !== 'undefined' &&
                   taskForm.taskMorph === 1
               "
-              >工具变形与验证</span
+              >工具变形与验证</el-tag
             >
-            <span
-              class="task-item"
+            <el-tag
               v-if="
                 typeof taskForm.taskSensi !== 'undefined' &&
                   taskForm.taskSensi === 1
               "
-              >敏感信息分析</span
+              >敏感信息分析</el-tag
             >
-            <span
-              class="task-item"
+            <el-tag
               v-if="
                 typeof taskForm.taskVeri !== 'undefined' &&
                   taskForm.taskVeri === 1
               "
-              >漏洞工具验证</span
+              >漏洞工具验证</el-tag
             >
           </el-form-item>
           <el-form-item label="任务作者 :">
@@ -96,13 +94,9 @@
       </div>
     </div>
     <div class="detail-body">
-      <div class="detail-top">
-        <h1 class="title">任务详情</h1>
-      </div>
-      <div class="detail-main">
-        <BaseTable :tid="tid" :task-status="taskForm.taskStatus" />
-      </div>
+      <BaseTable :tid="tid" :task-status="taskForm.taskStatus" />
     </div>
+    <div class="detail-footer"></div>
   </div>
 </template>
 
@@ -168,8 +162,7 @@ export default {
       currentEditItem: -1,
       // 当前编辑row
       currentRow: {},
-      // 计时器
-      timer: null
+      ws: null
     };
   },
   computed: {
@@ -208,44 +201,59 @@ export default {
       } catch (e) {
         throw e;
       }
+    },
+    /**
+     * @description 创建websocket
+     */
+    createWs() {
+      let token = sessionStorage.getItem("token");
+      this.ws = new WebSocket(window.g.WsUrl + "/v1/ws/task_state/" + token);
+      this.ws.onopen = () => {
+        console.log("open task_object");
+      };
+      this.ws.onmessage = event => {
+        let { data } = JSON.parse(event.data);
+        this.taskForm = data;
+      };
+      this.ws.onclose = () => {
+        console.log("close task_object!");
+      };
+      this.ws.onerror = event => {
+        console.log(event);
+        console.log("WebSocketError!");
+      };
     }
   },
   created() {
     this.getTaskDetail().catch(err => {
       console.log(err);
     });
-    // this.timer = setInterval(() => {
-    //   console.log(this);
-    //   this.getTaskDetail()
-    //     .then(res => {
-    //       if (res.taskStatus === 3) {
-    //         clearInterval(this.timer);
-    //       }
-    //     })
-    //     .catch(err => {
-    //       console.log(err);
-    //     });
-    // }, 5000);
+    this.createWs();
   },
   mounted() {},
   beforeDestroy() {
-    // if (this.timer) {
-    //   //如果定时器还在运行 或者直接关闭，不用判断
-    //   window.clearInterval(this.timer); //关闭
-    // }
+    this.ws.close();
   }
 };
 </script>
+<style>
+.task-detail .el-tag {
+  margin-right: 8px;
+}
+</style>
 
 <style lang="stylus" scoped>
 .task-detail
   .detail-header
     display flex
     justify-content space-between
-    margin-bottom 20px
-    padding 10px 10px 10px 40px
+    margin 0 12px 20px 6px
+    padding 15px 10px 10px 40px
     background-color #fff
     box-shadow 1px 0 10px #ccc
+
+    &.affix
+      margin-top 40px
 
     .header-left
       padding-left 50px
@@ -280,9 +288,8 @@ export default {
         width 200px
 
   .detail-body
-    padding 10px
+    margin 0 12px 20px 6px
     background-color #fff
-    box-shadow 1px 0 10px #ccc
 
     .detail-top
       display flex

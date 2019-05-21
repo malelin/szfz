@@ -3,7 +3,7 @@
  * @LastEditors: 旺苍扛把子
  * @Description: AppMain组件下的router-view的所有路由
  * @Date: 2019-03-29 10:18:42
- * @LastEditTime: 2019-04-17 09:14:38
+ * @LastEditTime: 2019-04-23 10:38:30
  */
 import Dashboard from "@/views/Layout/AppMain/Dashboard/Dashboard";
 import CreateTask from "@/views/Layout/AppMain/CreateTask/CreateTask";
@@ -51,14 +51,14 @@ const AppMain = [
     path: "taskDetail/:tid",
     name: "taskDetail",
     component: TaskDetail,
-    alias: "/taskDetail",
+    alias: "/taskDetail/:tid",
     props: true
   },
   {
     path: "detectReport/:rid",
     component: DetectReport,
     name: "detectReport",
-    alias: "/detectReport",
+    alias: "/detectReport/:rid",
     props: true
   },
   {
