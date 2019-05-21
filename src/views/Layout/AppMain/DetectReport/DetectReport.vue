@@ -3,7 +3,7 @@
  * @LastEditors: Please set LastEditors
  * @Description: 检测报告
  * @Date: 2019-04-16 10:07:40
- * @LastEditTime: 2019-05-10 16:15:46
+ * @LastEditTime: 2019-05-21 13:53:41
  -->
 <template>
   <div class="detect-report">
@@ -43,26 +43,36 @@
                 style="margin-right:5px;"
                 v-for="item in report.meta.detectContent"
                 :key="item.id"
-                :type="getTagType(item.levelContent)"
+                :type="_getStyle(item.levelContent)"
                 >{{ item.detectContent }}</el-tag
               >
             </div>
             <div class="meta-level">
               <span class="meta-title">• 危险等级</span>
-              <span class="meta-content">{{ report.meta.level }}</span>
+              <span class="meta-content">
+                <el-tag type="success" v-if="report.meta.level === 1"
+                  >安全</el-tag
+                >
+                <el-tag type="warning" v-if="report.meta.level === 2"
+                  >中危</el-tag
+                >
+                <el-tag type="danger" v-if="report.meta.level === 3"
+                  >高危</el-tag
+                >
+                <el-tag type="info" v-if="report.meta.level === 4">失败</el-tag>
+              </span>
             </div>
             <div class="meta-tags" v-if="report.meta.tags.length">
               <span class="meta-title">• 标签</span>
               <el-tag
                 style="margin-right:5px;"
-                type="info"
                 v-for="tag in report.meta.tags"
                 :key="tag.id"
                 >{{ tag }}</el-tag
               >
             </div>
           </div>
-          <div class="meta-manipulate-wrapper fr">
+          <!-- <div class="meta-manipulate-wrapper fr">
             <svg-icon
               icon-class="manipulate"
               class="manipulate-icon"
@@ -77,7 +87,7 @@
               <svg-icon icon-class="save" class="manipulate-item"></svg-icon>
               <svg-icon icon-class="refresh" class="manipulate-item"></svg-icon>
             </div>
-          </div>
+          </div> -->
         </div>
         <!-- 基本信息 -->
         <div class="report-item report-basic" ref="basic">
@@ -89,35 +99,51 @@
             <ul class="basic-list">
               <li>
                 <span class="field">• 文件名称</span>
-                <span class="description">{{ report.basic.objName }}</span>
+                <span class="description">{{
+                  report.basic.objName || "-------"
+                }}</span>
               </li>
               <li>
                 <span class="field">• 文件类型</span>
-                <span class="description">{{ report.basic.objType }}</span>
+                <span class="description">{{
+                  report.basic.objType || "-------"
+                }}</span>
               </li>
               <li>
                 <span class="field">• 文件大小</span>
-                <span class="description">{{ report.basic.size }}</span>
+                <span class="description">{{
+                  report.basic.size || "-------"
+                }}</span>
               </li>
               <li>
                 <span class="field">• 上传时间</span>
-                <span class="description">{{ report.basic.uploadTime }}</span>
+                <span class="description">{{
+                  report.basic.uploadTime || "-------"
+                }}</span>
               </li>
               <li>
                 <span class="field">• MD5</span>
-                <span class="description">{{ report.basic.md5 }}</span>
+                <span class="description">{{
+                  report.basic.md5 || "-------"
+                }}</span>
               </li>
               <li>
                 <span class="field">• SHA1</span>
-                <span class="description">{{ report.basic.sha1 }}</span>
+                <span class="description">{{
+                  report.basic.sha1 || "-------"
+                }}</span>
               </li>
               <li>
                 <span class="field">• SHA256</span>
-                <span class="description">{{ report.basic.sha256 }}</span>
+                <span class="description">{{
+                  report.basic.sha256 || "-------"
+                }}</span>
               </li>
               <li>
                 <span class="field">• SSDEEP</span>
-                <span class="description">{{ report.basic.ssdeep }}</span>
+                <span class="description">{{
+                  report.basic.ssdeep || "-------"
+                }}</span>
               </li>
             </ul>
           </div>
@@ -262,27 +288,25 @@
                   <div class="development-trace-item">
                     <span class="title">• PDB调试符号路径</span
                     ><span class="content">
-                      {{
-                        report.sensi.developmentTrace.pdb || "---------"
-                      }}</span
+                      {{ report.sensi.developmentTrace.pdb || "-------" }}</span
                     >
                   </div>
                   <div class="development-trace-item">
                     <span class="title">• 编译时间</span
                     ><span class="content">{{
-                      report.sensi.developmentTrace.compileTime || "---------"
+                      report.sensi.developmentTrace.compileTime || "-------"
                     }}</span>
                   </div>
                   <div class="development-trace-item">
                     <span class="title">• CodePage</span
                     ><span class="content">{{
-                      report.sensi.developmentTrace.codePage || "---------"
+                      report.sensi.developmentTrace.codePage || "-------"
                     }}</span>
                   </div>
                   <div class="development-trace-item">
                     <span class="title">• 作者</span
                     ><span class="content">{{
-                      report.sensi.developmentTrace.author || "---------"
+                      report.sensi.developmentTrace.author || "-------"
                     }}</span>
                   </div>
                 </el-card>
@@ -466,7 +490,8 @@ export default {
       },
       steps: {
         list: [{ title: "基本信息", ref: "basic" }]
-      }
+      },
+      reportSelectors: []
     };
   },
   computed: {
@@ -493,6 +518,7 @@ export default {
       );
       let target = this.$refs[ref];
       let offsetTop = target.offsetTop;
+      console.log("TCL: goAnchor -> offsetTop", offsetTop);
       scrollbar.scrollTop = offsetTop;
     },
     /**
@@ -618,7 +644,7 @@ export default {
       URL.revokeObjectURL(blob);
     },
     /**
-     * @description 根据元数据检测内容生成步骤条,各个报告的可见性,各个报告header样式
+     * @description 根据元数据检测内容生成步骤条,各个报告的可见性,各个报告header样式,各个报告dom
      */
     _generateSteps(detectContent) {
       detectContent.forEach(({ detectContent, levelContent }) => {
@@ -626,14 +652,12 @@ export default {
           case "敏感信息分析":
             this.steps.list.push({ title: "敏感信息分析结果", ref: "sensi" });
             this.visible.reportSensi = true;
-            this.style.reportSensi =
-              levelContent === "安全" ? "success" : "warning";
+            this.style.reportSensi = this._getStyle(levelContent);
             break;
           case "安全仿真分析":
             this.steps.list.push({ title: "安全仿真分析结果", ref: "anti" });
             this.visible.reportAnti = true;
-            this.style.reportAnti =
-              levelContent === "安全" ? "success" : "warning";
+            this.style.reportAnti = this._getStyle(levelContent);
             break;
           default:
             break;
@@ -641,10 +665,76 @@ export default {
       });
     },
     /**
-     * @description 设置元数据检测内容tag样式
+     * @description 设置报告header样式
      */
-    getTagType(levelContent) {
-      return levelContent === "安全" ? "success" : "warning";
+    _getStyle(levelContent) {
+      switch (levelContent) {
+        case "安全":
+          return "success";
+        case "中危":
+          return "warning";
+        case "高危":
+          return "danger";
+        default:
+          return "info";
+      }
+    },
+    /**
+     * @description 根据距离滚动条顶部的距离获取滚动到哪一个报告
+     */
+    _getReportIndex(selectors, scrollTop) {
+      let floors = selectors.map(({ selector }) => {
+        let dom = document.querySelector(selector);
+        let { offsetHeight, offsetTop } = dom;
+        return offsetHeight + offsetTop;
+      });
+      floors.shift();
+      console.log(floors);
+      return floors.findIndex(offsetTop => offsetTop >= scrollTop);
+    },
+
+    _initScrollBar() {
+      let scrollbar = document.querySelector(
+        ".app-content .el-scrollbar__wrap"
+      );
+      let _this = this;
+      scrollbar.addEventListener(
+        "scroll",
+        _.debounce(function() {
+          // 滚动条距离顶部的距离
+          let scrollTop = scrollbar.scrollTop;
+          let index = _this._getReportIndex(_this.reportSelectors, scrollTop);
+          console.log(index);
+          _this.config.steps.active = index;
+        }, 300)
+      );
+    },
+    /**
+     * @description 根据检测内容返回需要渲染dom
+     */
+    _getReportSelectors(detectContent) {
+      let arr = [
+        {
+          selector: ".report-basic"
+        }
+      ];
+      detectContent.forEach(({ detectContent }) => {
+        let dom = {};
+        switch (detectContent) {
+          case "敏感信息分析":
+            dom.selector = ".report-sensi";
+            // dom.offsetTop = document.querySelector(".report-sensi").offsetTop;
+            break;
+          case "安全仿真分析":
+            dom.selector = ".report-anti";
+            // dom.offsetTop = document.querySelector(".report-anti").offsetTop;
+            break;
+          default:
+            break;
+        }
+        arr.push(dom);
+      });
+      return arr;
     },
     /**
      * @description 初始化报告数据
@@ -658,6 +748,7 @@ export default {
         let { detectContent } = reportMeta;
         // 生成步骤条
         this._generateSteps(detectContent);
+        this.reportSelectors = this._getReportSelectors(detectContent);
         // 要执行并发的请求
         let promiseAll = [getReportBasic(rid)];
         // 报告类型
@@ -688,7 +779,10 @@ export default {
               this.report.sensi = sensi;
             }
           } else {
-            this.report[type] = data;
+            // 数据是null就使用data里的默认数据
+            if (!_.isNull(data)) {
+              this.report[type] = data;
+            }
           }
         });
       } catch (e) {
@@ -705,7 +799,9 @@ export default {
       }
     })();
   },
-  mounted() {}
+  mounted() {
+    this._initScrollBar();
+  }
 };
 </script>
 <style>
@@ -789,6 +885,10 @@ export default {
             background-color #67c23a
           &.warning
             background-color #e6a23c
+          &.danger
+            background-color rgb(245,108,108)
+          &.info
+            background-color rgb(144,147,153)
           .svg-icon
             vertical-align middle
             font-size 30px

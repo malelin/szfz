@@ -3,7 +3,7 @@
  * @LastEditors: Please set LastEditors
  * @Description: 任务概览组件
  * @Date: 2019-04-01 18:17:27
- * @LastEditTime: 2019-05-08 09:02:49
+ * @LastEditTime: 2019-05-21 11:35:47
  -->
 <template>
   <div class="task-overview">
@@ -134,7 +134,7 @@
           <div class="alert-inner">
             <span class="text">
               已选择{{ multipleSelection.length }}项, 任务总计{{
-                tableData.list.length
+                tableData.total
               }}项</span
             >
             <el-button
@@ -154,8 +154,10 @@
         class="c-el-table"
         @selection-change="handleSelectionChange"
       >
-        <el-table-column align="right" type="selection"> </el-table-column>
-        <el-table-column align="left" width="100" label="任务编号" prop="tid">
+        <el-table-column align="center" type="selection" width="55">
+        </el-table-column>
+        <!-- <el-table-column type="selection" width="55"></el-table-column> -->
+        <el-table-column align="center" width="100" label="任务编号" prop="tid">
         </el-table-column>
         <el-table-column align="center" prop="taskName" label="任务名称">
         </el-table-column>
@@ -213,7 +215,6 @@
           2 进行中
           3 完成
           4 失败 -->
-
           <template slot-scope="{ row }">
             <status :status="row.taskStatus" />
           </template>
@@ -263,9 +264,9 @@
       <el-pagination
         @size-change="handleSizeChange"
         @current-change="handleCurrentChange"
-        :current-page.sync="pagination.currentPage"
+        :current-page.sync="currentPage"
         :page-sizes="[10, 20, 30, 50]"
-        :page-size="pagination.size"
+        :page-size="pageSize"
         layout="sizes, prev, pager, next"
         :total="tableData.total"
         class="c-el-pagination fr"
@@ -280,10 +281,13 @@ import _ from "lodash";
 // 导入时间处理工具函数
 import { formatChinese } from "@/utils/day";
 import { getDefaultTask, getTask, deleteTask, executeTask } from "@/api/task";
+import { createNamespacedHelpers } from "vuex";
+const { mapMutations } = createNamespacedHelpers("layout");
 export default {
   name: "TaskOverview",
   data() {
     return {
+      ws: null,
       // 任务概览组件表单数据
       taskOverviewForm: {
         taskname: "",
@@ -323,10 +327,7 @@ export default {
       tableHeight: 300,
       multipleSelection: [],
       // 分页组件
-      pagination: {
-        size: 10,
-        currentPage: 1
-      },
+      size: 10, //每页数量
       // 组件中所有的配置
       options: {
         // 是否展开
@@ -346,6 +347,22 @@ export default {
     };
   },
   computed: {
+    currentPage: {
+      get() {
+        return this.$store.state.layout.pagination.currentPage;
+      },
+      set(value) {
+        this.setCurrentPage(value);
+      }
+    },
+    pageSize: {
+      get() {
+        return this.$store.state.layout.pagination.pageSize;
+      },
+      set(value) {
+        this.setPageSize(value);
+      }
+    },
     //  按钮文字, 展开或收起
     buttonState() {
       return this.options.isFold
@@ -353,7 +370,9 @@ export default {
         : { text: "收起", isActiveRotate: true };
     }
   },
+  watch: {},
   methods: {
+    ...mapMutations(["setCurrentPage", "setPageSize"]),
     /**
      * @description 收起和展开折叠面板,防抖处理
      */
@@ -377,33 +396,33 @@ export default {
      * @description 切换每页显示条数
      */
     async handleSizeChange(size) {
-      this.pagination.size = size;
+      this.setPageSize(size);
       try {
         let res = await getDefaultTask({
-          page: this.pagination.currentPage,
+          page: this.currentPage,
           rows: size
         });
-        console.log(res);
         this.tableData = res.data;
       } catch (e) {
         console.log(e);
       }
     },
+
     /**
      * @description 当前页改变
      */
-    async handleCurrentChange(pageIndex) {
+    handleCurrentChange: _.debounce(async function(pageIndex) {
+      this.setCurrentPage(pageIndex);
       try {
         let res = await getDefaultTask({
           page: pageIndex,
-          rows: this.pagination.size
+          rows: this.pageSize
         });
-        console.log(res);
         this.tableData = res.data;
       } catch (e) {
         console.log(e);
       }
-    },
+    }, 300),
     /**
      * @description 根据表单查询,获取任务列表
      */
@@ -506,8 +525,8 @@ export default {
         let { status } = await executeTask(tids);
         if (status === 200) {
           let { data } = await getDefaultTask({
-            page: this.pagination.currentPage,
-            rows: this.pagination.size
+            page: this.currentPage,
+            rows: this.pageSize
           });
           this.tableData = data;
           this.$message({ type: "success", message: "任务启动成功" });
@@ -557,17 +576,64 @@ export default {
       this.options.checkAll = checkedCount === this.options.engines.length;
       this.options.isIndeterminate =
         checkedCount > 0 && checkedCount < this.options.engines.length;
+    },
+    /**
+     * @description 创建websocket
+     */
+    createWs() {
+      let token = sessionStorage.getItem("token");
+      this.ws = new WebSocket(window.g.WsUrl + "/v1/ws/task_state/" + token);
+      this.ws.onopen = () => {
+        console.log("open task_state");
+      };
+      this.ws.onmessage = event => {
+        let { status, data } = JSON.parse(event.data);
+        debugger;
+        if (status === 200) {
+          let index = this.tableData.list.findIndex(item => {
+            return data.tid === item.tid;
+          });
+          this.tableData.list.splice(index, 1, data);
+        }
+      };
+      this.ws.onclose = () => {
+        console.log("close task_state!");
+      };
+      this.ws.onerror = event => {
+        console.log(event);
+        console.log("WebSocketError!");
+      };
     }
   },
   created() {
     // 请求默认任务;
-    getDefaultTask()
-      .then(res => {
-        this.tableData = res.data;
+    this.createWs();
+    console.log(this.currentPage);
+    if (this.currentPage !== 1 && this.pageSize !== 10) {
+      getDefaultTask({
+        page: this.currentPage,
+        rows: this.pageSize
       })
-      .catch(err => console.log(err));
+        .then(({ data }) => {
+          this.tableData = data;
+        })
+        .catch(err => {
+          console.log(err);
+        });
+    } else {
+      getDefaultTask({})
+        .then(({ data }) => {
+          this.tableData = data;
+        })
+        .catch(err => {
+          console.log(err);
+        });
+    }
   },
   mounted() {},
+  beforeDestroy() {
+    this.ws.close();
+  },
   updated() {}
 };
 </script>

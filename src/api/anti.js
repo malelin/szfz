@@ -3,7 +3,7 @@
  * @LastEditors: Please set LastEditors
  * @Description: 杀软管理模块
  * @Date: 2019-04-29 10:53:28
- * @LastEditTime: 2019-05-14 15:24:29
+ * @LastEditTime: 2019-05-17 15:46:45
  */
 import request from "@/utils/request";
 
@@ -20,7 +20,7 @@ export function getAntiList() {
   });
 }
 /**
- * @description 获取单个杀软的信息
+ * @description 获取杀软信息
  * @export
  * @param {number} aid 杀软aid
  */
@@ -29,7 +29,7 @@ export function getAntiInfo(aids) {
   return request({
     url: "/v1/antimanage/anti",
     method: "get",
-    params: { aids },
+    params: { aids: aids + "" },
     headers: { "Digark-Access-Header": token }
   });
 }

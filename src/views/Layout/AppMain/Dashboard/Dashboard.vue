@@ -3,7 +3,7 @@
  * @LastEditors: Please set LastEditors
  * @Description: 控制面板组件
  * @Date: 2019-03-29 10:14:42
- * @LastEditTime: 2019-05-14 13:54:36
+ * @LastEditTime: 2019-05-16 17:27:55
  -->
 <template>
   <div class="dashboard">
@@ -192,7 +192,7 @@ export default {
           engineId: "sensi",
           engineIcon: "mgxxfx",
           engineDescription: "这是引擎描述",
-          engineAction: process.env.VUE_APP_BASE_API + "/v1/filemanage/object",
+          engineAction: window.g.ApiUrl + "/v1/filemanage/object",
           engineHeaders: {
             "Digark-Access-Header": sessionStorage.getItem("token")
           },
@@ -203,7 +203,7 @@ export default {
           engineName: "安全仿真",
           engineIcon: "aqfz",
           engineId: "anti",
-          engineAction: process.env.VUE_APP_BASE_API + "/v1/filemanage/object",
+          engineAction: window.g.ApiUrl + "/v1/filemanage/object",
           engineHeaders: {
             "Digark-Access-Header": sessionStorage.getItem("token")
           },

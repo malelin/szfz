@@ -3,7 +3,7 @@
  * @LastEditors: Please set LastEditors
  * @Description: 注册组件
  * @Date: 2019-04-01 09:24:10
- * @LastEditTime: 2019-05-15 17:36:14
+ * @LastEditTime: 2019-05-20 14:26:35
  -->
 <template>
   <div class="register">
@@ -98,10 +98,10 @@ export default {
           callback(new Error("昵称只能是中文、字母、下划线,不超过18位"));
         } else {
           // 判断用户名是否存在;
-          verify(value, 1)
+          verify(value, 2)
             .then(({ status }) => {
               if (status === 202) {
-                callback(new Error("用户名已经存在"));
+                callback(new Error("昵称已经存在"));
               } else if (status === 203) {
                 callback();
               }
@@ -123,7 +123,7 @@ export default {
           callback(new Error("账号只能是数字,字母,下划线,4~18位"));
         } else {
           // 判断用户名是否存在;
-          verify(value, 2)
+          verify(value, 1)
             .then(({ status }) => {
               if (status === 202) {
                 callback(new Error("账号已经存在"));

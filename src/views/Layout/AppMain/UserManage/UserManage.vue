@@ -1,9 +1,9 @@
 <!--
  * @Author: malelin
- * @LastEditors: 旺苍扛把子
+ * @LastEditors: Please set LastEditors
  * @Description: 用户管理组件
  * @Date: 2019-04-02 13:37:27
- * @LastEditTime: 2019-04-24 16:45:53
+ * @LastEditTime: 2019-05-17 14:07:02
  -->
 <template>
   <div class="user-manage  box-shadow-6">
@@ -107,8 +107,8 @@
                     v-model="userListForm.loginTimeRange"
                     type="datetimerange"
                     style="width: 60%;"
-                    start-placeholde="起始时间"
-                    end-placeholde="结束时间"
+                    start-placeholder="起始时间"
+                    end-placeholder="结束时间"
                     :default-time="['00:00:00']"
                   >
                   </el-date-picker>

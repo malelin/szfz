@@ -1,9 +1,9 @@
 /*
  * @Author: 旺苍扛把子
- * @LastEditors: 旺苍扛把子
+ * @LastEditors: Please set LastEditors
  * @Description: layou组件的vuex数据
  * @Date: 2019-03-27 14:39:26
- * @LastEditTime: 2019-04-25 11:07:43
+ * @LastEditTime: 2019-05-21 11:08:56
  */
 // import Cookies from "js-cookie";
 
@@ -23,7 +23,12 @@ const layout = {
     // 任务对象
     task: {
       tid: 0
-    }
+    },
+    // 用户信息
+    userInfo: {},
+    // 任务概览分页
+    //   当前页
+    pagination: { currentPage: 1, pageSize: 10 }
   },
   getters: {},
   mutations: {
@@ -87,6 +92,27 @@ const layout = {
      */
     setTaskTid(state, tid) {
       state.task.tid = tid;
+    },
+    /**
+     * @description 设置用户信息
+     */
+    setUserInfo(state, userInfo) {
+      state.userInfo = userInfo;
+    },
+    /**
+     * @description 设置分页size
+     * @param {*} pageIndex
+     */
+    setPageSize(state, pageSize) {
+      state.pagination.pageSize = pageSize;
+    },
+    /**
+     * @description 设置当前页
+     * @param {*} state
+     * @param {*} currentPage
+     */
+    setCurrentPage(state, currentPage) {
+      state.pagination.currentPage = currentPage;
     }
   },
   actions: {}

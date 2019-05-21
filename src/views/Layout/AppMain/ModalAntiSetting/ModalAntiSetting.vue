@@ -1,7 +1,7 @@
 <!--
  * @Author: 旺苍扛把子
  * @Date: 2019-05-15 12:47:48
- * @LastEditTime: 2019-05-15 17:05:05
+ * @LastEditTime: 2019-05-16 09:44:01
  * @reference: 监控台
  * @Description: 监控台安全仿真分析任务设置modal
  -->
@@ -19,6 +19,7 @@
     <p class="setting-name">安全仿真分析设置</p>
     <div class="an-setting-wrapper">
       <anti-setting
+        ref="antiSetting"
         class="c-anti-setting"
         :anti="anti"
         :show-is-checked="false"
@@ -38,6 +39,7 @@
 
 <script>
 import { createTask } from "@/api/task";
+import _ from "lodash";
 export default {
   name: "ModalAntiSetting",
   components: {
@@ -57,7 +59,7 @@ export default {
   watch: {},
   methods: {
     handleSure() {
-      let aids = this.anti.aids;
+      let aids = this.$refs.antiSetting.model.aids;
       if (aids.length === 0) {
         this.$message({
           type: "warning",
@@ -82,6 +84,7 @@ export default {
       this.$modal.hide("modalAntiSetting");
     },
     async createTask() {
+      let anti = this.$refs.antiSetting.model;
       let object = this.$attrs.object;
       let {
         uploadId,
@@ -106,13 +109,13 @@ export default {
         type: fileType,
         uploadId: uploadId,
         url: saveUrl,
-        setting: { anti: JSON.parse(JSON.stringify(this.anti)) }
+        setting: { anti: _.cloneDeep(anti) }
       };
+      debugger;
       let param = {
         model: 2,
         objects: [base]
       };
-      this.anti.aids = [];
       try {
         let { data } = await createTask(param);
         return data;

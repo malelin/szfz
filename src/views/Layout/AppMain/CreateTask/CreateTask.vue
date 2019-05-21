@@ -3,12 +3,15 @@
  * @LastEditors: Please set LastEditors
  * @Description: 新建任务组件
  * @Date: 2019-04-02 09:23:23
- * @LastEditTime: 2019-05-15 17:49:28
+ * @LastEditTime: 2019-05-21 13:47:07
  -->
 
 <template>
   <div class="create-task">
-    <TaskSetting :taskSetting="modalTaskSetting" @get-data="getData" />
+    <task-setting
+      :task-setting="modalTaskSetting"
+      @get-task-setting="getTaskSetting"
+    />
     <div class="task-info box-shadow-6">
       <el-form ref="form" :model="taskOptinalInfo" label-width="80px">
         <el-form-item label="任务名称 :">
@@ -207,7 +210,7 @@ export default {
       // el-upload配置
       upload: {
         name: "object",
-        action: process.env.VUE_APP_BASE_API + "/v1/filemanage/object",
+        action: window.g.ApiUrl + "/v1/filemanage/object",
         percent: 0,
         showProgress: false,
         headers: {
@@ -304,14 +307,32 @@ export default {
     /**
      * @description 文件上传成功钩子
      */
-    fileOnSuccess({ status, msg }, file, fileList) {
+    fileOnSuccess({ status, msg }, file) {
       // 更新上传列表
-      this.uploadFileList = fileList;
       if (status === 200) {
-        // this.$message({
-        //   type: "success",
-        //   message: "上传成功"
-        // });
+        let fileMD5 = file.response.data.fileMD5;
+        console.log(fileMD5);
+        let repeatIndex = [];
+        this.uploadFileList.filter((item, index) => {
+          let response = item.response;
+          if (typeof response !== "undefined") {
+            if (fileMD5 === response.data.fileMD5) {
+              repeatIndex.push(index);
+            }
+          }
+        });
+        if (repeatIndex.length > 1) {
+          repeatIndex.shift();
+          console.log(repeatIndex);
+          console.log(this.uploadFileList);
+          repeatIndex.forEach(item => {
+            this.uploadFileList.splice(item, 1);
+          });
+          this.$message({
+            type: "warning",
+            message: "重复上传"
+          });
+        }
       } else {
         this.$notify({
           title: "上传失败",
@@ -404,12 +425,7 @@ export default {
      * @description modal关闭之前
      */
     async beforeModalClosed() {},
-    /**
-     * @description 设置弹框确定按钮
-     */
-    async handleSure() {
-      this.$modal.hide("taskSetting");
-    },
+
     /**
      * @description 任务设置取消操作
      */
@@ -460,9 +476,9 @@ export default {
     /**
      * @description 根据任务表单生成任务对象的任务内容
      */
-    _generateTaskContent(rows) {
+    _generateTaskContent(rows, taskSetting) {
       rows.forEach(row => {
-        row.setting = this.taskSetting;
+        row.setting = taskSetting;
       });
     },
 
@@ -521,36 +537,25 @@ export default {
           console.log(e);
         }
       } else {
-        // this.$message({
-        //   type: "warning",
-        //   message: "请选择对象要执行的任务内容"
-        // });
-        const h = this.$createElement;
-        this.$notify({
-          type: "error",
-          title: "创建失败",
-          offset: 62,
-          duration: 0,
-          message: h(
-            "i",
-            { style: "color: teal" },
-            "请选择对象要执行的任务内容"
-          )
+        this.$message({
+          type: "warning",
+          message: "请选择对象要执行的任务内容"
         });
       }
     }, 300),
     /**
      * @description 获取任务设置模态框里的数据
      */
-    getData(data) {
+    getTaskSetting(data) {
+      debugger;
       if (data !== null) {
-        this.taskSetting = data;
+        let taskSetting = data;
         this.$set(this.currentRow, "setting", data);
         // 生成任务内容
         let typeOpen = this.typeOpen;
         typeOpen === "single"
-          ? this._generateTaskContent([this.currentRow])
-          : this._generateTaskContent(this.multipleSelection);
+          ? this._generateTaskContent([this.currentRow], taskSetting)
+          : this._generateTaskContent(this.multipleSelection, taskSetting);
       }
     }
   },

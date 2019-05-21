@@ -4,9 +4,11 @@ import { Message } from "element-ui";
 // import store from "@/store";
 // import { getToken } from "@/utils/auth";
 // create an axios instance
+let baseURL = window.g.ApiUrl;
+let timeout = window.g.AXIOS_TIMEOUT;
 const service = axios.create({
-  baseURL: process.env.VUE_APP_BASE_API, //获取环境变量里的BASE_API
-  timeout: 5000 // request timeout
+  baseURL,
+  timeout // request timeout
 });
 
 // request interceptor

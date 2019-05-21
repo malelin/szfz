@@ -3,7 +3,7 @@
  * @LastEditors: Please set LastEditors
  * @Description: 任务详情组件
  * @Date: 2019-04-11 14:32:10
- * @LastEditTime: 2019-05-07 15:33:09
+ * @LastEditTime: 2019-05-16 17:31:29
  -->
 <template>
   <div class="task-detail">
@@ -161,7 +161,8 @@ export default {
       // 当前编辑的任务
       currentEditItem: -1,
       // 当前编辑row
-      currentRow: {}
+      currentRow: {},
+      ws: null
     };
   },
   computed: {
@@ -200,15 +201,39 @@ export default {
       } catch (e) {
         throw e;
       }
+    },
+    /**
+     * @description 创建websocket
+     */
+    createWs() {
+      let token = sessionStorage.getItem("token");
+      this.ws = new WebSocket(window.g.WsUrl + "/v1/ws/task_state/" + token);
+      this.ws.onopen = () => {
+        console.log("open task_object");
+      };
+      this.ws.onmessage = event => {
+        let { data } = JSON.parse(event.data);
+        this.taskForm = data;
+      };
+      this.ws.onclose = () => {
+        console.log("close task_object!");
+      };
+      this.ws.onerror = event => {
+        console.log(event);
+        console.log("WebSocketError!");
+      };
     }
   },
   created() {
     this.getTaskDetail().catch(err => {
       console.log(err);
     });
+    this.createWs();
   },
   mounted() {},
-  beforeDestroy() {}
+  beforeDestroy() {
+    this.ws.close();
+  }
 };
 </script>
 <style>

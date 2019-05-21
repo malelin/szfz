@@ -4,12 +4,15 @@
  * @Description: 任务对象设置
  * @reference: 创建任务组件和任务概览组件中
  * @Date: 2019-05-07 10:50:38
- * @LastEditTime: 2019-05-14 15:59:19
+ * @LastEditTime: 2019-05-20 14:48:36
  -->
 <template>
-  <div class="setting-overview">
+  <div class="setting-overview" v-show="visible">
     <el-tabs type="border-card">
-      <el-tab-pane label="敏感信息分析设置">
+      <el-tab-pane
+        v-if="typeof setting.sensi !== 'undefined' && setting.sensi.isChecked"
+        label="敏感信息分析设置"
+      >
         <el-checkbox
           disabled
           border
@@ -18,7 +21,9 @@
           label="敏感信息分析"
         ></el-checkbox>
       </el-tab-pane>
-      <el-tab-pane label="安全仿真分析设置"
+      <el-tab-pane
+        v-if="typeof setting.anti !== 'undefined' && setting.anti.isChecked"
+        label="安全仿真分析设置"
         ><el-form :model="setting.anti">
           <el-row :gutter="20">
             <el-col>
@@ -79,7 +84,7 @@
                     :label="option.label"
                     :value="option.value"
                   >
-                  </el-option> </el-select
+                  </el-option></el-select
               ></el-form-item>
             </el-col>
           </el-row> </el-form
@@ -116,14 +121,41 @@ export default {
     },
     aids() {
       return this.row.setting.anti.aids;
+    },
+    // 设置预览是否可见
+    visible() {
+      let settingExist = typeof this.setting !== "undefined";
+      let checkedArr = [];
+      for (const key in this.setting) {
+        if (this.setting.hasOwnProperty(key)) {
+          const element = this.setting[key];
+          let isChecked = element.isChecked;
+          checkedArr.push(isChecked);
+        }
+      }
+      let hasChecked = checkedArr.includes(true);
+      return settingExist && hasChecked;
     }
   },
-  watch: {},
+  watch: {
+    row: {
+      deep: true,
+      immediate: true,
+      handler: function({ setting }) {
+        debugger;
+        let {
+          anti: { aids }
+        } = setting;
+        this.setAntiTags(aids);
+      }
+    }
+  },
   methods: {
     /**
      * @description 根据安全仿真aids获取杀软全名
      */
     async getAntiTagByAids(aids) {
+      debugger;
       try {
         let { status, data } = await getAntiInfo(aids);
         if (status === 200) {
@@ -132,17 +164,23 @@ export default {
       } catch (e) {
         throw e;
       }
+    },
+    /**
+     * @description 根据安全仿真aids获取结果设置tag
+     */
+    async setAntiTags(aids) {
+      if (aids === null) {
+        return false;
+      }
+      try {
+        this.antiTags = await this.getAntiTagByAids(aids);
+      } catch (e) {
+        throw e;
+      }
     }
   },
   created() {
-    (async () => {
-      try {
-        let aids = this.aids + "";
-        this.antiTags = await this.getAntiTagByAids(aids);
-      } catch (e) {
-        console.log(e);
-      }
-    })();
+    this.setAntiTags(this.aids).catch(err => console.log(err));
   },
   mounted() {}
 };

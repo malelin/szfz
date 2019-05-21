@@ -1,9 +1,9 @@
 <!--
  * @Author: 旺苍扛把子
- * @LastEditors: 旺苍扛把子
+ * @LastEditors: Please set LastEditors
  * @Description: 头部栏,包含搜索,注销,消息
  * @Date: 2019-03-27 10:03:36
- * @LastEditTime: 2019-04-29 10:47:09
+ * @LastEditTime: 2019-05-20 14:12:57
  -->
 <template>
   <div class="navbar">
@@ -66,7 +66,7 @@ export default {
   watch: {},
   methods: {
     //映射是否折叠侧边栏
-    ...mapMutations(["toggleISCollapse"]),
+    ...mapMutations(["toggleISCollapse", "setUserInfo"]),
     /**
      * @description 注销登录
      */
@@ -94,9 +94,7 @@ export default {
      */
     createWs() {
       let token = sessionStorage.getItem("token");
-      this.ws = new WebSocket(
-        "ws://192.168.2.112:8081/v1/ws/user_state/" + token
-      );
+      this.ws = new WebSocket(window.g.WsUrl + "/v1/ws/user_state/" + token);
       this.ws.onopen = () => {
         console.log("open");
         this.ws.send("hello");
@@ -108,6 +106,7 @@ export default {
           this.ws.close();
         }
         if (userInfo.isLogin === 1) {
+          this.setUserInfo(userInfo);
           this.userInfo = Object.assign({}, this.userInfo, userInfo);
         }
       };

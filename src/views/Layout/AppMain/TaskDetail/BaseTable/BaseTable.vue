@@ -3,7 +3,7 @@
  * @LastEditors: Please set LastEditors
  * @Description: 封装任务详情和新建任务中的表格
  * @Date: 2019-04-12 09:46:16
- * @LastEditTime: 2019-05-15 17:11:39
+ * @LastEditTime: 2019-05-20 18:13:57
  -->
 <template>
   <div class="base-table task-settings box-shadow-6">
@@ -37,7 +37,7 @@
         </el-table-column>
         <el-table-column align="center" label="文件名称" prop="name">
         </el-table-column>
-        <el-table-column label="上传进度">
+        <el-table-column label="上传进度" v-if="taskStatus === 1">
           <template slot-scope="{ row }">
             <transition name="fade">
               <el-progress
@@ -50,7 +50,6 @@
             ></transition>
           </template>
         </el-table-column>
-
         <el-table-column
           align="center"
           prop="fileType"
@@ -88,7 +87,7 @@
             </el-tag>
           </template>
         </el-table-column>
-        <el-table-column align="center" label="结果" v-if="taskStatus !== 1">
+        <el-table-column align="center" label="结果" v-show="taskStatus !== 1">
           <template slot-scope="{ row }">
             <status :status-config="statusConfig" :status="row.objectResult" />
           </template>
@@ -98,7 +97,6 @@
           prop="operate"
           label="操作"
           align="center"
-          v-if="taskStatus === 1 || taskStatus === 3"
         >
           <template slot-scope="{ row, $index }">
             <div class="operate-box">
@@ -137,7 +135,10 @@
                 </el-scrollbar>
                 <el-button
                   slot="reference"
-                  v-show="taskStatus === 3"
+                  v-show="
+                    typeof row.objectResult !== 'undefined' &&
+                      row.objectResult !== 5
+                  "
                   type="success"
                   size="mini"
                   @mouseenter.native="handleView(row)"
@@ -149,10 +150,7 @@
         </el-table-column>
         <el-table-column type="expand">
           <template slot-scope="{ row }">
-            <setting-overview
-              v-if="typeof row.setting !== 'undefined'"
-              :row="row"
-            />
+            <setting-overview :row="row" />
           </template>
         </el-table-column>
       </el-table>
@@ -206,7 +204,10 @@
         >
       </el-row>
     </div>
-    <task-setting :taskSetting="modalTaskSetting" @get-data="getData" />
+    <task-setting
+      :taskSetting="modalTaskSetting"
+      @get-task-setting="getTaskSetting"
+    />
   </div>
 </template>
 
@@ -241,7 +242,7 @@ export default {
       // el-upload配置
       upload: {
         name: "object",
-        action: process.env.VUE_APP_BASE_API + "/v1/filemanage/object",
+        action: window.g.ApiUrl + "/v1/filemanage/object",
         percent: 0,
         showProgress: false,
         headers: {
@@ -306,7 +307,8 @@ export default {
         taskDetailList: {}
       },
       // 当前编辑的row
-      currentRow: {}
+      currentRow: {},
+      ws: null
     };
   },
   computed: {
@@ -358,34 +360,32 @@ export default {
     /**
      * @description 文件上传成功钩子
      */
-    fileOnSuccess({ msg, status }, file, fileList) {
+    fileOnSuccess({ msg, status }, file) {
       // 更新上传列表
-      this.uploadFileList = fileList;
       if (status === 200) {
-        // let fileMD5 = data.fileMD5;
-        // let inUploadFileList = this.uploadFileList.findIndex(
-        //   ({ response: { data } }) =>
-        //     JSON.stringify(data) === JSON.stringify(file.response.data)
-        // );
-        // if (inUploadFileList !== -1) {
-        //   this.$message({
-        //     type: "warning",
-        //     message: "该文件已上传"
-        //   });
-        //   this.uploadFileList.splice(inUploadFileList, 1);
-        //   return;
-        // }
-        // let inDetailList = this.detailList.findIndex(({ fileMD5: MD5 }) => {
-        //   return MD5 === fileMD5;
-        // });
-        // if (inDetailList !== -1) {
-        //   this.$message({
-        //     type: "warning",
-        //     message: "该文件已上传"
-        //   });
-        //   this.uploadFileList.splice(inDetailList, 1);
-        //   return;
-        // }
+        let fileMD5 = file.response.data.fileMD5;
+        console.log(fileMD5);
+        let repeatIndex = [];
+        this.uploadFileList.filter((item, index) => {
+          let response = item.response;
+          if (typeof response !== "undefined") {
+            if (fileMD5 === response.data.fileMD5) {
+              repeatIndex.push(index);
+            }
+          }
+        });
+        if (repeatIndex.length > 1) {
+          repeatIndex.shift();
+          console.log(repeatIndex);
+          console.log(this.uploadFileList);
+          repeatIndex.forEach(item => {
+            this.uploadFileList.splice(item, 1);
+          });
+          this.$message({
+            type: "warning",
+            message: "重复上传"
+          });
+        }
       } else {
         this.$notify({
           title: "上传失败",
@@ -464,7 +464,25 @@ export default {
       this.currentRow = row;
       let setting = this.currentRow.setting;
       if (typeof setting !== "undefined") {
-        this.modalTaskSetting = JSON.parse(JSON.stringify(setting));
+        this.modalTaskSetting = _.cloneDeep(setting);
+      } else {
+        this.modalTaskSetting = {
+          sensi: { isChecked: false },
+          // 安全仿真分析
+          anti: {
+            isChecked: false,
+            // 选中的杀软
+            aids: [],
+            // 检测模式
+            model: 1,
+            // 网络状态
+            network: 2,
+            // 命令行参数
+            param: "",
+            // 选中的检测时长
+            time: 1
+          }
+        };
       }
       this.$modal.show("modalTaskSetting");
     }, 300),
@@ -565,6 +583,7 @@ export default {
       }
       try {
         let config = { req: this._generateTaskParam(model), tid: this.tid };
+        debugger;
         let { status } = await modifyTask(config);
         if (status === 200) {
           this.$message({
@@ -579,7 +598,8 @@ export default {
     }, 300),
     _generateTaskParam(model) {
       // 任务名称,任务描述
-      let { remarks, taskname } = this.taskOptinalInfo;
+      debugger;
+      let { remarks, taskName: taskname } = this.$parent.taskForm;
       let objects = this.uploadFileList.map(item => {
         let {
           response: { data: file },
@@ -641,7 +661,7 @@ export default {
         };
         return res;
       });
-      objects.concat(objects2);
+      debugger;
       return {
         model, //1 创建 2 创建并执行
         objects: objects.concat(objects2),
@@ -652,9 +672,9 @@ export default {
     /**
      * @description 根据任务表单生成任务对象的任务内容
      */
-    _generateTaskContent(rows) {
+    _generateTaskContent(rows, setting) {
       rows.forEach(row => {
-        row.setting = this.taskSetting;
+        row.setting = setting;
       });
     },
     /**
@@ -712,21 +732,9 @@ export default {
           console.log(e);
         }
       } else {
-        // this.$message({
-        //   type: "warning",
-        //   message: "请选择对象要执行的任务内容"
-        // });
-        const h = this.$createElement;
-        this.$notify({
-          type: "error",
-          title: "创建失败",
-          offset: 62,
-          duration: 0,
-          message: h(
-            "i",
-            { style: "color: teal" },
-            "请选择对象要执行的任务内容"
-          )
+        this.$message({
+          type: "warning",
+          message: "请选择对象要执行的任务内容"
         });
       }
     }, 300),
@@ -773,16 +781,39 @@ export default {
     /**
      * @description 获取任务设置模态框里的数据
      */
-    getData(data) {
-      if (data !== null) {
-        this.taskSetting = data;
-        this.$set(this.currentRow, "setting", data);
+    getTaskSetting(setting) {
+      if (setting !== null) {
         // 生成任务内容
         let typeOpen = this.typeOpen;
         typeOpen === "single"
-          ? this._generateTaskContent([this.currentRow])
-          : this._generateTaskContent(this.multipleSelection);
+          ? this._generateTaskContent([this.currentRow], setting)
+          : this._generateTaskContent(this.multipleSelection, setting);
       }
+    },
+    /**
+     * @description 创建websocket
+     */
+    createWs() {
+      let token = sessionStorage.getItem("token");
+      this.ws = new WebSocket(
+        window.g.WsUrl + "/v1/ws/task_object_state/" + token
+      );
+      this.ws.onopen = () => {
+        console.log("open task_object");
+      };
+      this.ws.onmessage = event => {
+        let { objectResult, oid } = JSON.parse(event.data);
+        let object = this.detailList.find(item => oid === item.oid);
+        object.objectResult = objectResult;
+        debugger;
+      };
+      this.ws.onclose = () => {
+        console.log("close task_object!");
+      };
+      this.ws.onerror = event => {
+        console.log(event);
+        console.log("WebSocketError!");
+      };
     }
   },
   created() {
@@ -796,6 +827,10 @@ export default {
       .catch(err => {
         console.log(err);
       });
+    this.createWs();
+  },
+  beforeDestroy() {
+    this.ws.close();
   },
   mounted() {}
 };
@@ -875,7 +910,6 @@ export default {
         border-radius 5px
         color rgba(64, 174, 252, 1)
         cursor pointer
-
 .c-modal
   .modal-header
     display flex

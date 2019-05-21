@@ -3,7 +3,7 @@
  * @reference: 创建任务组件,任务概览组件
  * @Description: 任务设置模态框
  * @Date: 2019-05-13 11:26:53
- * @LastEditTime: 2019-05-15 14:10:00
+ * @LastEditTime: 2019-05-21 11:52:06
  -->
 <template>
   <modal
@@ -15,6 +15,7 @@
     transition="fade"
     height="auto"
     width="50%"
+    @before-close="beforeModalClose"
   >
     <div class="task-setting">
       <el-card>
@@ -27,7 +28,7 @@
             ref="taskSetting"
             :inline="false"
             label-width="80px"
-            :model="taskSetting"
+            :model="model"
           >
             <el-collapse v-model="activatedCollapse" accordion>
               <el-collapse-item title="敏感信息分析" name="1"
@@ -38,17 +39,20 @@
                     label="敏感信息分析:"
                   >
                     <el-switch
-                      v-model="taskSetting.sensi.isChecked"
-                      active-text="启用"
+                      v-model="model.sensi.isChecked"
+                      active-text="开启"
                       :active-value="true"
-                      inactive-text="禁用"
+                      inactive-text="关闭"
                       :inactive-value="false"
                     />
                   </el-form-item>
                 </el-card>
               </el-collapse-item>
               <el-collapse-item title="安全仿真分析" name="2">
-                <anti-setting :anti="taskSetting.anti"></anti-setting>
+                <anti-setting
+                  ref="antiSetting"
+                  :anti="model.anti"
+                ></anti-setting>
               </el-collapse-item>
             </el-collapse>
           </el-form>
@@ -68,6 +72,7 @@
 
 <script>
 import { getAntiTree } from "@/api/anti";
+import _ from "lodash";
 export default {
   name: "TaskSetting",
   components: {
@@ -113,14 +118,19 @@ export default {
       defaultProps: {
         children: "children",
         label: "label"
-      }
+      },
+      model: null
     };
   },
   computed: {},
   watch: {
-    // "taskSetting.anti.isChecked"(newValue) {
-    //   this._setAntiTreeIsActivated(this.antiTree, newValue);
-    // },
+    taskSetting: {
+      deep: true,
+      immediate: true,
+      handler: function(val) {
+        this.model = _.cloneDeep(val);
+      }
+    }
   },
   methods: {
     /**
@@ -156,77 +166,64 @@ export default {
       } catch (e) {
         console.log(e);
       }
-      // // modal打开的类型
-      // let typeOpen = this.modalTaskSetting.typeOpen;
-      // // 单个任务的设置
-      // if (typeOpen === "single") {
-      //   // 设置表单内容
-      //   this._setTaskSetting();
-      // }
+    },
+    /**
+     * @description modal关闭之前,获取数据
+     */
+    beforeModalClose() {
+      console.log("beforeModalClose");
+      this.$refs.taskSetting.resetFields();
     },
     /**
      * @description 关闭modal
      */
-
     handleModalClose() {
-      this.$emit("get-data", null);
+      this.$emit("get-task-setting", null);
       this.$refs.taskSetting.resetFields();
-      // this._setAntiTreeIsActivated(this.antiTree, false);
-      this._clearAids();
       this.$modal.hide("modalTaskSetting");
-    },
-    // /**
-    //  * @description modal关闭之前的事件
-    //  */
-    // async beforeModalClosed() {
-    //   // 生成任务内容
-    //   let typeOpen = this.modalTaskSetting.typeOpen;
-    //   typeOpen === "single"
-    //     ? this._generateTaskContent([this.currentRow])
-    //     : this._generateTaskContent(this.uploadFileList);
-    //   this.$refs["modalTaskSetting"].resetFields();
-    // },
-    /**
-     * @description 获取选中的杀软aids
-     */
-    // _getAids() {
-    //   let nodes = this.$refs.tree.getCheckedNodes();
-    //   return nodes
-    //     .filter(node => {
-    //       return typeof node.id !== "undefined";
-    //     })
-    //     .map(({ id }) => id);
-    // },
-    /**
-     * @description 清空选中的杀软aids
-     */
-    _clearAids() {
-      this.taskSetting.anti.aids = [];
     },
     /**
      * @description 确定按钮
      */
     handleSure() {
-      let aids = this.taskSetting.anti.aids;
-      if (this.taskSetting.anti.isChecked) {
-        if (aids.length > 0) {
-          this.taskSetting.anti.aids = aids;
-        } else {
-          this.$message({
-            type: "warning",
-            message: "请选择杀毒软件"
-          });
-          return false;
-        }
+      let taskSetting = this.getTaskSetting();
+      if (taskSetting.anti.isChecked && taskSetting.anti.aids.length === 0) {
+        this.$message({
+          type: "warning",
+          message: "请选择杀毒软件"
+        });
+        return false;
       }
-      this.$emit("get-data", JSON.parse(JSON.stringify(this.taskSetting)));
+      this.$emit("get-task-setting", _.cloneDeep(taskSetting));
       this.$refs.taskSetting.resetFields();
       this.$modal.hide("modalTaskSetting");
+    },
+    /**
+     * @description 获取安全仿真分析引擎设置
+     */
+    _getAnti() {
+      let model = this.$refs.antiSetting.model;
+      return model;
+    },
+    /**
+     * @description 获取敏感信息分析引擎设置
+     */
+    _getSensi() {
+      return this.model.sensi;
+    },
+    /**
+     * @description 获取所有引擎设置
+     */
+    getTaskSetting() {
+      let taskSetting = {};
+      let anti = this._getAnti();
+      let sensi = this._getSensi();
+      taskSetting.sensi = sensi;
+      if (anti !== null) {
+        taskSetting.anti = anti;
+      }
+      return taskSetting;
     }
-    // setCheckedNodes() {
-    //   let aids = this.taskSetting.anti.aids;
-    //   this.$refs.tree.setCheckedNodes(aids);
-    // }
   },
   created() {},
   mounted() {}
@@ -236,12 +233,6 @@ export default {
 .task-setting .el-transfer-panel {
   width: 268px;
 }
-.task-setting .anti-select {
-  height: 180px;
-  overflow-x: hidden;
-  padding-left: 110px;
-}
-
 .task-setting .el-scrollbar__wrap {
   overflow-x: hidden;
 }
@@ -253,6 +244,7 @@ export default {
 <style lang="stylus" scoped>
 .task-setting
   line-height 1
+
   .anti-select-title
     width 120px
     text-align left
